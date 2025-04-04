@@ -9,14 +9,13 @@ import { HttpClient } from '@angular/common/http';
 })
 
 export class Tab1Page {
-  cardData: { title: string; price: string; image: string }[] = []; // Propiedad para almacenar los datos
-  searchQuery: string = ''; // Propiedad para almacenar el término de búsqueda
+  cardData: { title: string; price: string; image: string }[] = []; // almacenar datos de las cartas
+  searchQuery: string = ''; // almacenar el término de búsqueda
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    // Opcional: Puedes realizar una búsqueda inicial si lo deseas
-    // this.fetchData('gengar');
+
   }
 
   searchCards() {
@@ -33,21 +32,21 @@ export class Tab1Page {
       next: (response) => {
         console.log('Datos obtenidos:', response);
 
-        // Crear un DOMParser para analizar el HTML
+        // analizar el HTML
         const parser = new DOMParser();
         const doc = parser.parseFromString(response, 'text/html');
 
-        // Seleccionar los elementos que contienen las cartas
+        // elementos de las cartas
         const cards = doc.querySelectorAll('.card-wrapper');
 
-        this.cardData = []; // Limpiar datos previos
+        this.cardData = []; // limpiar datos 
 
         cards.forEach((card) => {
           const title = card.querySelector('.card__heading a')?.textContent?.trim() || 'Sin título';
           const price = card.querySelector('.price-item--last')?.textContent?.trim() || 'Sin precio';
           let image = card.querySelector('img')?.getAttribute('src') || 'Sin imagen';
 
-          // Asegurarse de que la URL de la imagen sea absoluta
+          // quitar los // de la url
           if (image.startsWith('//')) {
             image = `https:${image}`;
           }
@@ -55,7 +54,6 @@ export class Tab1Page {
           this.cardData.push({ title, price, image });
         });
 
-        // Mostrar los datos en la consola
         console.log('Cartas encontradas:', this.cardData);
       },
       error: (error) => {
