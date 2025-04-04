@@ -1,0 +1,28 @@
+/* filepath: c:\Users\DanielAntonioCaldero\Desktop\Poke\src\app\tab1\tab1.page.scss */
+.card {
+  margin-bottom: 15px;
+}
+
+.card-image {
+  width: 100px; /* Ajusta el ancho de la imagen */
+  height: auto; /* Mantén la proporción de la imagen */
+  border-radius: 8px; /* Opcional: bordes redondeados */
+  margin-right: 15px; /* Espaciado entre la imagen y el texto */
+}
+
+ion-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+ion-label h2 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+ion-label p {
+  font-size: 1rem;
+  color: #666;
+  margin: 5px 0 0;
+}
