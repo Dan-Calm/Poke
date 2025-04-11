@@ -42,7 +42,7 @@ export class Tab1Page {
 
     // Crear promesas para ambas funciones
     const promesaAFKStore = this.obtenerDatosAFKStore(this.terminoBusqueda);
-    const promesaTCGMatch = this.obtenerDatosTCGMatch(this.terminoBusqueda);
+    // const promesaTCGMatch = this.obtenerDatosTCGMatch(this.terminoBusqueda);
     // const promesaOasis = this.obtenerDatosOasis(this.terminoBusqueda);
 
     // Esperar a que ambas funciones terminen
