@@ -4,6 +4,16 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+# Inicializar Firebase con las credenciales del archivo JSON
+cred = credentials.Certificate("c:\\Users\\DanielAntonioCaldero\\Desktop\\Portafolio\\Poke\\src\\app\\config\\serviceAccountKey.json")
+firebase_admin.initialize_app(cred)
+
+# Inicializar Firestore
+db = firestore.client()
+
 # Configurar el navegador
 options = webdriver.ChromeOptions()
 # options.add_argument('--headless')  # Para ejecutar en modo sin interfaz gráfica
@@ -15,7 +25,7 @@ options.add_argument('--disable-dev-shm-usage')
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 # Número total de páginas
-total_paginas = 27
+total_paginas = 2
 
 # Lista para almacenar todos los productos con imagen
 todos_los_productos = []
@@ -53,25 +63,22 @@ try:
                 disponible = "Disponible" if "Agotado" not in producto.text else "Agotado"
 
                 # Agregar el producto con imagen a la lista
-                todos_los_productos.append({
+                producto_data = {
                     "nombre": alt,
                     "precio": precio,
                     "disponibilidad": disponible,
                     "imagen": src
-                })
+                }
+                todos_los_productos.append(producto_data)
+
+                # Guardar el producto en Firestore
+                db.collection("productos_afkstore").add(producto_data)
 
             except Exception as e:
                 print(f"Error al procesar un producto en la página {pagina}: {str(e)}")
                 continue
 
-    # Imprimir todos los productos con imagen
-    print("\nTodos los productos con imagen:")
-    for producto in todos_los_productos:
-        print(f"Producto: {producto['nombre']}")
-        print(f"Precio: {producto['precio']}")
-        print(f"Disponibilidad: {producto['disponibilidad']}")
-        print(f"Imagen: {producto['imagen']}")
-        print("-" * 50)
+    print("\nTodos los productos han sido guardados en Firebase Firestore.")
 
 except Exception as e:
     print(f"Error general: {str(e)}")

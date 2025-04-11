@@ -1,46 +1,20 @@
-<ion-content [fullscreen]="true">
-  <div class="ion-padding">
-    <!-- Campo de búsqueda -->
-    <ion-item>
-      <ion-input
-        placeholder="Ingrese el nombre de la carta"
-        [(ngModel)]="terminoBusqueda"
-        clearInput
-      ></ion-input>
-      <ion-button (click)="buscarCartas()">Buscar</ion-button>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Cartas Guardadas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let carta of listaDeCartas">
+      <ion-thumbnail slot="start">
+        <img [src]="carta.imagen" alt="{{ carta.nombre }}" />
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ carta.nombre }}</h2>
+        <p>Precio: {{ carta.precio }}</p>
+        <p>Disponibilidad: {{ carta.disponibilidad }}</p>
+      </ion-label>
     </ion-item>
-
-    <div class="ion-padding">
-      <!-- Lista de cartas agrupadas -->
-      <div *ngIf="mostrarCartasAgrupadas">
-        <ion-card *ngFor="let carta of cartasAgrupadas" class="card">
-          <ion-item lines="none">
-            <img [src]="carta.imagen" alt="{{ carta.titulo }}" class="card-image" />
-            <ion-label>
-              <h2>{{ carta.titulo }}</h2>
-              <p>Precio promedio: {{ carta.precioPromedio }}</p>
-            </ion-label>
-          </ion-item>
-          <ion-button expand="block" (click)="abrirCartasPorSku(carta.sku)">Ver opciones</ion-button>
-        </ion-card>
-      </div>
-
-      <!-- Lista de cartas filtradas por SKU -->
-      <div *ngIf="!mostrarCartasAgrupadas">
-        <ion-button expand="block" (click)="volverALaVistaAgrupada()">Volver</ion-button>
-        <h2>Opciones para el SKU seleccionado</h2>
-        <ion-card *ngFor="let carta of cartasFiltradas" class="card">
-          <ion-item lines="none">
-            <img [src]="carta.imagen" alt="{{ carta.titulo }}" class="card-image" />
-            <ion-label>
-              <h2>{{ carta.titulo }}</h2>
-              <p>{{ carta.precio }}</p>
-              <p>Tienda: {{ carta.tienda }}</p>
-            </ion-label>
-          </ion-item>
-          <ion-button expand="block" (click)="abrirEnlaceCarta(carta.enlace)">Ver en {{ carta.tienda }}</ion-button>
-        </ion-card>
-      </div>
-    </div>
-  </div>
+  </ion-list>
 </ion-content>
