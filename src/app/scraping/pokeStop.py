@@ -14,9 +14,9 @@ options.add_argument('--disable-dev-shm-usage')
 # Inicializar el driver de Selenium
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-productos  = driver.get("https://pokestop.cl/singles")
+inicio = time.time()
 
-time.sleep(2)  # Esperar a que cargue la página
+productos  = driver.get("https://pokestop.cl/singles")
 
 # Buscar elementos con la clase "grid__item"
 productos = driver.find_elements(By.CLASS_NAME, "js-item-product")
@@ -25,3 +25,9 @@ print(f"Se encontraron {len(productos)} productos en la página.")
 print("Productos encontrados:")
 for producto in productos:
     print(producto.text)
+    print("-------------------")
+    
+    
+fin = time.time()
+tiempo_total = fin - inicio
+print(f"Tiempo total de ejecución: {tiempo_total} segundos")
