@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { collection, getDocs } from 'firebase/firestore';
-// import { db } from '../config/firebase.config'; // Importa la configuración de Firebase
+import { db } from '../config/firebase.config'; // Importa la configuración de Firebase
 
 @Component({
   selector: 'app-tab1',
