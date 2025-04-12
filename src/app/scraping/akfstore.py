@@ -17,7 +17,6 @@ db = firestore.client()
 # Configurar el navegador
 options = webdriver.ChromeOptions()
 options.add_argument("--headless=new")
-#cc
 options.add_argument('--disable-gpu')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
@@ -26,7 +25,7 @@ options.add_argument('--disable-dev-shm-usage')
 driver = webdriver.Chrome(options=options)
 
 # Número total de páginas
-total_paginas = 1git ls-files | findstr "src/app/config/serviceAccountKey.json"git config --global core.autocrlf truegit config --global core.autocrlf true
+total_paginas = 1
 
 # Lista para almacenar todos los productos con imagen
 todos_los_productos = []
