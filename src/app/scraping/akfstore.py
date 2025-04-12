@@ -48,6 +48,8 @@ try:
         print(f"Scraping página {pagina}: {url}")
         driver.get(url)
 
+
+        print("prueba")
         # Buscar elementos con la clase "grid__item"
         productos = driver.find_elements(By.CLASS_NAME, "grid__item")
         print(f"Se encontraron {len(productos)} productos en la página {pagina}.")
