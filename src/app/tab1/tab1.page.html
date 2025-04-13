@@ -20,15 +20,11 @@
           <p>Tipo Carta: {{ carta.tipo_carta }}</p>
           <p>Código Carta: {{ carta.codigo_carta }}</p>
           <ion-button expand="block" [href]="carta.link" target="_blank">
-            Ver Carta
+            {{ carta.tienda }}
           </ion-button>
         </ion-label>
       </ion-item>
 
-      <!-- Botón debajo de la información -->
-      <!-- <ion-card-content>
-
-      </ion-card-content> -->
     </ion-card>
   </ion-list>
 </ion-content>

@@ -99,6 +99,7 @@ try:
     for pagina in range(1, total_paginas + 1):
         # Actualizar la URL con el número de página
         url = f"https://www.afkstore.cl/collections/singles-pokemon?page={pagina}"
+        url = f"https://www.afkstore.cl/search?q=charizard&options%5Bprefix%5D=last"
         print(f"Scraping página {pagina}: {url}")
         driver.get(url)
 
