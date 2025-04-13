@@ -9,12 +9,17 @@ from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# Inicializar Firebase con las credenciales del archivo JSON
-cred = credentials.Certificate("../config/serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
+# Cargar todas las colecciones y sus cartas usando la función cargar_todas_las_colecciones
+from cargarColecciones import cargar_todas_las_colecciones  # Importar la función desde cargarColecciones.py
+
+# Verificar si Firebase ya está inicializado
+if not firebase_admin._apps:
+    cred = credentials.Certificate("../config/serviceAccountKey.json")  # Cambia esto por la ruta a tu archivo JSON de credenciales
+    firebase_admin.initialize_app(cred)
 
 # Inicializar Firestore
 db = firestore.client()
+
 
 # Configurar el navegador
 options = webdriver.ChromeOptions()
@@ -32,12 +37,11 @@ total_paginas = 1
 # Lista para almacenar todos los productos con imagen
 todos_los_productos = []
 
-from datetime import datetime
-
 def guardar_en_firebase(productos):
     """
     Función para guardar los datos en Firebase Firestore.
     """
+    
     try:
         for producto in productos:
             print(f"Guardando producto: {producto['nombre']}")
@@ -95,11 +99,32 @@ def guardar_en_firebase(productos):
     except Exception as e:
         print(f"Error al guardar los productos en Firebase: {str(e)}")
 
-try:
+try: 
+    
+    todas_las_cartas = cargar_todas_las_colecciones()  # Obtener todas las cartas de todas las colecciones
+    print(f"Total de cartas cargadas: {len(todas_las_cartas)}")
+    # Imprimir toda la información de todas_las_cartas
+    print("\nInformación de todas las cartas cargadas:")
+    # for idx, carta in enumerate(todas_las_cartas, start=1):
+    #     print(f"Carta {idx}:")
+    #     for key, value in carta.items():
+    #         print(f"  {key}: {value}")
+    #     print("-" * 40)
+    # Buscar la carta con el código "061/193"
+    carta_especifica = next((carta for carta in todas_las_cartas if carta["codigo"] == "061/193"), None)
+
+    # Verificar si se encontró la carta
+    if carta_especifica:
+        print("\nCarta encontrada con código '061/193':")
+        for key, value in carta_especifica.items():
+            print(f"  {key}: {value}")
+    else:
+        print("\nNo se encontró una carta con el código '061/193'.")
+
     for pagina in range(1, total_paginas + 1):
         # Actualizar la URL con el número de página
         url = f"https://www.afkstore.cl/collections/singles-pokemon?page={pagina}"
-        url = f"https://www.afkstore.cl/search?q=charizard&options%5Bprefix%5D=last"
+        # url = f"https://www.afkstore.cl/search?q=charizard&options%5Bprefix%5D=last"
         print(f"Scraping página {pagina}: {url}")
         driver.get(url)
 
@@ -142,14 +167,17 @@ try:
                 # Convertir el precio a un número eliminando caracteres no numéricos
                 precio = int(re.sub(r"[^\d]", "", precio))
                     
-                # Verificar disponibilidad
-                disponible = "Disponible" if "Agotado" not in producto.text else "Agotado"
-
                 # Extraer el código de la carta usando una expresión regular
                 codigo_carta = "Sin código"
                 match = re.search(r"(\d{1,3}/\d{3}|[A-Z]+\d+/[A-Z]*\d+|[A-Z]+\d+)", alt)  # Ajustado para casos especiales
                 if match:
                     codigo_carta = match.group(0)
+                
+                # Buscar si el código ya existe en todas_las_cartas
+                carta_existente = next((carta for carta in todas_las_cartas if carta["codigo"] == codigo_carta), None)
+
+                # Preparar el campo Colección
+                coleccion = carta_existente["id"] if carta_existente else ""
 
                 # Extraer el tipo de la carta usando una expresión regular
                 tipo_carta = "Sin tipo"
@@ -165,7 +193,8 @@ try:
                     "tipo_carta": tipo_carta,
                     "precio": precio,
                     "imagen": src,
-                    "tienda": "AfkStore"
+                    "tienda": "AfkStore",
+                    "coleccion": coleccion,  # Agregar el campo Colección
                 }
                 todos_los_productos.append(producto_data)
 
@@ -180,13 +209,14 @@ try:
         print(f"  Nombre: {producto['nombre']}")
         print(f"  Enlace: {producto['link']}")
         print(f"  Código: {producto['codigo_carta']}")
+        print(f"  Colección: {producto['coleccion']}")
         print(f"  Tipo: {producto['tipo_carta']}")
         print(f"  Precio: {producto['precio']}")
         print(f"  Imagen: {producto['imagen']}")
         print("-" * 40)
 
     # Guardar los productos en Firebase
-    guardar_en_firebase(todos_los_productos)
+    # guardar_en_firebase(todos_los_productos)
 
 except Exception as e:
     print(f"Error general: {str(e)}")
