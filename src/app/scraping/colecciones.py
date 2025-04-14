@@ -24,6 +24,9 @@ driver = webdriver.Chrome(options=options)
 # URL de la página a scrapear
 url = "https://www.wikidex.net/wiki/Base_Set_(TCG)"
 url = "https://www.wikidex.net/wiki/Escarlata_y_Púrpura_(TCG):_Evoluciones_en_Paldea"
+url = "https://www.wikidex.net/wiki/DP_Black_Star_Promos_(TCG)"
+url = "https://www.wikidex.net/wiki/Escarlata_y_Púrpura_(TCG):_151"
+url = "https://www.wikidex.net/wiki/XY_(TCG):_Evoluciones"
 
 # Nombre de la colección (extraído de la URL)
 nombre_coleccion = url.split("/")[-1]  # Obtiene "Base_Set_(TCG)"

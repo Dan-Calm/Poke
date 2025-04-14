@@ -6,6 +6,8 @@ cred = credentials.Certificate("../config/serviceAccountKey.json")  # Cambia est
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+
+
 def cargar_cartas_de_coleccion(nombre_coleccion):
     try:
         # Referencia a la colección en Firebase
@@ -40,17 +42,24 @@ def cargar_todas_las_colecciones():
         
         todas_las_cartas = []
         for coleccion in colecciones:
-            nombre_coleccion = coleccion.id  # Usar el ID del documento como nombre de la colección
+            # Obtener los datos del documento de la colección
+            coleccion_data = coleccion.to_dict()
+            # Usar el campo "nombre" de la colección, con un valor por defecto si no existe
+            nombre_coleccion = coleccion_data.get("nombre", "Sin nombre")
             print(f"Cargando cartas de la colección: {nombre_coleccion}")
-            cartas = cargar_cartas_de_coleccion(nombre_coleccion)
-            # for carta in cartas:
-            #     print(carta)
+            
+            # Cargar las cartas de la colección
+            cartas = cargar_cartas_de_coleccion(coleccion.id)  # Usar el ID para acceder a las cartas
+            for carta in cartas:
+                carta["Colección"] = nombre_coleccion  # Agregar el nombre de la colección a cada carta
             todas_las_cartas.extend(cartas)
         
         return todas_las_cartas
     except Exception as e:
         print(f"Error al cargar las colecciones: {e}")
         return []
-        
-    except Exception as e:
-        print(f"Error al cargar las colecciones: {e}")
+
+if __name__ == "__main__":
+    todas_las_cartas = cargar_todas_las_colecciones()
+    for carta in todas_las_cartas:
+        print(carta)

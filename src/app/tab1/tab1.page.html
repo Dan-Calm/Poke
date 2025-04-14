@@ -2,11 +2,18 @@
   <ion-toolbar>
     <ion-title>Cartas Guardadas</ion-title>
   </ion-toolbar>
+
+  <!-- Barra de búsqueda -->
+  <ion-searchbar [(ngModel)]="textoBusqueda" (ionInput)="filtrarCartas($event)"
+    placeholder="Buscar por nombre"></ion-searchbar>
+
 </ion-header>
 
 <ion-content>
+
   <ion-list>
-    <ion-card *ngFor="let carta of listaDeCartas" class="custom-card">
+    <ion-card *ngFor="let carta of cartasFiltradas" class="custom-card">
+      
       <ion-item lines="none">
         <!-- Imagen de la carta a la izquierda -->
         <ion-thumbnail slot="start" class="custom-thumbnail">
@@ -19,6 +26,7 @@
           <p>Precio actual: {{ carta.precioActual }}</p>
           <p>Tipo Carta: {{ carta.tipo_carta }}</p>
           <p>Código Carta: {{ carta.codigo_carta }}</p>
+          <p>Colección: {{ carta.coleccion }}</p>
           <ion-button expand="block" [href]="carta.link" target="_blank">
             {{ carta.tienda }}
           </ion-button>
@@ -27,4 +35,5 @@
 
     </ion-card>
   </ion-list>
+
 </ion-content>
