@@ -39,31 +39,34 @@ todos_los_productos = []
 
 def guardar_en_firebase(productos):
     """
-    Función para guardar los datos en Firebase Firestore.
+    Función para guardar los datos en Firebase Firestore en la nueva estructura.
     """
-    
     try:
+        # Crear una referencia a la colección "tiendas" y al documento "productos_afkstore"
+        tienda_ref = db.collection("tiendas").document("productos_afkstore")
+        
         for producto in productos:
             print(f"Guardando producto: {producto['nombre']}")
 
             # Generar un ID válido para el documento utilizando el enlace del producto
             id_documento = re.sub(r"[^\w\s-]", "", producto["link"]).replace(" ", "_")  # Limpia caracteres no válidos
 
-            # Crear o actualizar el documento de la carta
-            carta_ref = db.collection("productos_afkstore").document(id_documento)
-            carta_ref.set({
+            # Crear o actualizar el documento del producto dentro de la subcolección "productos"
+            producto_ref = tienda_ref.collection("productos").document(id_documento)
+            producto_ref.set({
                 "nombre": producto["nombre"],
-                "nomre_limpio": producto["nombre_limpio"],
+                "nombre_limpio": producto["nombre_limpio"],
                 "link": producto["link"],
                 "codigo_carta": producto["codigo_carta"],
                 "tipo_carta": producto["tipo_carta"],
+                "precio": producto["precio"],
                 "imagen": producto["imagen"],
                 "tienda": producto["tienda"],
                 "coleccion": producto["coleccion"], 
             }, merge=True)  # Merge asegura que no se sobrescriban datos existentes
 
             # Obtener la subcolección "precios"
-            precios_ref = carta_ref.collection("precios")
+            precios_ref = producto_ref.collection("precios")
 
             # Obtener el precio más reciente (documento con la fecha final más actual)
             precios_docs = precios_ref.order_by("fecha_final", direction="DESCENDING").limit(1).stream()
@@ -100,12 +103,11 @@ def guardar_en_firebase(productos):
         print("Los productos y sus precios se han guardado correctamente en Firebase.")
     except Exception as e:
         print(f"Error al guardar los productos en Firebase: {str(e)}")
-
 try: 
     
     todas_las_cartas = cargar_todas_las_colecciones()  # Obtener todas las cartas de todas las colecciones
     print(f"Total de cartas cargadas: {len(todas_las_cartas)}")
-
+            
     for pagina in range(1, total_paginas + 1):
         # Actualizar la URL con el número de página
         url = f"https://www.afkstore.cl/collections/singles-pokemon?page={pagina}"

@@ -36,18 +36,21 @@ url = "https://www.oasisgames.cl/search?type=product&options%5Bprefix%5D=last&q=
 
 def guardar_en_firebase(productos):
     """
-    Función para guardar los datos en Firebase Firestore.
+    Función para guardar los datos en Firebase Firestore con la nueva estructura.
     """
     try:
+        # Crear una referencia a la colección "tiendas" y al documento "productos_oasisgames"
+        tienda_ref = db.collection("tiendas").document("productos_oasisgames")
+        
         for producto in productos:
             print(f"Guardando producto: {producto['nombre']}")
 
             # Generar un ID válido para el documento utilizando el enlace del producto
             id_documento = re.sub(r"[^\w\s-]", "", producto["link"]).replace(" ", "_")  # Limpia caracteres no válidos
 
-            # Crear o actualizar el documento de la carta
-            carta_ref = db.collection("productos_oasisgames").document(id_documento)
-            carta_ref.set({
+            # Crear o actualizar el documento del producto dentro de la subcolección "productos"
+            producto_ref = tienda_ref.collection("productos").document(id_documento)
+            producto_ref.set({
                 "nombre": producto["nombre"],
                 "link": producto["link"],
                 "codigo_carta": producto["codigo_carta"],
@@ -58,7 +61,7 @@ def guardar_en_firebase(productos):
             }, merge=True)  # Merge asegura que no se sobrescriban datos existentes
 
             # Obtener la subcolección "precios"
-            precios_ref = carta_ref.collection("precios")
+            precios_ref = producto_ref.collection("precios")
 
             # Obtener el precio más reciente (documento con la fecha final más actual)
             precios_docs = precios_ref.order_by("fecha_final", direction="DESCENDING").limit(1).stream()

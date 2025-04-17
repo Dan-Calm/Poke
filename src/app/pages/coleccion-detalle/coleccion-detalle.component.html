@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Cartas de la Colección</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tab1"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let carta of cartas" class="custom-card">
+      <ion-thumbnail slot="start" class="custom-thumbnail">
+        <img [src]="carta.imagen || 'assets/placeholder.png'" alt="{{ carta.nombre }}" />
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ carta.nombre }}</h2>
+        <p><strong>Código:</strong> {{ carta.codigo_carta }}</p>
+        <p><strong>Precio:</strong> {{ carta.precio }}</p>
+        <ion-button expand="block" (click)="openLink(carta.link)">
+          {{ carta.tienda }}
+        </ion-button>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

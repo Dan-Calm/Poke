@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase.config';
+import { CartasService } from '../services/cartas.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tab1',
@@ -9,107 +11,91 @@ import { db } from '../config/firebase.config';
   standalone: false,
 })
 export class Tab1Page implements OnInit {
-  
-  listaDeCartas: {
-    nombre: string;
-    precioActual: string;
-    fechaPrecioActual: string;
-    imagen: string;
-    link: string;
-    tipo_carta: string;
-    tienda: string;
-    codigo_carta: string;
-    coleccion: string;
-  }[] = [];
+  cartasPorColeccion: any[] = []; // Almacena las colecciones y sus cartas
+  cartasFiltradas: any[] = []; // Almacena las cartas filtradas
+  textoBusqueda: string = ''; // Texto ingresado en la barra de búsqueda
 
-  cartasFiltradas: typeof this.listaDeCartas = [];
-  textoBusqueda: string = '';
+  cartas: any[] = []; // Almacena las cartas cargadas
 
-  constructor() { }
+  constructor(private cartasService: CartasService, private router: Router) { }
 
-  ngOnInit() {
-    this.obtenerCartasDesdeFirebase();
-  }
-
-  async obtenerCartasDesdeFirebase() {
+  async ngOnInit() {
     try {
-      // Obtener cartas de ambas colecciones
-      const [cartasAfkStore, cartasOasisGames] = await Promise.all([
-        this.obtenerCartasDeColeccion('productos_afkstore'),
-        this.obtenerCartasDeColeccion('productos_oasisgames')
-      ]);
+      // Cargar las cartas de todas las colecciones
+      await this.obtenerCartasDeTodasLasColecciones();
+      this.cartas = await this.cartasService.cargarCartasDesdeFirebase();
 
-      // Combinar ambas listas
-      this.listaDeCartas = [...cartasAfkStore, ...cartasOasisGames];
-      this.cartasFiltradas = this.listaDeCartas;
-
-      console.log('Cartas obtenidas desde Firebase:', this.listaDeCartas);
+      this.cartasFiltradas = this.cartasPorColeccion; // Inicialmente, mostrar todas las cartas
     } catch (error) {
-      console.error('Error al obtener las cartas desde Firebase:', error);
+      console.error('Error durante la inicialización:', error);
     }
   }
 
-  // Función genérica para obtener cartas de cualquier colección
-  async obtenerCartasDeColeccion(nombreColeccion: string) {
-    const referenciaColeccion = collection(db, nombreColeccion);
-    const resultadoConsulta = await getDocs(referenciaColeccion);
+  async obtenerCartasDeTodasLasColecciones() {
+    try {
+      const referenciaColeccion = collection(db, 'colecciones');
+      const resultadoConsulta = await getDocs(referenciaColeccion);
 
-    return await Promise.all(
-      resultadoConsulta.docs.map(async (documento) => {
-        const datosCarta = documento.data() as {
-          nombre: string;
-          imagen: string;
-          tipo_carta: string;
-          link: string;
-          tienda: string;
-          codigo_carta: string;
-          coleccion: string;
-        };
+      this.cartasPorColeccion = await Promise.all(
+        resultadoConsulta.docs.map(async (documento) => {
+          const coleccionId = documento.id;
+          const referenciaCartas = collection(db, `colecciones/${coleccionId}/cartas`);
+          const cartasConsulta = await getDocs(referenciaCartas);
 
-        // Obtener el precio más reciente
-        const referenciaPrecios = collection(documento.ref, 'precios');
-        const consultaPrecioMasReciente = query(
-          referenciaPrecios,
-          orderBy('fecha_final', 'desc'),
-          limit(1)
-        );
-        const preciosConsulta = await getDocs(consultaPrecioMasReciente);
+          const cartas = cartasConsulta.docs.map((cartaDoc) => ({
+            id: cartaDoc.id,
+            ...cartaDoc.data(),
+          }));
 
-        let precioActual = 'No disponible';
-        let fechaPrecioActual = 'No disponible';
-        if (!preciosConsulta.empty) {
-          const precioMasReciente = preciosConsulta.docs[0].data() as {
-            precio: number;
-            fecha_final: string;
+          return {
+            coleccion: coleccionId,
+            cartas,
           };
+        })
+      );
 
-          precioActual = new Intl.NumberFormat('es-CL', {
-            style: 'currency',
-            currency: 'CLP',
-            minimumFractionDigits: 0,
-          }).format(precioMasReciente.precio);
-          fechaPrecioActual = precioMasReciente.fecha_final;
-        }
-
-        return {
-          nombre: datosCarta.nombre,
-          imagen: datosCarta.imagen,
-          tipo_carta: datosCarta.tipo_carta,
-          link: datosCarta.link,
-          tienda: datosCarta.tienda,
-          codigo_carta: datosCarta.codigo_carta,
-          coleccion: datosCarta.coleccion,
-          precioActual,
-          fechaPrecioActual,
-        };
-      })
-    );
+      console.log('Cartas por colección:', this.cartasPorColeccion);
+    } catch (error) {
+      console.error('Error al obtener las cartas de todas las colecciones:', error);
+      throw error;
+    }
   }
 
-  filtrarCartas(event: any) {
+  accion1(id: string) {
+    console.log(`Acción 1 ejecutada para la carta con ID: ${id}`);
+  }
+
+  accion2(id: string) {
+    console.log(`Acción 2 ejecutada para la carta con ID: ${id}`);
+  }
+
+  accion3(id: string) {
+    console.log(`Acción 3 ejecutada para la carta con ID: ${id}`);
+  }
+
+  // Función para filtrar cartas según el texto ingresado
+  filtrarCartas() {
     const texto = this.textoBusqueda.toLowerCase();
-    this.cartasFiltradas = this.listaDeCartas.filter((carta) =>
-      carta.nombre.toLowerCase().includes(texto)
-    );
+
+    this.cartasFiltradas = this.cartasPorColeccion.map((coleccion) => {
+      const cartasFiltradas = coleccion.cartas.filter((carta: any) => {
+        return (
+          carta.id.toLowerCase().includes(texto) ||
+          (carta.nombre_espanol && carta.nombre_espanol.toLowerCase().includes(texto)) ||
+          (carta.nombre_ingles && carta.nombre_ingles.toLowerCase().includes(texto)) ||
+          (carta.codigo && carta.codigo.toLowerCase().includes(texto))
+        );
+      });
+
+      return {
+        coleccion: coleccion.coleccion,
+        cartas: cartasFiltradas,
+      };
+    }).filter((coleccion) => coleccion.cartas.length > 0); // Eliminar colecciones vacías
+  }
+
+  mostrarId(id: string) {
+    // Navegar a la segunda pantalla pasando el ID de la colección como parámetro
+    this.router.navigate(['/coleccion-detalle', id]);
   }
 }

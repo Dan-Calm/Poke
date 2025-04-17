@@ -1,17 +1,32 @@
-.custom-thumbnail {
-  width: 150px; /* Ajusta el ancho de la imagen */
-  height: 200px; /* Ajusta la altura de la imagen */
-  overflow: hidden; /* Asegura que la imagen no se desborde */
+ion-card {
+  margin: 10px 0;
+  // height: 400px; /* Altura fija para todas las tarjetas */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.custom-thumbnail img {
-  object-fit: cover; /* Ajusta la imagen para que se recorte proporcionalmente */
-  width: 100%; /* Asegura que la imagen ocupe todo el ancho */
-  height: 100%; /* Asegura que la imagen ocupe toda la altura */
+img {
+  width: 100%;
+  height: 250px; /* Altura fija para las imágenes */
+  object-fit: contain; /* Asegura que la imagen completa sea visible */
+  // background-color: #f4f4f4; /* Fondo para imágenes más pequeñas */
+  border-radius: 5px; /* Opcional: bordes redondeados */
 }
 
-.custom-card {
-  border: 1px solid var(--ion-color-medium); /* Agrega un borde a las ion-cards */
-  border-radius: 8px; /* Opcional: redondea las esquinas */
-  margin: 10px; /* Agrega un margen entre las tarjetas */
+ion-card-title {
+  font-size: 16px;
+  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+  overflow: hidden; /* Oculta el texto que excede el ancho */
+  text-overflow: ellipsis; /* Agrega "..." al final del texto truncado */
+  display: block; /* Asegura que el comportamiento de truncado funcione correctamente */
+}
+
+ion-content {
+  --offset-bottom: auto!important;
+  --overflow: hidden;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

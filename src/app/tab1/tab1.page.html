@@ -4,36 +4,50 @@
   </ion-toolbar>
 
   <!-- Barra de búsqueda -->
-  <ion-searchbar [(ngModel)]="textoBusqueda" (ionInput)="filtrarCartas($event)"
-    placeholder="Buscar por nombre"></ion-searchbar>
-
+  <ion-searchbar
+    [(ngModel)]="textoBusqueda"
+    (input)="filtrarCartas()"
+    placeholder="Buscar"
+  ></ion-searchbar>
 </ion-header>
 
 <ion-content>
+  <ion-grid>
+    <ion-row>
+      <!-- Iterar sobre las cartas filtradas -->
+      <ion-col size="6" *ngFor="let coleccion of cartasFiltradas">
+        <ion-card *ngFor="let carta of coleccion.cartas" >
+          <!-- Botones pequeños con íconos -->
+          <ion-grid>
+            <ion-row class="ion-justify-content-center ion-align-items-center">
+              <ion-col size="auto">
+                <ion-button  size="small" (click)="accion1(carta.id)">
+                  <ion-icon slot="icon-only" name="heart-outline"></ion-icon>
+                </ion-button>
+              </ion-col>
+              <ion-col size="auto">
+                <ion-button  size="small" (click)="accion2(carta.id)">
+                  <ion-icon slot="icon-only" name="share-social-outline"></ion-icon>
+                </ion-button>
+              </ion-col>
+              <ion-col size="auto">
+                <ion-button  size="small" (click)="accion3(carta.id)">
+                  <ion-icon slot="icon-only" name="bar-chart"></ion-icon>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          <!-- Imagen de la carta -->
+          <img (click)="mostrarId(carta.id)" [src]="carta.imagen_url || 'assets/placeholder.png'" alt="{{ carta.nombre_espanol || 'Carta' }}" />
 
-  <ion-list>
-    <ion-card *ngFor="let carta of cartasFiltradas" class="custom-card">
-      
-      <ion-item lines="none">
-        <!-- Imagen de la carta a la izquierda -->
-        <ion-thumbnail slot="start" class="custom-thumbnail">
-          <img [src]="carta.imagen" alt="{{ carta.nombre }}" />
-        </ion-thumbnail>
+          <!-- Encabezado de la carta -->
+          <ion-card-header>
+            <ion-card-title>{{ carta.nombre_espanol }}</ion-card-title>
+            <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
+          </ion-card-header>
 
-        <!-- Información de la carta a la derecha -->
-        <ion-label>
-          <h2>{{ carta.nombre }}</h2>
-          <p>Precio actual: {{ carta.precioActual }}</p>
-          <p>Tipo Carta: {{ carta.tipo_carta }}</p>
-          <p>Código Carta: {{ carta.codigo_carta }}</p>
-          <p>Colección: {{ carta.coleccion }}</p>
-          <ion-button expand="block" [href]="carta.link" target="_blank">
-            {{ carta.tienda }}
-          </ion-button>
-        </ion-label>
-      </ion-item>
-
-    </ion-card>
-  </ion-list>
-
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
