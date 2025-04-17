@@ -62,7 +62,7 @@ for producto in productos:
             
 
         # Verificar disponibilidad
-        disponible = "Disponible" if "Agotado" not in producto.text else "Agotado"
+        # disponible = "Disponible" if "Agotado" not in producto.text else "Agotado"
 
         # Extraer enlace del producto
         link_elementos = producto.find_elements(By.CSS_SELECTOR, "a")
