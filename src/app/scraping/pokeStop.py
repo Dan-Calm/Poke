@@ -22,7 +22,7 @@ db = firestore.client()
 
 # Configurar el navegador
 options = webdriver.ChromeOptions()
-options.add_argument('--headless')  # Para ejecutar en modo sin interfaz gráfica
+# options.add_argument('--headless')  # Para ejecutar en modo sin interfaz gráfica
 options.add_argument('--disable-gpu')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
@@ -37,6 +37,30 @@ total_paginas = 1
 
 # Lista para almacenar los datos de los productos
 todos_los_productos = []
+
+def verificar_conexion_firebase():
+    """
+    Función para verificar la conexión con Firebase escribiendo y leyendo un documento de prueba.
+    """
+    try:
+        # Crear una referencia a una colección de prueba
+        prueba_ref = db.collection("prueba_conexion").document("test_document")
+
+        # Escribir un documento de prueba
+        prueba_ref.set({
+            "mensaje": "Conexión exitosa",
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        })
+
+        # Leer el documento de prueba
+        doc = prueba_ref.get()
+        if doc.exists:
+            print("Conexión con Firebase verificada correctamente.")
+            print(f"Datos del documento: {doc.to_dict()}")
+        else:
+            print("No se pudo leer el documento de prueba. Verifica la conexión.")
+    except Exception as e:
+        print(f"Error al verificar la conexión con Firebase: {str(e)}")
 
 
 def guardar_en_firebase(productos):
@@ -108,6 +132,7 @@ def guardar_en_firebase(productos):
         
         
 try: 
+    verificar_conexion_firebase()
     
     todas_las_cartas = cargar_todas_las_colecciones()  # Obtener todas las cartas de todas las colecciones
     print(f"Total de cartas cargadas: {len(todas_las_cartas)}")
