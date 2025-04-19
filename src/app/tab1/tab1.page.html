@@ -4,50 +4,56 @@
   </ion-toolbar>
 
   <!-- Barra de búsqueda -->
-  <ion-searchbar
-    [(ngModel)]="textoBusqueda"
-    (input)="filtrarCartas()"
-    placeholder="Buscar"
-  ></ion-searchbar>
+  <ion-searchbar [(ngModel)]="textoBusqueda" (input)="filtrarCartas()" placeholder="Buscar"></ion-searchbar>
 </ion-header>
 
 <ion-content>
   <ion-grid>
     <ion-row>
-      <!-- Iterar sobre las cartas filtradas -->
-      <ion-col size="6" *ngFor="let coleccion of cartasFiltradas">
-        <ion-card *ngFor="let carta of coleccion.cartas" >
+      <!-- Iterar directamente sobre las cartas filtradas -->
+      <ion-col size="6" *ngFor="let carta of cartasCargadas">
+        <ion-card>
           <!-- Botones pequeños con íconos -->
           <ion-grid>
             <ion-row class="ion-justify-content-center ion-align-items-center">
               <ion-col size="auto">
-                <ion-button  size="small" (click)="accion1(carta.id)">
+                <ion-button size="small" (click)="accion1(carta.id)">
                   <ion-icon slot="icon-only" name="heart-outline"></ion-icon>
                 </ion-button>
               </ion-col>
               <ion-col size="auto">
-                <ion-button  size="small" (click)="accion2(carta.id)">
-                  <ion-icon slot="icon-only" name="share-social-outline"></ion-icon>
+                <ion-button size="small" (click)="accion2(carta.id)">
+                  <ion-icon slot="icon-only" name="duplicate"></ion-icon>
                 </ion-button>
               </ion-col>
               <ion-col size="auto">
-                <ion-button  size="small" (click)="accion3(carta.id)">
+                <ion-button size="small" (click)="accion3(carta.id)">
                   <ion-icon slot="icon-only" name="bar-chart"></ion-icon>
                 </ion-button>
               </ion-col>
             </ion-row>
           </ion-grid>
+
           <!-- Imagen de la carta -->
-          <img (click)="mostrarId(carta.id)" [src]="carta.imagen_url || 'assets/placeholder.png'" alt="{{ carta.nombre_espanol || 'Carta' }}" />
+          <img (click)="mostrarId(carta.id)" [src]="carta.imagen_url || 'assets/placeholder.png'"
+            alt="{{ carta.nombre_espanol || 'Carta' }}" />
 
           <!-- Encabezado de la carta -->
           <ion-card-header>
             <ion-card-title>{{ carta.nombre_espanol }}</ion-card-title>
             <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
           </ion-card-header>
-
         </ion-card>
       </ion-col>
     </ion-row>
   </ion-grid>
+
+
+<ion-button expand="full" (click)="onScrollEnd()">
+    +
+  </ion-button>
+
+
+
 </ion-content>
+
