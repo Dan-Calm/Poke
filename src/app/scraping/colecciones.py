@@ -23,9 +23,10 @@ options.add_argument('--disable-dev-shm-usage')
 driver = webdriver.Chrome(options=options)
 
 # URL de la página a scrapear
-# url = "https://www.wikidex.net/wiki/Base_Set_(TCG)"
+url = "https://www.wikidex.net/wiki/Base_Set_(TCG)"
 # url = "https://www.wikidex.net/wiki/Jungla_(TCG)"
-url = "https://www.wikidex.net/wiki/Fósil_(TCG)"
+# url = "https://www.wikidex.net/wiki/Fósil_(TCG)"
+# url = "https://www.wikidex.net/wiki/Escarlata_y_Púrpura_(TCG):_Chispas_Fulgurantes"
 
 
 # Nombre de la colección (extraído de la URL)
@@ -161,7 +162,7 @@ print("\nScraping completado. Total de productos encontrados:", len(cartas))
 #     print(f"URL de la Imagen: {carta['imagen_url']}")
 #     print("-" * 40)
 # Guardar las cartas en Firebase
-guardar_cartas_en_firebase(cartas, coleccion_ref)
+# guardar_cartas_en_firebase(cartas, coleccion_ref)
 
 # Cerrar el navegador
 driver.quit()

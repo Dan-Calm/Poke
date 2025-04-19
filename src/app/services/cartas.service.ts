@@ -6,51 +6,80 @@ import { db } from '../config/firebase.config';
   providedIn: 'root', // Hace que el servicio esté disponible en toda la aplicación
 })
 export class CartasService {
-  private cartas: any[] = []; // Almacena el listado de cartas
-  private cartasCargadas: boolean = false; // Indica si las cartas ya fueron cargadas
+  private listaColecciones: any[] = []; // Almacena el listado de cartas
+  private listaTiendas: any[] = []; // Almacena el listado de cartas
 
-  constructor() {}
+  constructor() { }
 
-  // Función para cargar las cartas desde Firebase
-  async cargarCartasDesdeFirebase() {
-    if (this.cartasCargadas) {
-      // Si ya se cargaron las cartas, no volver a cargarlas
-      return this.cartas;
-    }
-
+  async descargarCartasDeTiendas() {
     try {
       const referenciaTiendas = collection(db, 'tiendas'); // Referencia a la colección "tiendas"
       const resultadoTiendas = await getDocs(referenciaTiendas); // Obtener todas las tiendas
 
-      const cartasCargadas: any[] = [];
+      // Recorrer cada tienda y obtener las cartas de su subcolección "productos"
+      const todasLasCartas = await Promise.all(
+        resultadoTiendas.docs.map(async (tiendaDoc) => {
+          const tiendaId = tiendaDoc.id; // ID de la tienda (por ejemplo, "afkstore" o "oasisgames")
+          const referenciaProductos = collection(db, `tiendas/${tiendaId}/productos`); // Subcolección "productos"
+          const resultadoProductos = await getDocs(referenciaProductos); // Obtener los productos de la tienda
 
-      // Recorrer cada tienda y obtener sus productos
-      for (const tiendaDoc of resultadoTiendas.docs) {
-        const tiendaId = tiendaDoc.id; // ID de la tienda (por ejemplo, "productos_afkstore" o "productos_oasisgames")
-        const referenciaProductos = collection(db, `tiendas/${tiendaId}/productos`); // Subcolección "productos"
-        const resultadoProductos = await getDocs(referenciaProductos); // Obtener los productos de la tienda
+          // Agregar el nombre de la tienda a cada carta
+          const cartas = resultadoProductos.docs.map((productoDoc) => ({
+            id: productoDoc.id,
+            tienda: tiendaId, // Agregar el nombre de la tienda
+            ...productoDoc.data(),
+          }));
 
-        const productosDeTienda = resultadoProductos.docs.map((productoDoc) => ({
-          id: productoDoc.id,
-          tienda: tiendaId, // Agregar el ID de la tienda al producto
-          ...productoDoc.data(),
-        }));
+          return cartas; // Retornar las cartas de esta tienda
+        })
+      );
 
-        cartasCargadas.push(...productosDeTienda); // Agregar los productos al listado general
-      }
+      // Combinar todas las cartas en una sola lista
+       this.listaTiendas = todasLasCartas.reduce((acumulador, cartas) => {
+        return acumulador.concat(cartas);
+      }, []);
 
-      this.cartas = cartasCargadas;
-      this.cartasCargadas = true; // Marcar como cargadas
-      console.log('Cartas cargadas desde Firebase:', this.cartas);
-      return this.cartas;
+      console.log('Todas las cartas de todas las tiendas:', this.listaTiendas);
+      return this.listaTiendas;
     } catch (error) {
-      console.error('Error al cargar las cartas desde Firebase:', error);
+      console.error('Error al descargar las cartas de las tiendas:', error);
       throw error;
     }
   }
 
-  // Función para obtener las cartas
-  obtenerCartas() {
-    return this.cartas;
+  async colecciones() {
+    try {
+      const referenciaColecciones = collection(db, 'colecciones'); // Referencia a la colección "colecciones"
+      const resultadoColecciones = await getDocs(referenciaColecciones); // Obtener todas las colecciones
+
+      // Recorrer cada colección y obtener las cartas de su subcolección "cartas"
+      const todasLasCartas = await Promise.all(
+        resultadoColecciones.docs.map(async (coleccionDoc) => {
+          const coleccionId = coleccionDoc.id; // ID de la colección (por ejemplo, "Base_Set_(TCG)")
+          const referenciaCartas = collection(db, `colecciones/${coleccionId}/cartas`); // Subcolección "cartas"
+          const resultadoCartas = await getDocs(referenciaCartas); // Obtener las cartas de la colección
+
+          // Agregar el nombre de la colección a cada carta
+          const cartas = resultadoCartas.docs.map((cartaDoc) => ({
+            id: cartaDoc.id,
+            coleccion: coleccionId, // Agregar el nombre de la colección
+            ...cartaDoc.data(),
+          }));
+
+          return cartas; // Retornar las cartas de esta colección
+        })
+      );
+
+      // Combinar todas las cartas en una sola lista
+      this.listaColecciones = todasLasCartas.reduce((acumulador, cartas) => {
+        return acumulador.concat(cartas);
+      }, []);
+
+      // console.log('Todas las cartas combinadas:', this.listaColecciones);
+      return this.listaColecciones;
+    } catch (error) {
+      console.error('Error al descargar la información de colecciones:', error);
+      throw error;
+    }
   }
 }
