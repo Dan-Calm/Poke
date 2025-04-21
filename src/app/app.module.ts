@@ -20,7 +20,7 @@ import { firebaseConfig } from './config/firebase.config';
     AppRoutingModule,
     HttpClientModule,
     AngularFireModule.initializeApp(firebaseConfig), // Configuración de Firebase
-    AngularFireAuthModule, // Módulo de autenticación
+    AngularFireAuthModule, // Módulo de autenticación de Firebase
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

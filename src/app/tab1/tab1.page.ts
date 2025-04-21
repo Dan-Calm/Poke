@@ -15,20 +15,18 @@ import { InfiniteScrollCustomEvent } from '@ionic/angular';
 
 })
 export class Tab1Page implements OnInit {
-  cartasPorColeccion: any[] = []; // Almacena las colecciones y sus cartas
-  cartasFiltradas: any[] = []; // Almacena las cartas filtradas
-  cartasCargadas: any[] = []; // Almacena las cartas filtradas
+  cartasPorColeccion: any[] = []; // guarda las cartas de la wikidex
+  cartasFiltradas: any[] = []; // listra con las cartas filtradas por la barra de busqqueda
+  cartasMostradas: any[] = []; // cartas que se mostrarán en la pantalla
 
-  cartasTienda: any[] = []; // Almacena las colecciones y sus cartas
+  cartasTienda: any[] = []; // guarda las cartas de todas las tiendas
 
   textoBusqueda: string = ''; // Texto ingresado en la barra de búsqueda
 
   constructor(private cartasService: CartasService, private router: Router) { }
 
   async ngOnInit() {
-    this.iniciarColecciones(); // Inicializar las colecciones
-
-
+    this.iniciarColecciones(); // cargar las colecciones al iniciar
     this.cartasService.descargarCartasDeTiendas();
   }
 
@@ -40,17 +38,16 @@ export class Tab1Page implements OnInit {
 
   async iniciarColecciones() {
     try {
-      // Llamar a la función del servicio para obtener la lista única de cartas
+      // llenar cartasPorColeccion con las cartas de la wikidex
       this.cartasPorColeccion = await this.cartasService.colecciones();
-
-      // Inicializar las cartas filtradas con las cartas de las colecciones
+      //filtro en blanco
       this.cartasFiltradas = this.cartasPorColeccion;
-      // Actualizar cartasCargadas con los primeros 12 elementos de cartasFiltradas
-      this.cartasCargadas = this.cartasFiltradas.slice(0, 12);
+      // cargar las primeras 12 cartas
+      this.cartasMostradas = this.cartasFiltradas.slice(0, 12);
 
       console.log('Lista única de cartas:', this.cartasPorColeccion);
 
-      console.log('Cartas cargadas:', this.cartasCargadas);
+      console.log('Cartas cargadas:', this.cartasMostradas);
     } catch (error) {
       console.error('Error durante la inicialización:', error);
     }
@@ -64,7 +61,7 @@ export class Tab1Page implements OnInit {
     document.getElementById('main-content')?.removeAttribute('inert');
   }
 
-  accion1(id: string) {
+  agregarFavorito(id: string) {
     console.log(`Acción 1 ejecutada para la carta con ID: ${id}`);
   }
 
@@ -80,7 +77,7 @@ export class Tab1Page implements OnInit {
   filtrarCartas() {
     const texto = this.textoBusqueda.toLowerCase();
 
-    // Filtrar las cartas según el texto ingresado
+    // filtrar por nombre y codigo
     this.cartasFiltradas = this.cartasPorColeccion.filter((carta: any) => {
       return (
         carta.id.toLowerCase().includes(texto) ||
@@ -90,11 +87,11 @@ export class Tab1Page implements OnInit {
       );
     });
 
-    // Actualizar cartasCargadas con los primeros 12 elementos de cartasFiltradas
-    this.cartasCargadas = this.cartasFiltradas.slice(0, 12);
+    // Actualizar cartasMostradas con los primeros 12 elementos de cartasFiltradas
+    this.cartasMostradas = this.cartasFiltradas.slice(0, 12);
 
     console.log('Cartas filtradas:', this.cartasFiltradas);
-    console.log('Cartas cargadas:', this.cartasCargadas);
+    console.log('Cartas cargadas:', this.cartasMostradas);
   }
 
   mostrarId(id: string) {
@@ -105,17 +102,10 @@ export class Tab1Page implements OnInit {
   onScrollEnd() {
     console.log('Se ha llegado al final de la página.');
 
-    // Calcular el índice actual y el nuevo límite
-    const inicio = this.cartasCargadas.length;
-    const fin = inicio + 12;
+    // se calcula el largo actual de cartasMostradas
+    this.cartasMostradas = this.cartasFiltradas.slice(0, this.cartasMostradas.length + 12);
 
-    // Agregar las siguientes 12 cartas a cartasCargadas
-    const nuevasCartas = this.cartasFiltradas.slice(inicio, fin);
-    this.cartasCargadas = [...this.cartasCargadas, ...nuevasCartas];
-
-    console.log('Cartas cargadas:', this.cartasCargadas);
-
-
+    console.log('Cartas cargadas:', this.cartasMostradas);
   }
 
 }

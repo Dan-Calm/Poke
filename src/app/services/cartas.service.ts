@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc, setDoc} from 'firebase/firestore';
 import { db } from '../config/firebase.config';
+
 
 @Injectable({
   providedIn: 'root', // Hace que el servicio esté disponible en toda la aplicación

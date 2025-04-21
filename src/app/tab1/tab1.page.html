@@ -29,22 +29,25 @@
   <ion-content>
     <ion-grid>
       <ion-row>
-        <!-- Iterar directamente sobre las cartas filtradas -->
-        <ion-col size="6" *ngFor="let carta of cartasCargadas">
+        <!-- Cartas -->
+        <ion-col size="6" *ngFor="let carta of cartasMostradas">
           <ion-card>
-            <!-- Botones pequeños con íconos -->
+            
             <ion-grid>
               <ion-row class="ion-justify-content-center ion-align-items-center">
+                <!-- Agregar a favorito -->
                 <ion-col size="auto">
-                  <ion-button size="small" (click)="accion1(carta.id)">
+                  <ion-button size="small" (click)="agregarFavorito(carta.id)">
                     <ion-icon slot="icon-only" name="heart-outline"></ion-icon>
                   </ion-button>
                 </ion-col>
+                <!--Agregar a una colección -->
                 <ion-col size="auto">
                   <ion-button size="small" (click)="accion2(carta.id)">
                     <ion-icon slot="icon-only" name="duplicate"></ion-icon>
                   </ion-button>
                 </ion-col>
+                <!-- Ver estadísticas -->
                 <ion-col size="auto">
                   <ion-button size="small" (click)="accion3(carta.id)">
                     <ion-icon slot="icon-only" name="bar-chart"></ion-icon>

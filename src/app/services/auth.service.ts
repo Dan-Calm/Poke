@@ -1,11 +1,17 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 
+import { collection, getDocs, query, where, doc, getDoc, setDoc } from 'firebase/firestore';
+
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { db } from '../config/firebase.config';
+
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private afAuth: AngularFireAuth) {}
+  constructor(private afAuth: AngularFireAuth, private fireStore: AngularFirestore) { }
 
   // Método para iniciar sesión con correo y contraseña
   async login(email: string, password: string): Promise<any> {
@@ -20,10 +26,23 @@ export class AuthService {
   }
 
   // Método para registrar un nuevo usuario
-  async register(email: string, password: string): Promise<any> {
+  async register(email: string, password: string, datos: any): Promise<any> {
     try {
       const userCredential = await this.afAuth.createUserWithEmailAndPassword(email, password);
-      console.log('Usuario registrado:', userCredential.user);
+      const userId = userCredential.user?.uid;
+
+      console.log("Datos del usuario:", datos);
+      console.log("ID del usuario:", userId);
+
+      if (userId) {
+        await setDoc(doc(db, "usuarios", userId), {
+          nombreUsuario: datos.nombre,
+          fechaCreacion: new Date(),
+        });
+        console.log('Usuario registrado:', userCredential);
+      };
+
+
       return userCredential.user;
     } catch (error) {
       console.error('Error en el registro:', error);
@@ -32,7 +51,7 @@ export class AuthService {
   }
 
   // Método para cerrar sesión
-  async logout(): Promise<void> {
+  async cerrarSesion(): Promise<void> {
     try {
       await this.afAuth.signOut();
       console.log('Sesión cerrada');
