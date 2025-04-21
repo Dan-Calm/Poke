@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CartasService } from '../services/cartas.service';
 import { Router } from '@angular/router';
 
-import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../config/firebase.config';
 
 import { InfiniteScrollCustomEvent } from '@ionic/angular';
+
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-tab1',
@@ -23,12 +25,29 @@ export class Tab1Page implements OnInit {
 
   textoBusqueda: string = ''; // Texto ingresado en la barra de búsqueda
 
-  constructor(private cartasService: CartasService, private router: Router) { }
+  idUsiuario: any = ''; // ID del usuario logueado
+
+  constructor(private cartasService: CartasService, private router: Router, private authService: AuthService) { }
 
   async ngOnInit() {
     this.iniciarColecciones(); // cargar las colecciones al iniciar
     this.cartasService.descargarCartasDeTiendas();
+    this.obtenerIdUsuario(); // obtener el id del usuario logueado
   }
+
+  async obtenerIdUsuario() {
+    try {
+      this.idUsiuario = await this.authService.getCurrentUser();
+      if (this.idUsiuario) {
+        console.log('ID del usuario:', this.idUsiuario);
+      } else {
+        console.log('No hay usuario autenticado');
+      }
+    } catch (error) {
+      console.error('Error al obtener el ID del usuario:', error);
+    }
+  }
+
 
   onIonInfinite(event: InfiniteScrollCustomEvent) {
     alert('Scroll infinito activado');
@@ -61,8 +80,13 @@ export class Tab1Page implements OnInit {
     document.getElementById('main-content')?.removeAttribute('inert');
   }
 
-  agregarFavorito(id: string) {
+  async agregarFavorito(id: string) {
     console.log(`Acción 1 ejecutada para la carta con ID: ${id}`);
+    const usuario = doc(db, 'usuarios', this.idUsiuario);
+
+    await setDoc(doc(db, "usuarios", this.idUsiuario, "favoritos", id), {
+    });
+    console.log('Favorito agregado:', id);
   }
 
   accion2(id: string) {

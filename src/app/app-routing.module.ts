@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { ColeccionDetalleComponent } from './pages/coleccion-detalle/coleccion-detalle.component';
 
-
 const routes: Routes = [
   {
     path: '',

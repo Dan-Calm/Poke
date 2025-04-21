@@ -6,6 +6,7 @@ import { collection, getDocs, query, where, doc, getDoc, setDoc } from 'firebase
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { db } from '../config/firebase.config';
 
+import { getAuth } from "firebase/auth";
 
 @Injectable({
   providedIn: 'root',
@@ -35,7 +36,7 @@ export class AuthService {
       console.log("ID del usuario:", userId);
 
       if (userId) {
-        await setDoc(doc(db, "usuarios", userId), {
+        await setDoc(doc(db, "usuarios", datos.nombre), {
           nombreUsuario: datos.nombre,
           fechaCreacion: new Date(),
         });
@@ -62,7 +63,17 @@ export class AuthService {
   }
 
   // Método para obtener el usuario actual
-  getCurrentUser() {
-    return this.afAuth.authState;
-  }
+getCurrentUser(): Promise<string | null> {
+  return new Promise((resolve, reject) => {
+    this.afAuth.authState.subscribe(user => {
+      if (user) {
+        resolve(user.uid); // Devuelve el ID del usuario
+      } else {
+        resolve(null); // No hay usuario autenticado
+      }
+    }, error => {
+      reject(error); // Maneja errores
+    });
+  });
+}
 }
