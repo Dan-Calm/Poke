@@ -1,76 +1,68 @@
 import { Component, OnInit } from '@angular/core';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../config/firebase.config';
 import { CartasService } from '../services/cartas.service';
 import { Router } from '@angular/router';
-import { InfiniteScrollCustomEvent } from '@ionic/angular';
 
+import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase.config';
+
+import { InfiniteScrollCustomEvent } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
   standalone: false,
+
 })
 export class Tab1Page implements OnInit {
   cartasPorColeccion: any[] = []; // Almacena las colecciones y sus cartas
-  cartasTienda: any[] = []; // Almacena las colecciones y sus cartas
-
   cartasFiltradas: any[] = []; // Almacena las cartas filtradas
   cartasCargadas: any[] = []; // Almacena las cartas filtradas
-  textoBusqueda: string = ''; // Texto ingresado en la barra de búsqueda
 
-  cartas: any[] = []; // Almacena las cartas cargadas
+  cartasTienda: any[] = []; // Almacena las colecciones y sus cartas
+
+  textoBusqueda: string = ''; // Texto ingresado en la barra de búsqueda
 
   constructor(private cartasService: CartasService, private router: Router) { }
 
   async ngOnInit() {
-    try {
-      // Cargar las cartas de las colecciones
-      const cartasDeColecciones = await this.cartasService.colecciones();
+    this.iniciarColecciones(); // Inicializar las colecciones
 
-      // Asignar solo las cartas de las colecciones
-      this.cartas = cartasDeColecciones;
 
-      // Inicializar las cartas filtradas con las cartas de las colecciones
-      this.cartasFiltradas = this.cartas;
-      // Actualizar cartasCargadas con los primeros 12 elementos de cartasFiltradas
-      this.cartasCargadas = this.cartasFiltradas.slice(0, 18);
+    this.cartasService.descargarCartasDeTiendas();
+  }
 
-      console.log('Cartas de las colecciones:', this.cartas);
-    } catch (error) {
-      console.error('Error durante la inicialización:', error);
-    }
+  onIonInfinite(event: InfiniteScrollCustomEvent) {
+    alert('Scroll infinito activado');
+    console.log('FINAL');
+    event.target.complete();
   }
 
   async iniciarColecciones() {
     try {
       // Llamar a la función del servicio para obtener la lista única de cartas
-      this.cartas = await this.cartasService.colecciones();
+      this.cartasPorColeccion = await this.cartasService.colecciones();
 
-      console.log('Lista única de cartas:', this.cartas);
+      // Inicializar las cartas filtradas con las cartas de las colecciones
+      this.cartasFiltradas = this.cartasPorColeccion;
+      // Actualizar cartasCargadas con los primeros 12 elementos de cartasFiltradas
+      this.cartasCargadas = this.cartasFiltradas.slice(0, 12);
 
-      // Puedes usar `this.cartas` para filtrar, mostrar o procesar las cartas
-      // this.cartasFiltradas = this.cartas.slice(0, 18); // Ejemplo: Mostrar las primeras 10 cartas
-      console.log('Cartas cargadas:', this.cartasFiltradas);
+      console.log('Lista única de cartas:', this.cartasPorColeccion);
+
+      console.log('Cartas cargadas:', this.cartasCargadas);
     } catch (error) {
       console.error('Error durante la inicialización:', error);
     }
   }
 
-  async iniciarTiendas() {
-    try {
-      // Llamar a la función del servicio para obtener todas las cartas de las tiendas
-      this.cartasTienda = await this.cartasService.descargarCartasDeTiendas();
-
-      console.log('Cartas de todas las tiendas:', this.cartasTienda);
-
-      // Puedes usar `this.cartasTienda` para filtrar, mostrar o procesar las cartas
-    } catch (error) {
-      console.error('Error al cargar las cartas de las tiendas:', error);
-    }
+  onMenuOpen() {
+    document.getElementById('main-content')?.setAttribute('inert', 'true');
   }
 
+  onMenuClose() {
+    document.getElementById('main-content')?.removeAttribute('inert');
+  }
 
   accion1(id: string) {
     console.log(`Acción 1 ejecutada para la carta con ID: ${id}`);
@@ -89,7 +81,7 @@ export class Tab1Page implements OnInit {
     const texto = this.textoBusqueda.toLowerCase();
 
     // Filtrar las cartas según el texto ingresado
-    this.cartasFiltradas = this.cartas.filter((carta: any) => {
+    this.cartasFiltradas = this.cartasPorColeccion.filter((carta: any) => {
       return (
         carta.id.toLowerCase().includes(texto) ||
         (carta.nombre_espanol && carta.nombre_espanol.toLowerCase().includes(texto)) ||
@@ -99,7 +91,7 @@ export class Tab1Page implements OnInit {
     });
 
     // Actualizar cartasCargadas con los primeros 12 elementos de cartasFiltradas
-    this.cartasCargadas = this.cartasFiltradas.slice(0, 18);
+    this.cartasCargadas = this.cartasFiltradas.slice(0, 12);
 
     console.log('Cartas filtradas:', this.cartasFiltradas);
     console.log('Cartas cargadas:', this.cartasCargadas);
