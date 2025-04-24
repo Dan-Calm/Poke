@@ -6,9 +6,33 @@
   </ion-header>
   <ion-content>
     <ion-list>
-      <ion-item >Opción 1</ion-item>
-      <ion-item >Opción 2</ion-item>
-      <ion-item >Opción 3</ion-item>
+      <!-- Acordeón para Favoritos -->
+      <ion-accordion-group>
+        <ion-accordion value="favoritos">
+          <ion-item slot="header">
+            <ion-label>Favoritos</ion-label>
+          </ion-item>
+          <div slot="content">
+            <ion-list>
+              <!-- Iterar sobre los favoritos y mostrar sus nombres -->
+              <ion-item *ngFor="let favorito of favoritos" (click)="irAFavoritos(favorito.id)">
+                {{ favorito.codigo }} - {{ favorito.nombre }}
+              </ion-item>
+            </ion-list>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </ion-list>
+
+    <!-- Lista de historial -->
+    <ion-list>
+      <ion-item-divider>
+        <ion-label>Historial</ion-label>
+      </ion-item-divider>
+      <!-- Iterar sobre los favoritos y mostrar sus nombres -->
+      <ion-item *ngFor="let histo of historial">
+        {{ histo.nombre }}
+      </ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
@@ -32,12 +56,12 @@
         <!-- Cartas -->
         <ion-col size="6" *ngFor="let carta of cartasMostradas">
           <ion-card>
-            
+
             <ion-grid>
               <ion-row class="ion-justify-content-center ion-align-items-center">
                 <!-- Agregar a favorito -->
                 <ion-col size="auto">
-                  <ion-button size="small" (click)="agregarFavorito(carta.id)">
+                  <ion-button size="small" (click)="agregarFavorito(carta.id, carta.nombre_espanol, carta.codigo)">
                     <ion-icon slot="icon-only" name="heart-outline"></ion-icon>
                   </ion-button>
                 </ion-col>
@@ -57,10 +81,10 @@
             </ion-grid>
 
             <!-- Imagen de la carta -->
-            <img (click)="mostrarId(carta.id)" [src]="carta.imagen_url || 'assets/placeholder.png'"
+            <img (click)="mostrarId(carta.id, carta.nombre_espanol, carta.codigo)" [src]="carta.imagen_url || 'assets/placeholder.png'"
               alt="{{ carta.nombre_espanol || 'Carta' }}" />
 
-            <!-- Encabezado de la carta -->
+            <!-- Nombre y código de la carta -->
             <ion-card-header>
               <ion-card-title>{{ carta.nombre_espanol }}</ion-card-title>
               <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
@@ -70,10 +94,11 @@
       </ion-row>
     </ion-grid>
 
-    <ion-button expand="full" (click)="onScrollEnd()">+</ion-button>
-
+    <!-- Scroll Infinito -->
     <ion-infinite-scroll threshold="50px" (ionInfinite)="onIonInfinite($event)">
-      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más cartas..."></ion-infinite-scroll-content>
+      <ion-infinite-scroll-content loadingSpinner="bubbles"
+        loadingText="Cargando más cartas..."></ion-infinite-scroll-content>
     </ion-infinite-scroll>
+
   </ion-content>
 </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CartasService } from '../services/cartas.service';
+import { ColeccionesService } from '../services/colecciones.service';
 import { Router } from '@angular/router';
 
 import { collection, getDocs, query, where, doc, getDoc, setDoc } from 'firebase/firestore';
@@ -8,6 +9,7 @@ import { db } from '../config/firebase.config';
 import { InfiniteScrollCustomEvent } from '@ionic/angular';
 
 import { AuthService } from '../services/auth.service';
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'app-tab1',
@@ -22,17 +24,21 @@ export class Tab1Page implements OnInit {
   cartasMostradas: any[] = []; // cartas que se mostrarán en la pantalla
 
   cartasTienda: any[] = []; // guarda las cartas de todas las tiendas
+  favoritos: any[] = []; // guarda las cartas de todas las tiendas
+  historial: any[] = []; // guarda las cartas de todas las tiendas
 
   textoBusqueda: string = ''; // Texto ingresado en la barra de búsqueda
 
   idUsiuario: any = ''; // ID del usuario logueado
 
-  constructor(private cartasService: CartasService, private router: Router, private authService: AuthService) { }
+  constructor(private cartasService: CartasService, private router: Router, private authService: AuthService, private coleccionesServies: ColeccionesService) { }
 
   async ngOnInit() {
     this.iniciarColecciones(); // cargar las colecciones al iniciar
     this.cartasService.descargarCartasDeTiendas();
-    this.obtenerIdUsuario(); // obtener el id del usuario logueado
+    await this.obtenerIdUsuario(); // obtener el id del usuario logueado
+    this.favoritos = await this.coleccionesServies.cargarFavoritos(this.idUsiuario); // cargar los favoritos del usuario logueado
+    this.historial = await this.coleccionesServies.cargarHistorial(this.idUsiuario); // cargar los favoritos del usuario logueado
   }
 
   async obtenerIdUsuario() {
@@ -50,9 +56,16 @@ export class Tab1Page implements OnInit {
 
 
   onIonInfinite(event: InfiniteScrollCustomEvent) {
-    alert('Scroll infinito activado');
-    console.log('FINAL');
+    // se calcula el largo actual de cartasMostradas
+    this.cartasMostradas = this.cartasFiltradas.slice(0, this.cartasMostradas.length + 12);
+
+    console.log('Cartas cargadas:', this.cartasMostradas);
+
     event.target.complete();
+  }
+
+  irAFavoritos(id: string) {
+    this.router.navigate(['/coleccion-detalle', id]);
   }
 
   async iniciarColecciones() {
@@ -80,17 +93,22 @@ export class Tab1Page implements OnInit {
     document.getElementById('main-content')?.removeAttribute('inert');
   }
 
-  async agregarFavorito(id: string) {
+  async agregarFavorito(id: string, nombre: string, codigo: string) {
     console.log(`Acción 1 ejecutada para la carta con ID: ${id}`);
     const usuario = doc(db, 'usuarios', this.idUsiuario);
 
     await setDoc(doc(db, "usuarios", this.idUsiuario, "favoritos", id), {
+      nombre: nombre,
+      codigo: codigo,
+      id: id,
     });
     console.log('Favorito agregado:', id);
+    this.favoritos = await this.coleccionesServies.cargarFavoritos(this.idUsiuario); // cargar los favoritos del usuario logueado
   }
 
   accion2(id: string) {
     console.log(`Acción 2 ejecutada para la carta con ID: ${id}`);
+    
   }
 
   accion3(id: string) {
@@ -118,18 +136,23 @@ export class Tab1Page implements OnInit {
     console.log('Cartas cargadas:', this.cartasMostradas);
   }
 
-  mostrarId(id: string) {
+  async mostrarId(id: string, nombre: string, codigo: string) {
+    console.log("ID del usuario:", this.idUsiuario);
+
+
+    console.log(`Acción 1 ejecutada para la carta con ID: ${id}`);
+    const usuario = doc(db, 'usuarios', this.idUsiuario);
+
+    await setDoc(doc(db, "usuarios", this.idUsiuario, "historial", id), {
+      nombre: nombre,
+      codigo: codigo,
+      id: id,
+    });
+    console.log('Favorito agregado:', id);
+    this.historial = await this.coleccionesServies.cargarHistorial(this.idUsiuario); // cargar los favoritos del usuario logueado
     // Navegar a la segunda pantalla pasando el ID de la colección como parámetro
     this.router.navigate(['/coleccion-detalle', id]);
   }
 
-  onScrollEnd() {
-    console.log('Se ha llegado al final de la página.');
-
-    // se calcula el largo actual de cartasMostradas
-    this.cartasMostradas = this.cartasFiltradas.slice(0, this.cartasMostradas.length + 12);
-
-    console.log('Cartas cargadas:', this.cartasMostradas);
-  }
 
 }
