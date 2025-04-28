@@ -25,7 +25,7 @@ driver = webdriver.Chrome(options=options)
 # URL de la página a scrapear
 # url = "https://www.wikidex.net/wiki/Base_Set_(TCG)"
 # url = "https://www.wikidex.net/wiki/Jungla_(TCG)"
-url = "https://www.wikidex.net/wiki/Fósil_(TCG)"
+url = "https://www.wikidex.net/wiki/Escarlata_y_P%C3%BArpura_(TCG):_Chispas_Fulgurantes"
 
 
 # Nombre de la colección (extraído de la URL)
@@ -41,7 +41,7 @@ tabla_cartas = driver.find_element(By.XPATH, "//table[contains(@class, 'sortable
 filas = tabla_cartas.find_elements(By.TAG_NAME, "tr")[1:]  # Omitir la primera fila (encabezados)
 
 # Crear una referencia a la colección en Firebase
-coleccion_ref = db.collection("colecciones").document(nombre_coleccion)
+coleccion_ref = db.collection("expansiones").document(nombre_coleccion)
 
 # Agregar el campo "nombre" al documento de la colección
 coleccion_ref.set({
@@ -137,7 +137,7 @@ for carta in cartas:
     # Agregar la URL de la imagen a los datos de la carta
     carta["imagen_url"] = imagen_url
     # Esperar un tiempo para evitar saturar la página con demasiadas consultas
-    # time.sleep(1)
+    time.sleep(1)
     # Imprimir la información de la carta actual
     print(f"Información de la carta actual:")
     print(f"Código: {carta['codigo']}")

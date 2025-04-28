@@ -196,7 +196,7 @@ try:
                     tipo_carta = match_tipo.group(0).upper()  # Convertir a mayúsculas para uniformidad
                     
                 # Limpiar el nombre del producto eliminando el código y el tipo
-                nombre_limpio = re.sub(rf"(\b{codigo_carta}\b|\b{tipo_carta}\b)", "", alt, flags=re.IGNORECASE).strip()
+                nombre_limpio = re.sub(rf"(\b{codigo_carta}\b|\b{tipo_carta}\b|\[.*?\])", "", alt, flags=re.IGNORECASE).strip()
                 
                 # Eliminar guiones sobrantes y espacios redundantes
                 nombre_limpio = re.sub(r"\s*-\s*", " ", nombre_limpio).strip()  # Reemplazar guiones con un espacio
@@ -218,10 +218,10 @@ try:
                     "tienda": "PokeStop",
                     "coleccion": coleccion,  
                 }
-                # if nombre_limpio and precio and link and srcset:
-                todos_los_productos.append(producto_data)
-                # else:
-                #     print("Producto con información incompleta, no se agrega a la lista.")
+                if nombre_limpio and precio and link and srcset:
+                    todos_los_productos.append(producto_data)
+                else:
+                    print("Producto con información incompleta, no se agrega a la lista.")
             except Exception as e:
                 print(f"Error al procesar un producto en la página {pagina}: {str(e)}")
                 continue
@@ -240,8 +240,8 @@ try:
         print(f"  Imagen: {producto['imagen']}")
         print("-" * 40)
         
-        # Guardar los productos en Firebase
-        # guardar_en_firebase(todos_los_productos)
+    # Guardar los productos en Firebase
+    guardar_en_firebase(todos_los_productos)
         
     fin = time.time()
     tiempo_total = fin - inicio
@@ -251,34 +251,6 @@ except Exception as e:
     print(f"Error general: {str(e)}")
 finally:
     driver.quit()    
-                    
-                     
-            
-            #     # Verificar que los datos esenciales no estén vacíos antes de agregar a la lista
-            #     if nombre and precio and link and img:
-            #         lista_productos.append({
-            #             "nombre": nombre,
-            #             "link": link,
-            #             "codigo_carta": codigo_carta,
-            #             "tipo_carta": tipo_carta,
-            #             "precio": precio,
-            #             "img": srcset,
-            #             "tienda": "PokeStop"
-            #         })
 
-            #         # Imprimir los datos del producto
-            #         print(f"Nombre: {nombre}")
-            #         print(f"Link: {link}")
-            #         print(f"Código: {codigo_carta}")
-            #         print(f"Tipo: {tipo_carta}")
-            #         print(f"Precio: {precio}")
-            #         print(f"Imagen: {srcset}")
-            #         print(f"Tienda: PokeStop")
-            #         print("-------------------")
-            #     else:
-            #         print("Producto con información incompleta, no se agrega a la lista.")
-            # except Exception as e:
-            #     print(f"Error al procesar un producto: {str(e)}")
-            #     continue
 
         
