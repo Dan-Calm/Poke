@@ -15,8 +15,11 @@
           <div slot="content">
             <ion-list>
               <!-- Iterar sobre los favoritos y mostrar sus nombres -->
-              <ion-item *ngFor="let favorito of favoritos" (click)="irAFavoritos(favorito.id)">
-                {{ favorito.codigo }} - {{ favorito.nombre }}
+              <ion-item *ngFor="let favorito of favoritos">
+                <ion-button slot="start" (click)="eliminarFavorito(favorito.id)">X</ion-button>
+                <ion-label (click)="irAFavoritos(favorito.id)">
+                  {{ favorito.codigo }} - {{ favorito.nombre }}
+                </ion-label>
               </ion-item>
             </ion-list>
           </div>
@@ -76,13 +79,14 @@
                   <ion-button size="small" (click)="accion3(carta.id)">
                     <ion-icon slot="icon-only" name="bar-chart"></ion-icon>
                   </ion-button>
+
                 </ion-col>
               </ion-row>
             </ion-grid>
 
             <!-- Imagen de la carta -->
-            <img (click)="mostrarId(carta.id, carta.nombre_espanol, carta.codigo)" [src]="carta.imagen_url || 'assets/placeholder.png'"
-              alt="{{ carta.nombre_espanol || 'Carta' }}" />
+            <img (click)="mostrarId(carta.id, carta.nombre_espanol, carta.codigo)"
+              [src]="carta.imagen_url || 'assets/placeholder.png'" alt="{{ carta.nombre_espanol || 'Carta' }}" />
 
             <!-- Nombre y código de la carta -->
             <ion-card-header>

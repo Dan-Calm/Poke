@@ -47,6 +47,31 @@ tabla_cartas = driver.find_element(By.XPATH, "//table[contains(@class, 'sortable
 filas = tabla_cartas.find_elements(By.TAG_NAME, "tr")[1:]  # Omitir la primera fila (encabezados)
 print("Filas:", len(filas))
 
+seleccionadas = []
+def buscarImagenes(url, cantidad):
+    # Abrir la página
+    driver.get(url)
+    time.sleep(2)  # Esperar a que la página cargue completamente
+
+    # Seleccionar los elementos con el selector CSS
+    imagenes = driver.find_elements(By.CSS_SELECTOR, "div > a > img[srcset]")
+
+    # Procesar las imágenes y separar las URLs
+    for i, img in enumerate(imagenes, start=1):
+        srcset = img.get_attribute("srcset")
+        if i >= cantidad:
+            # Dividir el contenido de srcset por comas
+            partes = srcset.split(",")
+            # print(f"Imagen {i}:")
+            for n, parte in enumerate(partes, start=1):
+                if n == 2:      
+                    # Limpiar espacios y extraer la URL
+                    url = parte.strip().split(" ")[0]
+                    # print(f"  - {url}")
+                    seleccionadas.append(url)
+
+    return seleccionadas
+
 for fila in filas:
     columnas = fila.find_elements(By.TAG_NAME, "td")
     
@@ -83,17 +108,15 @@ for carta in cartas:
         cartas_agrupadas[url] = []
     cartas_agrupadas[url].append(carta)
     
-def buscarImagenes(url):
-    driver.get(url)
-    imagenes = driver.find_elements(By.CLASS_NAME, "gallery mw-gallery-nolines")
-    print("Imagenes:", len(imagenes))
-    print("Imagenes:", imagenes)
-    time.sleep(2)
-
 for cartas in cartas_agrupadas.values():
+    imgs = []
+    imgs = buscarImagenes(cartas[0]["url_nombre"], len(cartas))
+    for img in imgs:
+        print(img)
+        print("-"*20)
     print("Largo: ", len(cartas))
     print("URL:", cartas[0]["url_nombre"])
-    buscarImagenes(cartas[0]["url_nombre"])
+    # buscarImagenes(cartas[0]["url_nombre"])
     print("*" * 40)
     # print(cartas)
     for carta in cartas:

@@ -3,13 +3,14 @@ import { CartasService } from '../services/cartas.service';
 import { ColeccionesService } from '../services/colecciones.service';
 import { Router } from '@angular/router';
 
-import { collection, getDocs, query, where, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../config/firebase.config';
 
 import { InfiniteScrollCustomEvent } from '@ionic/angular';
 
 import { AuthService } from '../services/auth.service';
-import Swal from 'sweetalert2'
+import { AlertController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-tab1',
@@ -31,7 +32,15 @@ export class Tab1Page implements OnInit {
 
   idUsiuario: any = ''; // ID del usuario logueado
 
-  constructor(private cartasService: CartasService, private router: Router, private authService: AuthService, private coleccionesServies: ColeccionesService) { }
+
+
+  constructor(
+    private cartasService: CartasService,
+    private router: Router,
+    private authService: AuthService,
+    private coleccionesServies: ColeccionesService,
+    private alertController: AlertController
+  ) { }
 
   async ngOnInit() {
     this.iniciarColecciones(); // cargar las colecciones al iniciar
@@ -106,9 +115,45 @@ export class Tab1Page implements OnInit {
     this.favoritos = await this.coleccionesServies.cargarFavoritos(this.idUsiuario); // cargar los favoritos del usuario logueado
   }
 
-  accion2(id: string) {
+  async eliminarFavorito(id: string) {
+    console.log("eliminar favorito", id);
+
+    await deleteDoc(doc(db, "usuarios", this.idUsiuario, "favoritos", id));
+    this.favoritos = await this.coleccionesServies.cargarFavoritos(this.idUsiuario); // cargar los favoritos del usuario logueado
+  }
+
+  async accion2(id: string) {
     console.log(`Acción 2 ejecutada para la carta con ID: ${id}`);
-    
+
+    // Crear y mostrar la alerta
+    const alert = await this.alertController.create({
+      header: 'Agregar a una colección',
+      inputs: [
+        {
+          name: 'nombre',
+          type: 'text',
+          placeholder: 'Nombre de la colección',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            console.log('Acción cancelada');
+          },
+        },
+        {
+          text: 'Guardar',
+          handler: (data) => {
+            console.log(`Nombre ingresado: ${data.nombre}`);
+            // Aquí puedes agregar la lógica para guardar el nombre
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 
   accion3(id: string) {

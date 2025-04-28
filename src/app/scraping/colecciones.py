@@ -33,6 +33,7 @@ cartas = []
 url = "https://www.wikidex.net/wiki/Base_Set_(TCG)"
 # url = "https://www.wikidex.net/wiki/Jungla_(TCG)"
 # url = "https://www.wikidex.net/wiki/Fósil_(TCG)"
+url = "https://www.wikidex.net/wiki/Escarlata_y_Púrpura_(TCG):_151"
 url = "https://www.wikidex.net/wiki/Escarlata_y_Púrpura_(TCG):_Chispas_Fulgurantes"
 
 
@@ -49,7 +50,7 @@ tabla_cartas = driver.find_element(By.XPATH, "//table[contains(@class, 'sortable
 filas = tabla_cartas.find_elements(By.TAG_NAME, "tr")[1:]  # Omitir la primera fila (encabezados)
 
 # Crear una referencia a la colección en Firebase
-coleccion_ref = db.collection("colecciones").document(nombre_coleccion)
+coleccion_ref = db.collection("expansiones").document(nombre_coleccion)
 
 # Agregar el campo "nombre" al documento de la colección
 coleccion_ref.set({
@@ -121,7 +122,13 @@ def extraer_imagenes_adicionales(driver, url_nombre):
 
         # Extraer todas las imágenes de la galería
         imagenes = galeria.find_elements(By.XPATH, ".//img")
-        urls_imagenes = [imagen.get_attribute("src") for imagen in imagenes]
+        urls_imagenes = [imagen.get_attribute("srcset") for imagen in imagenes]
+        print(f"Se encontraron {len(urls_imagenes)} imágenes en la galería de la URL: {url_nombre}")
+        # print("URLs de las imágenes:", urls_imagenes)
+        for url_imagen in urls_imagenes:
+            # Limpiar espacios y extraer la URL
+            url_imagen = url_imagen.strip().split(" ")[0]
+            print(f"  - {url_imagen}")
 
         return urls_imagenes
     except NoSuchElementException:
@@ -230,7 +237,7 @@ for nombre, grupo in sorted(cartas_agrupadas.items()):
         print("=" * 40)
 
 # Guardar las cartas en Firebase
-guardar_cartas_en_firebase(cartas, coleccion_ref)
+# guardar_cartas_en_firebase(cartas, coleccion_ref)
 
 # Cerrar el navegador
 driver.quit()
