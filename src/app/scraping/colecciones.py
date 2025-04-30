@@ -7,6 +7,9 @@ from firebase_admin import credentials, firestore
 import time
 import re  # Para limpiar el código de caracteres no válidos
 
+from selenium.common.exceptions import NoSuchElementException
+
+
 # Configurar Firebase
 cred = credentials.Certificate("../config/serviceAccountKey.json")  # Cambia esto por la ruta a tu archivo JSON de credenciales
 firebase_admin.initialize_app(cred)
@@ -14,7 +17,7 @@ db = firestore.client()
 
 # Configurar el navegador
 options = webdriver.ChromeOptions()
-options.add_argument("--headless=new")
+# options.add_argument("--headless=new")
 options.add_argument('--disable-gpu')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
@@ -22,10 +25,14 @@ options.add_argument('--disable-dev-shm-usage')
 # Inicializar el driver de Selenium
 driver = webdriver.Chrome(options=options)
 
+
+# Crear una lista para almacenar los datos de las cartas
+cartas = []
+
 # URL de la página a scrapear
-# url = "https://www.wikidex.net/wiki/Base_Set_(TCG)"
+url = "https://www.wikidex.net/wiki/Base_Set_(TCG)"
 # url = "https://www.wikidex.net/wiki/Jungla_(TCG)"
-url = "https://www.wikidex.net/wiki/Escarlata_y_P%C3%BArpura_(TCG):_Chispas_Fulgurantes"
+url = "https://www.wikidex.net/wiki/Fósil_(TCG)"
 
 
 # Nombre de la colección (extraído de la URL)
@@ -47,6 +54,7 @@ coleccion_ref = db.collection("expansiones").document(nombre_coleccion)
 coleccion_ref.set({
     "nombre": nombre_coleccion.replace("_", " ").replace(":", ": ")  # Formatear el nombre para que sea legible
 })
+
 
 def guardar_cartas_en_firebase(cartas, coleccion_ref):
     """
@@ -71,9 +79,63 @@ def guardar_cartas_en_firebase(cartas, coleccion_ref):
     except Exception as e:
         print(f"Error al guardar las cartas en Firebase: {str(e)}")
 
+def obtener_imagen_desde_url(driver, url):
+    """
+    Función que toma una URL, navega a la página y busca la imagen principal.
+    Devuelve la URL de la imagen o "No disponible" si no se encuentra.
+    """
+    driver.get(url)  # Navegar a la página de la carta
+    imagen_url = "No disponible"  # Valor predeterminado si no se encuentra la imagen
 
-# Crear una lista para almacenar los datos de las cartas
-cartas = []
+    try:
+        # Intentar encontrar la imagen principal en un <div> con clase "imagen"
+        imagen_elemento = driver.find_element(By.XPATH, "//div[@class='imagen']/a[@class='image']/img")
+        imagen_url = imagen_elemento.get_attribute("src")
+    except NoSuchElementException:
+        try:
+            # Intentar encontrar la imagen en una galería (<ul class="gallery">)
+            imagen_elemento = driver.find_element(By.XPATH, "//ul[@class='gallery']//img")
+            imagen_url = imagen_elemento.get_attribute("src")
+        except NoSuchElementException:
+            try:
+                # Intentar obtener la imagen desde las metaetiquetas <meta property="og:image">
+                meta_elemento = driver.find_element(By.XPATH, "//meta[@property='og:image']")
+                imagen_url = meta_elemento.get_attribute("content")
+            except Exception as e:
+                print(f"Error al obtener la imagen para la URL {url}: {e}")
+
+    return imagen_url
+
+# Función para extraer imágenes adicionales de una carta
+def extraer_imagenes_adicionales(driver, url_nombre):
+    """
+    Ingresa a la URL de la carta y extrae todas las imágenes disponibles en la galería.
+    """
+    try:
+        # Navegar a la URL de la carta
+        driver.get(url_nombre)
+
+        # Buscar la sección de la galería
+        galeria = driver.find_element(By.XPATH, "//ul[contains(@class, 'gallery mw-gallery-nolines')]")
+
+        # Extraer todas las imágenes de la galería
+        imagenes = galeria.find_elements(By.XPATH, ".//img")
+        urls_imagenes = [imagen.get_attribute("srcset") for imagen in imagenes]
+        print(f"Se encontraron {len(urls_imagenes)} imágenes en la galería de la URL: {url_nombre}")
+        # print("URLs de las imágenes:", urls_imagenes)
+        for url_imagen in urls_imagenes:
+            # Limpiar espacios y extraer la URL
+            url_imagen = url_imagen.strip().split(" ")[0]
+            print(f"  - {url_imagen}")
+
+        return urls_imagenes
+    except NoSuchElementException:
+        print(f"No se encontró la galería de imágenes en la URL: {url_nombre}")
+        return []
+    except Exception as e:
+        print(f"Error al extraer imágenes de la URL {url_nombre}: {e}")
+        return []
+
 
 # Recorrer las filas y extraer los datos de la tabla
 for fila in filas:
@@ -112,7 +174,8 @@ for fila in filas:
             "url_nombre": url_nombre
         })
 
-# Ahora recorrer la lista de cartas para extraer las imágenes
+# Agrupar las cartas por nombre_espanol
+cartas_agrupadas = {}
 for carta in cartas:
     driver.get(carta["url_nombre"])  # Navegar a la página de la carta
     imagen_url = "No disponible"  # Valor predeterminado si no se encuentra la imagen
@@ -137,7 +200,7 @@ for carta in cartas:
     # Agregar la URL de la imagen a los datos de la carta
     carta["imagen_url"] = imagen_url
     # Esperar un tiempo para evitar saturar la página con demasiadas consultas
-    time.sleep(1)
+    # time.sleep(1)
     # Imprimir la información de la carta actual
     print(f"Información de la carta actual:")
     print(f"Código: {carta['codigo']}")
@@ -161,7 +224,7 @@ print("\nScraping completado. Total de productos encontrados:", len(cartas))
 #     print(f"URL de la Imagen: {carta['imagen_url']}")
 #     print("-" * 40)
 # Guardar las cartas en Firebase
-guardar_cartas_en_firebase(cartas, coleccion_ref)
+# guardar_cartas_en_firebase(cartas, coleccion_ref)
 
 # Cerrar el navegador
 driver.quit()

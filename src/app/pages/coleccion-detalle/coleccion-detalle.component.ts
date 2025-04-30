@@ -15,7 +15,10 @@ import { IonicModule } from '@ionic/angular';
 })
 export class ColeccionDetalleComponent implements OnInit {
   coleccionId: string = ''; // ID de la colección seleccionada
+
   cartas: any[] = []; // Cartas de la colección seleccionada
+
+  cartasTiendas: any[] = []; // Cartas de la colección seleccionada
 
   constructor(
     private route: ActivatedRoute,
@@ -23,11 +26,23 @@ export class ColeccionDetalleComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
-    // Llamar a la función para cargar las cartas
-    await this.cargarCartas();
+    // Obtener el ID de la colección desde los parámetros de la ruta
+    this.coleccionId = this.route.snapshot.paramMap.get('id') || '';
+    console.log('ID de la colección:', this.coleccionId);
+
+    // Obtener todas las cartas de las tiendas
+    this.cartasTiendas = await this.cartasService.descargarCartasDeTiendas();
+    console.log('Cartas de tiendas:', this.cartasTiendas);
+
+    // Filtrar las cartas que pertenecen a la colección seleccionada
+    this.cartas = this.cartasTiendas.filter(
+      (carta) => carta.coleccion === this.coleccionId
+    );
+
+    console.log('Cartas de la colección seleccionada:', this.cartas);
   }
 
-    openLink(link: string) {
+  openLink(link: string) {
     if (link) {
       window.open(link, '_blank'); // Abrir el enlace en una nueva pestaña
     } else {

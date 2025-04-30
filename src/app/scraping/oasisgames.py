@@ -33,6 +33,7 @@ driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), opti
 # URL de la página a scrapear
 url = "https://www.oasisgames.cl/collections/pokemon-singles-instock"
 url = "https://www.oasisgames.cl/search?type=product&options%5Bprefix%5D=last&q=charizard"
+url = "https://www.oasisgames.cl/search?type=product&options%5Bprefix%5D=last&q=pikachu"
 
 def guardar_en_firebase(productos):
     """

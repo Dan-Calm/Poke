@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Iniciar Sesión</ion-title>
+    <ion-title>Registrar</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -8,7 +8,12 @@
   <ion-grid>
     <ion-row class="ion-justify-content-center">
       <ion-col size-md="6" size-lg="4">
-        <form (submit)="login()">
+        <form (submit)="register()">
+          <ion-item>
+            <ion-label position="floating">Nombre</ion-label>
+            <ion-input type="text" [(ngModel)]="nombre" name="nombre" required></ion-input>
+          </ion-item>
+
           <ion-item>
             <ion-label position="floating">Correo Electrónico</ion-label>
             <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
@@ -21,7 +26,7 @@
 
           <ion-text color="danger" *ngIf="errorMessage">{{ errorMessage }}</ion-text>
 
-          <ion-button expand="block" type="submit">Iniciar Sesión</ion-button>
+          <ion-button expand="block" type="submit">Registrar</ion-button>
         </form>
       </ion-col>
     </ion-row>
