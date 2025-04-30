@@ -140,6 +140,7 @@ try:
     for pagina in range(1, total_paginas + 1):
         # Actualizar la URL con el número de página
         url = f"https://pokestop.cl/singles/?mpage={pagina}"
+        url = f"https://pokestop.cl/search/?q=pikachu"
         # url = f"https://www.afkstore.cl/search?q=charizard&options%5Bprefix%5D=last"
         print(f"Scraping página {pagina}: {url}")
         driver.get(url)
@@ -241,7 +242,7 @@ try:
         print("-" * 40)
         
         # Guardar los productos en Firebase
-        # guardar_en_firebase(todos_los_productos)
+        guardar_en_firebase(todos_los_productos)
         
     fin = time.time()
     tiempo_total = fin - inicio

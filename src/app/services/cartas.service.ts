@@ -64,14 +64,14 @@ export class CartasService {
       }
 
       // Realizar la consulta a Firebase si los datos no están en caché
-      const referenciaColecciones = collection(db, 'colecciones'); // Referencia a la colección "colecciones"
-      const resultadoColecciones = await getDocs(referenciaColecciones); // Obtener todas las colecciones
+      const referenciaColecciones = collection(db, 'expansiones'); // Referencia a la colección "expansiones"
+      const resultadoColecciones = await getDocs(referenciaColecciones); // Obtener todas las expansiones
 
       // Recorrer cada colección y obtener las cartas de su subcolección "cartas"
       const todasLasCartas = await Promise.all(
         resultadoColecciones.docs.map(async (coleccionDoc) => {
           const coleccionId = coleccionDoc.id; // ID de la colección (por ejemplo, "Base_Set_(TCG)")
-          const referenciaCartas = collection(db, `colecciones/${coleccionId}/cartas`); // Subcolección "cartas"
+          const referenciaCartas = collection(db, `expansiones/${coleccionId}/cartas`); // Subcolección "cartas"
           const resultadoCartas = await getDocs(referenciaCartas); // Obtener las cartas de la colección
 
           // Agregar el nombre de la colección a cada carta
@@ -90,10 +90,10 @@ export class CartasService {
         return acumulador.concat(cartas);
       }, []);
 
-      console.log('Todas las cartas de todas las colecciones:', this.listaColecciones);
+      console.log('Todas las cartas de todas las expansiones:', this.listaColecciones);
       return this.listaColecciones;
     } catch (error) {
-      console.error('Error al descargar la información de colecciones:', error);
+      console.error('Error al descargar la información de expansiones:', error);
       throw error;
     }
   }

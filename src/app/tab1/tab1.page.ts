@@ -32,6 +32,13 @@ export class Tab1Page implements OnInit {
 
   idUsiuario: any = ''; // ID del usuario logueado
 
+  mostrarModal = false; // Controla la visibilidad del modal
+  imagen_carta_seleccionada: string = ''; // Almacena la URL de la imagen seleccionada
+  nombre_carta_seleccionada: string = ''; // 
+  codigo_carta_seleccionada: string = ''; // 
+  rareza_carta_seleccionada: string = ''; // 
+  tipo_carta_seleccionada: string = ''; // 
+  expansion_carta_seleccionada: string = ''; // 
 
 
   constructor(
@@ -160,6 +167,27 @@ export class Tab1Page implements OnInit {
     console.log(`Acción 3 ejecutada para la carta con ID: ${id}`);
   }
 
+  
+
+  // Función para abrir el modal con la imagen seleccionada
+  verCarta(carta: any): void {
+    this.imagen_carta_seleccionada = carta.imagen_url_grande; // Usar un placeholder si no hay imagen
+    this.nombre_carta_seleccionada = carta.nombre_espanol; // Usar un placeholder si no hay imagen
+    this.codigo_carta_seleccionada = carta.codigo; // Usar un placeholder si no hay imagen
+    this.rareza_carta_seleccionada = carta.rareza; // Usar un placeholder si no hay imagen
+    this.tipo_carta_seleccionada = carta.tipo_carta; // Usar un placeholder si no hay imagen
+    this.expansion_carta_seleccionada = carta.expansion; // Usar un placeholder si no hay imagen
+
+    this.mostrarModal = true; // Mostrar el modal
+  }
+
+  // Función para cerrar el modal
+  cerrarModal(): void {
+    this.mostrarModal = false; // Ocultar el modal
+  }
+
+  
+
   // Función para filtrar cartas según el texto ingresado
   filtrarCartas() {
     const texto = this.textoBusqueda.toLowerCase();
@@ -197,6 +225,16 @@ export class Tab1Page implements OnInit {
     this.historial = await this.coleccionesServies.cargarHistorial(this.idUsiuario); // cargar los favoritos del usuario logueado
     // Navegar a la segunda pantalla pasando el ID de la colección como parámetro
     this.router.navigate(['/coleccion-detalle', id]);
+  }
+
+  accionMantenerPresionada(id: string, nombre: string, codigo: string): void {
+    console.log('Imagen mantenida presionada');
+    console.log('ID:', id);
+    console.log('Nombre:', nombre);
+    console.log('Código:', codigo);
+
+    // Aquí puedes ejecutar la acción que desees
+    alert(`Has mantenido presionada la carta: ${nombre} (${codigo})`);
   }
 
 
