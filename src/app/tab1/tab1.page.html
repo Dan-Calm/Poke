@@ -57,7 +57,7 @@
     <ion-grid>
       <ion-row>
         <!-- Cartas -->
-        <ion-col size="6" *ngFor="let carta of cartasMostradas">
+        <ion-col size="6" *ngFor="let carta of cartas_mostradas">
           <ion-card>
 
             <ion-grid>
@@ -82,8 +82,8 @@
                 </ion-col>
                 <!-- Ver carta -->
                 <ion-col size="auto">
-                  <ion-button size="small" (click)="verCarta(carta)">
-                    <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+                  <ion-button size="small" (click)="cotizar(carta.id, carta.nombre_espanol, carta.codigo)">
+                    <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
                   </ion-button>
                 </ion-col>
 
@@ -91,7 +91,7 @@
             </ion-grid>
 
             <!-- Imagen de la carta -->
-            <img (click)="mostrarId(carta.id, carta.nombre_espanol, carta.codigo)"
+            <img (click)="verCarta(carta)"
               [src]="carta.imagen_url || 'assets/placeholder.png'" alt="{{ carta.nombre_espanol || 'Carta' }}" />
 
             <!-- Nombre y código de la carta -->

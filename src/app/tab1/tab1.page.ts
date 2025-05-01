@@ -20,9 +20,9 @@ import { AlertController } from '@ionic/angular';
 
 })
 export class Tab1Page implements OnInit {
-  cartasPorColeccion: any[] = []; // guarda las cartas de la wikidex
-  cartasFiltradas: any[] = []; // listra con las cartas filtradas por la barra de busqqueda
-  cartasMostradas: any[] = []; // cartas que se mostrarán en la pantalla
+  cartas_expansiones: any[] = []; // guarda las cartas de la wikidex
+  cartas_filtradas: any[] = []; // listra con las cartas filtradas por la barra de busqqueda
+  cartas_mostradas: any[] = []; // cartas que se mostrarán en la pantalla
 
   cartasTienda: any[] = []; // guarda las cartas de todas las tiendas
   favoritos: any[] = []; // guarda las cartas de todas las tiendas
@@ -53,8 +53,8 @@ export class Tab1Page implements OnInit {
     this.iniciarColecciones(); // cargar las colecciones al iniciar
     this.cartasService.descargarCartasDeTiendas();
     await this.obtenerIdUsuario(); // obtener el id del usuario logueado
-    this.favoritos = await this.coleccionesServies.cargarFavoritos(this.idUsiuario); // cargar los favoritos del usuario logueado
-    this.historial = await this.coleccionesServies.cargarHistorial(this.idUsiuario); // cargar los favoritos del usuario logueado
+    this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado
+    this.historial = await this.coleccionesServies.cargarHistorial(); // cargar los historial del usuario logueado
   }
 
   async obtenerIdUsuario() {
@@ -72,11 +72,16 @@ export class Tab1Page implements OnInit {
 
 
   onIonInfinite(event: InfiniteScrollCustomEvent) {
-    // se calcula el largo actual de cartasMostradas
-    this.cartasMostradas = this.cartasFiltradas.slice(0, this.cartasMostradas.length + 12);
+    // Verificar si ya se están mostrando todas las cartas filtradas
+    if (this.cartas_mostradas.length >= this.cartas_filtradas.length) {
+      console.log('No hay más cartas para cargar.');
+      event.target.complete();
+      return;
+    }
+    // Cargar más cartas
+    this.cartas_mostradas = this.cartas_filtradas.slice(0, this.cartas_mostradas.length + 12);
 
-    console.log('Cartas cargadas:', this.cartasMostradas);
-
+    console.log('Cartas cargadas:', this.cartas_mostradas);
     event.target.complete();
   }
 
@@ -86,16 +91,16 @@ export class Tab1Page implements OnInit {
 
   async iniciarColecciones() {
     try {
-      // llenar cartasPorColeccion con las cartas de la wikidex
-      this.cartasPorColeccion = await this.cartasService.colecciones();
+      // llenar cartas_expansiones con las cartas de la wikidex
+      this.cartas_expansiones = await this.cartasService.expansiones();
       //filtro en blanco
-      this.cartasFiltradas = this.cartasPorColeccion;
+      this.cartas_filtradas = this.cartas_expansiones;
       // cargar las primeras 12 cartas
-      this.cartasMostradas = this.cartasFiltradas.slice(0, 12);
+      this.cartas_mostradas = this.cartas_filtradas.slice(0, 12);
 
-      console.log('Lista única de cartas:', this.cartasPorColeccion);
+      console.log('Lista única de cartas:', this.cartas_expansiones);
 
-      console.log('Cartas cargadas:', this.cartasMostradas);
+      console.log('Cartas cargadas:', this.cartas_mostradas);
     } catch (error) {
       console.error('Error durante la inicialización:', error);
     }
@@ -110,23 +115,23 @@ export class Tab1Page implements OnInit {
   }
 
   async agregarFavorito(id: string, nombre: string, codigo: string) {
-    console.log(`Acción 1 ejecutada para la carta con ID: ${id}`);
+    console.log(`Agregar a Favorito carta con ID: ${id}`);
     const usuario = doc(db, 'usuarios', this.idUsiuario);
 
-    await setDoc(doc(db, "usuarios", this.idUsiuario, "favoritos", id), {
+    await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "favoritos", "cartas", id), {
       nombre: nombre,
       codigo: codigo,
       id: id,
     });
     console.log('Favorito agregado:', id);
-    this.favoritos = await this.coleccionesServies.cargarFavoritos(this.idUsiuario); // cargar los favoritos del usuario logueado
+    this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado
   }
 
   async eliminarFavorito(id: string) {
     console.log("eliminar favorito", id);
 
-    await deleteDoc(doc(db, "usuarios", this.idUsiuario, "favoritos", id));
-    this.favoritos = await this.coleccionesServies.cargarFavoritos(this.idUsiuario); // cargar los favoritos del usuario logueado
+    await deleteDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "favoritos", "cartas", id));
+    this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado
   }
 
   async accion2(id: string) {
@@ -167,16 +172,14 @@ export class Tab1Page implements OnInit {
     console.log(`Acción 3 ejecutada para la carta con ID: ${id}`);
   }
 
-  
-
   // Función para abrir el modal con la imagen seleccionada
   verCarta(carta: any): void {
-    this.imagen_carta_seleccionada = carta.imagen_url_grande; // Usar un placeholder si no hay imagen
-    this.nombre_carta_seleccionada = carta.nombre_espanol; // Usar un placeholder si no hay imagen
-    this.codigo_carta_seleccionada = carta.codigo; // Usar un placeholder si no hay imagen
-    this.rareza_carta_seleccionada = carta.rareza; // Usar un placeholder si no hay imagen
-    this.tipo_carta_seleccionada = carta.tipo_carta; // Usar un placeholder si no hay imagen
-    this.expansion_carta_seleccionada = carta.expansion; // Usar un placeholder si no hay imagen
+    this.imagen_carta_seleccionada = carta.imagen_url_grande;
+    this.nombre_carta_seleccionada = carta.nombre_espanol;
+    this.codigo_carta_seleccionada = carta.codigo;
+    this.rareza_carta_seleccionada = carta.rareza;
+    this.tipo_carta_seleccionada = carta.tipo_carta;
+    this.expansion_carta_seleccionada = carta.expansion;
 
     this.mostrarModal = true; // Mostrar el modal
   }
@@ -186,14 +189,12 @@ export class Tab1Page implements OnInit {
     this.mostrarModal = false; // Ocultar el modal
   }
 
-  
-
   // Función para filtrar cartas según el texto ingresado
   filtrarCartas() {
     const texto = this.textoBusqueda.toLowerCase();
 
     // filtrar por nombre y codigo
-    this.cartasFiltradas = this.cartasPorColeccion.filter((carta: any) => {
+    this.cartas_filtradas = this.cartas_expansiones.filter((carta: any) => {
       return (
         carta.id.toLowerCase().includes(texto) ||
         (carta.nombre_espanol && carta.nombre_espanol.toLowerCase().includes(texto)) ||
@@ -202,27 +203,26 @@ export class Tab1Page implements OnInit {
       );
     });
 
-    // Actualizar cartasMostradas con los primeros 12 elementos de cartasFiltradas
-    this.cartasMostradas = this.cartasFiltradas.slice(0, 12);
+    // Actualizar cartas_mostradas con los primeros 12 elementos de cartas_filtradas
+    this.cartas_mostradas = this.cartas_filtradas.slice(0, 12);
 
-    console.log('Cartas filtradas:', this.cartasFiltradas);
-    console.log('Cartas cargadas:', this.cartasMostradas);
+    console.log('Cartas filtradas:', this.cartas_filtradas);
+    console.log('Cartas cargadas:', this.cartas_mostradas);
   }
 
-  async mostrarId(id: string, nombre: string, codigo: string) {
+  async cotizar(id: string, nombre: string, codigo: string) {
     console.log("ID del usuario:", this.idUsiuario);
 
+    console.log(`Cotizar carta con ID: ${id}`);
 
-    console.log(`Acción 1 ejecutada para la carta con ID: ${id}`);
-    const usuario = doc(db, 'usuarios', this.idUsiuario);
-
-    await setDoc(doc(db, "usuarios", this.idUsiuario, "historial", id), {
+    await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "historial", "cartas", id), {
       nombre: nombre,
       codigo: codigo,
       id: id,
     });
-    console.log('Favorito agregado:', id);
-    this.historial = await this.coleccionesServies.cargarHistorial(this.idUsiuario); // cargar los favoritos del usuario logueado
+
+    console.log('Historial agregado:', id);
+    this.historial = await this.coleccionesServies.cargarHistorial(); // cargar los favoritos del usuario logueado
     // Navegar a la segunda pantalla pasando el ID de la colección como parámetro
     this.router.navigate(['/coleccion-detalle', id]);
   }

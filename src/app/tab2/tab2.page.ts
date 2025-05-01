@@ -1,8 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { CartasService } from '../services/cartas.service';
-
-import { ModalController } from '@ionic/angular';
-import { SelectorExpansionesComponent } from '../modales/selector-expansiones/selector-expansiones.component';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-tab2',
@@ -10,41 +6,8 @@ import { SelectorExpansionesComponent } from '../modales/selector-expansiones/se
   styleUrls: ['tab2.page.scss'],
   standalone: false,
 })
-export class Tab2Page implements OnInit {
-  expansiones: any[] = [];
+export class Tab2Page {
 
-  constructor(
-    private cartasService: CartasService,
-    private modalController: ModalController
-  ) {}
+  constructor() {}
 
-  async ngOnInit() {
-    this.expansiones = await this.cartasService.colecciones();
-  }
-
-  async abrirSelectorExpansiones() {
-    const expansiones = await this.cartasService.colecciones();
-  
-    const modal = await this.modalController.create({
-      component: SelectorExpansionesComponent,
-      componentProps: {
-        expansiones: expansiones,
-      },
-    });
-  
-    await modal.present();
-  
-    const { data } = await modal.onDidDismiss();
-  
-    if (data) {
-      console.log('Expansión seleccionada:', data);
-      // Aquí puedes continuar: clonar la expansión, asociarla al usuario, etc.
-    }
-  }
-
-  mostrarFavoritos() {
-    // Este lo implementamos en el siguiente paso
-  }
 }
-
-

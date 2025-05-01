@@ -8,11 +8,12 @@ import { AuthService } from '../services/auth.service';
 })
 export class ColeccionesService {
 
-  idUsiuario: any = ''; // ID del usuario logueado
+  idUsuarios: any = ''; // ID del usuario logueado
   favoritos: any[] = []; // guarda los favoritos del usuario logueado
   historial: any[] = []; // guarda los favoritos del usuario logueado
   expansiones: any[] = []; // guarda las expansiones
 
+  colecciones: any[] = []; // guarda las cartas de todas las tiendas
 
   constructor(private authService: AuthService) { }
 
@@ -20,9 +21,41 @@ export class ColeccionesService {
 
   }
 
-  async cargarHistorial(id: string): Promise<any[]> {
+  async cargarColecciones() {
     try {
-      const referenciaColecciones = collection(db, 'usuarios', id, 'historial');
+      await this.obtenerIdUsuario(); // obtener el id del usuario logueado
+      const referenciaFavoritos = collection(db, 'usuarios', this.idUsuarios, 'colecciones');
+      console.log('ID del usuario:', this.idUsuarios);
+      const resultadoFavoritos = await getDocs(referenciaFavoritos);
+
+      this.colecciones = resultadoFavoritos.docs.map(async (tiendaDoc) => {
+        const tiendaId = tiendaDoc.id;
+        const referenciaProductos = collection(db, `usuarios/${this.idUsuarios}/colecciones/${tiendaId}/cartas`);
+        const resultadoProductos = await getDocs(referenciaProductos);
+
+        // console.log(`Productos de la tienda ${tiendaId}:`, resultadoProductos.docs.map(doc => doc.data()));
+
+        const cartas = resultadoProductos.docs.map((productoDoc) => ({
+          id: productoDoc.id,
+          tienda: tiendaId,
+          ...productoDoc.data(),
+        }));
+
+        return cartas;
+      });
+      console.log('Favoritos encontrados:', resultadoFavoritos.docs.map(doc => doc.id));
+      
+  
+    } catch (error) {
+      console.error('Error al cargar los documentos de favoritos:', error);
+      throw error;
+    }
+  }
+
+  async cargarHistorial(): Promise<any[]> {
+    await this.obtenerIdUsuario(); // obtener el id del usuario logueado
+    try {
+      const referenciaColecciones = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'historial', 'cartas');
       const resultadoColecciones = await getDocs(referenciaColecciones);
       this.favoritos = resultadoColecciones.docs.map(doc => doc.data());
 
@@ -34,9 +67,10 @@ export class ColeccionesService {
     }
   }
 
-  async cargarFavoritos(id: string): Promise<any[]> {
+  async cargarFavoritos(): Promise<any[]> {
+    await this.obtenerIdUsuario(); // obtener el id del usuario logueado
     try {
-      const referenciaColecciones = collection(db, 'usuarios', id, 'favoritos');
+      const referenciaColecciones = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'favoritos', 'cartas');
       const resultadoColecciones = await getDocs(referenciaColecciones);
       this.favoritos = resultadoColecciones.docs.map(doc => doc.data());
 
@@ -50,11 +84,12 @@ export class ColeccionesService {
 
   async obtenerIdUsuario() {
     try {
-      this.idUsiuario = await this.authService.getCurrentUser();
-      if (this.idUsiuario) {
-        console.log('ID del usuario:', this.idUsiuario);
+      if (this.idUsuarios) {
+        console.log('ID del usuario:', this.idUsuarios);
+        return this.idUsuarios;
       } else {
-        console.log('No hay usuario autenticado');
+        this.idUsuarios = await this.authService.getCurrentUser();
+        return this.idUsuarios;
       }
     } catch (error) {
       console.error('Error al obtener el ID del usuario:', error);
