@@ -6,7 +6,7 @@ import { db } from '../config/firebase.config';
   providedIn: 'root', // Hace que el servicio esté disponible en toda la aplicación
 })
 export class CartasService {
-  private listaColecciones: any[] = []; // Almacena el listado de cartas
+  private listaExpansiones: any[] = []; // Almacena el listado de cartas
   private listaTiendas: any[] = []; // Almacena el listado de cartas
 
   constructor() { }
@@ -55,12 +55,12 @@ export class CartasService {
     }
   }
 
-  async colecciones() {
+  async expansiones() {
     try {
-      // Si ya se han cargado las colecciones, devolverlas directamente
-      if (this.listaColecciones.length > 0) {
-        console.log('Usando datos en caché de colecciones:', this.listaColecciones);
-        return this.listaColecciones;
+      // Si ya se han cargado las expansiones, devolverlas directamente
+      if (this.listaExpansiones.length > 0) {
+        console.log('Usando datos en caché de expansiones:', this.listaExpansiones);
+        return this.listaExpansiones;
       }
 
       // Realizar la consulta a Firebase si los datos no están en caché
@@ -86,12 +86,12 @@ export class CartasService {
       );
 
       // Combinar todas las cartas en una sola lista
-      this.listaColecciones = todasLasCartas.reduce((acumulador, cartas) => {
+      this.listaExpansiones = todasLasCartas.reduce((acumulador, cartas) => {
         return acumulador.concat(cartas);
       }, []);
 
-      console.log('Todas las cartas de todas las expansiones:', this.listaColecciones);
-      return this.listaColecciones;
+      console.log('Todas las cartas de todas las expansiones:', this.listaExpansiones);
+      return this.listaExpansiones;
     } catch (error) {
       console.error('Error al descargar la información de expansiones:', error);
       throw error;
