@@ -11,6 +11,7 @@ export class ColeccionesService {
   idUsiuario: any = ''; // ID del usuario logueado
   favoritos: any[] = []; // guarda los favoritos del usuario logueado
   historial: any[] = []; // guarda los favoritos del usuario logueado
+  expansiones: any[] = []; // guarda las expansiones
 
 
   constructor(private authService: AuthService) { }
@@ -57,6 +58,39 @@ export class ColeccionesService {
       }
     } catch (error) {
       console.error('Error al obtener el ID del usuario:', error);
+    }
+   }
+
+   async cargarExpansiones(): Promise<any[]> {
+    try {
+      const referenciaExpansiones = collection(db, 'expansiones');
+      const resultado = await getDocs(referenciaExpansiones);
+      this.expansiones = resultado.docs.map(doc => doc.data());
+  
+      console.log('Expansiones encontradas:', this.expansiones);
+      return this.expansiones;
+    } catch (error) {
+      console.error('Error al cargar las expansiones:', error);
+      throw error;
+    } 
+  }
+
+  async cargarColeccionesCompletas(): Promise<any[]> {
+    try {
+      await this.obtenerIdUsuario();
+  
+      const favoritos = await this.cargarFavoritos(this.idUsiuario);
+      const expansiones = await this.cargarExpansiones();
+  
+      const listaUnificada = [
+        { tipo: 'Favoritos', items: favoritos },
+        { tipo: 'Expansiones', items: expansiones }
+      ];
+  
+      return listaUnificada;
+    } catch (error) {
+      console.error('Error al cargar las colecciones completas:', error);
+      return [];
     }
   }
 }
