@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc, setDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../config/firebase.config';
 import { AuthService } from '../services/auth.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class ColeccionesService {
   async ngOnInit() {
 
   }
+  
 
   async cargarColecciones() {
     try {
@@ -114,7 +116,7 @@ export class ColeccionesService {
     try {
       await this.obtenerIdUsuario();
   
-      const favoritos = await this.cargarFavoritos(this.idUsiuario);
+      const favoritos = await this.cargarFavoritos();
       const expansiones = await this.cargarExpansiones();
   
       const listaUnificada = [
@@ -127,5 +129,27 @@ export class ColeccionesService {
       console.error('Error al cargar las colecciones completas:', error);
       return [];
     }
+  }
+
+  async completarColeccion(id: string, lista: any[]) {
+    await this.obtenerIdUsuario();
+    console.log('ID del usuario:', this.idUsuarios);
+    console.log('ID de la tienda:', id);
+    console.log('Lista de cartas:', lista);
+
+    console.log("primera carta", lista[0]);
+    console.log("id de la primera carta", lista[0].id);
+    await setDoc(doc(db, "usuarios", this.idUsuarios, "colecciones", id, "cartas", lista[0].id), {
+      id: lista[0].id,
+      nombre: lista[0].nombre_espanol,
+      rareza: lista[0].rareza,
+      imagen: lista[0].imagen_url,
+      colecciones: "informacion extra"
+    }).then(() => {
+      console.log("Documento escrito correctamente");
+    }).catch((error) => {
+      console.error("Error al escribir el documento:", error);
+    });
+
   }
 }
