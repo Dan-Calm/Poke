@@ -16,7 +16,7 @@ export class Tab2Page {
     private coleccionesServies: ColeccionesService,
     private cartasService: CartasService,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   idUsiuario: any = ''; // ID del usuario logueado
   favoritos: any[] = []; // guarda las cartas de todas las tiendas
@@ -27,6 +27,13 @@ export class Tab2Page {
     console.log('ID del usuario:', this.idUsiuario);
     await this.coleccionesServies.cargarColecciones(); // cargar los favoritos del usuario logueado
     this.expansiones = await this.cartasService.expansiones(); // cargar los favoritos del usuario logueado
+    // Obtener los valores únicos del campo "coleccion"
+    const coleccionesUnicas = Array.from(
+      new Set(this.expansiones.map((expansion) => expansion.coleccion))
+    );
+
+    // Imprimir los valores únicos por consola
+    console.log('Valores únicos del campo "coleccion":', coleccionesUnicas);
   }
 
 }

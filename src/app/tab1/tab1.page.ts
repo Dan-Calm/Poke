@@ -51,7 +51,7 @@ export class Tab1Page implements OnInit {
 
   async ngOnInit() {
     this.iniciarColecciones(); // cargar las colecciones al iniciar
-    this.cartasService.descargarCartasDeTiendas();
+    this.cartasTienda = await this.cartasService.descargarCartasDeTiendas();
     await this.obtenerIdUsuario(); // obtener el id del usuario logueado
     this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado
     this.historial = await this.coleccionesServies.cargarHistorial(); // cargar los historial del usuario logueado
@@ -134,17 +134,33 @@ export class Tab1Page implements OnInit {
     this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado
   }
 
-  async accion2(id: string) {
+  async agregarPropia(id: string, nombre: string, codigo: string) {
     console.log(`Acción 2 ejecutada para la carta con ID: ${id}`);
+
+    console.log("Cartas de la tienda", this.cartasTienda);
+
+    const cartasConPrecio = this.cartasTienda.filter((carta) => carta.coleccion === id);
+    console.log(`Cartas filtradas por la colección "${id}":`, cartasConPrecio);
+
+    const sumaPrecios = cartasConPrecio.reduce((acumulador: number, carta: any) => { return acumulador + carta.precio; }, 0);
+
+    const precioPromedio = sumaPrecios / cartasConPrecio.length;
+    console.log(`Suma de precios de todas las cartas: ${precioPromedio}`);
 
     // Crear y mostrar la alerta
     const alert = await this.alertController.create({
-      header: 'Agregar a una colección',
+      header: 'Agregar a tu colección',
       inputs: [
         {
-          name: 'nombre',
-          type: 'text',
-          placeholder: 'Nombre de la colección',
+          name: 'precioPromedio',
+          type: 'number',
+          placeholder: `Precio promedio: ${precioPromedio.toString()}`,
+        },
+        {
+          name: 'cantidad',
+          type: 'number',
+          placeholder: `Unidades`,
+          min: 1,
         },
       ],
       buttons: [
@@ -158,14 +174,39 @@ export class Tab1Page implements OnInit {
         {
           text: 'Guardar',
           handler: (data) => {
-            console.log(`Nombre ingresado: ${data.nombre}`);
-            // Aquí puedes agregar la lógica para guardar el nombre
+            // Validar que la cantidad sea al menos 1
+            const cantidad = parseInt(data.cantidad, 10);
+            if (!cantidad || cantidad < 1) {
+              console.error('La cantidad debe ser al menos 1.');
+              alert.dismiss(); // Cerrar la alerta si el valor no es válido
+              return false; // Evitar que se ejecute el resto del handler
+            }
+
+            // Validar el precio promedio
+            const precioFinal = data.precioPromedio ? parseFloat(data.precioPromedio) : precioPromedio;
+
+            console.log(`Precio final guardado: ${precioFinal}`);
+            console.log(`Cantidad guardada: ${cantidad}`);
+
+            // Guardar los datos en Firestore
+            setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "propias", "cartas", id), {
+              nombre: nombre,
+              codigo: codigo,
+              id: id,
+              precio: precioFinal,
+              cantidad: cantidad,
+            });
+
+            return true; // Indicar que el handler se ejecutó correctamente
           },
         },
       ],
     });
 
+
+
     await alert.present();
+
   }
 
   accion3(id: string) {
