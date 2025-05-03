@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { CartasService } from '../services/cartas.service';import { SelectorExpansionesComponent } from '../modales/selector-expansiones/selector-expansiones.component';
+import { CartasService } from '../services/cartas.service';
+import { SelectorExpansionesComponent } from '../modales/selector-expansiones/selector-expansiones.component';
+import { AuthService } from '../services/auth.service';
 
 
 @Component({
@@ -15,15 +17,9 @@ export class Tab2Page {
   
   constructor(
     private cartasService: CartasService,
-    private modalController: ModalController
-
-  ) {}
+    private modalController: ModalController,
     private authService: AuthService,
   ) { }
-
-  idUsiuario: any = ''; // ID del usuario logueado
-  favoritos: any[] = []; // guarda las cartas de todas las tiendas
-  expansiones: any[] = []; // guarda las cartas de todas las tiendas
 
   async ngOnInit() {
     console.log('ngOnInit Tab2Page');
