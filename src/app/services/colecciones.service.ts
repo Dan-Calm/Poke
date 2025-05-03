@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc, setDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../config/firebase.config';
 import { AuthService } from '../services/auth.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class ColeccionesService {
   idUsuarios: any = ''; // ID del usuario logueado
   favoritos: any[] = []; // guarda los favoritos del usuario logueado
   historial: any[] = []; // guarda los favoritos del usuario logueado
+  expansiones: any[] = []; // guarda las expansiones
 
   colecciones: any[] = []; // guarda las cartas de todas las tiendas
 
@@ -19,6 +21,7 @@ export class ColeccionesService {
   async ngOnInit() {
 
   }
+  
 
   async cargarColecciones() {
     try {
@@ -93,5 +96,60 @@ export class ColeccionesService {
     } catch (error) {
       console.error('Error al obtener el ID del usuario:', error);
     }
+   }
+
+   async cargarExpansiones(): Promise<any[]> {
+    try {
+      const referenciaExpansiones = collection(db, 'expansiones');
+      const resultado = await getDocs(referenciaExpansiones);
+      this.expansiones = resultado.docs.map(doc => doc.data());
+  
+      console.log('Expansiones encontradas:', this.expansiones);
+      return this.expansiones;
+    } catch (error) {
+      console.error('Error al cargar las expansiones:', error);
+      throw error;
+    } 
+  }
+
+  async cargarColeccionesCompletas(): Promise<any[]> {
+    try {
+      await this.obtenerIdUsuario();
+  
+      const favoritos = await this.cargarFavoritos();
+      const expansiones = await this.cargarExpansiones();
+  
+      const listaUnificada = [
+        { tipo: 'Favoritos', items: favoritos },
+        { tipo: 'Expansiones', items: expansiones }
+      ];
+  
+      return listaUnificada;
+    } catch (error) {
+      console.error('Error al cargar las colecciones completas:', error);
+      return [];
+    }
+  }
+
+  async completarColeccion(id: string, lista: any[]) {
+    await this.obtenerIdUsuario();
+    console.log('ID del usuario:', this.idUsuarios);
+    console.log('ID de la tienda:', id);
+    console.log('Lista de cartas:', lista);
+
+    console.log("primera carta", lista[0]);
+    console.log("id de la primera carta", lista[0].id);
+    await setDoc(doc(db, "usuarios", this.idUsuarios, "colecciones", id, "cartas", lista[0].id), {
+      id: lista[0].id,
+      nombre: lista[0].nombre_espanol,
+      rareza: lista[0].rareza,
+      imagen: lista[0].imagen_url,
+      colecciones: "informacion extra"
+    }).then(() => {
+      console.log("Documento escrito correctamente");
+    }).catch((error) => {
+      console.error("Error al escribir el documento:", error);
+    });
+
   }
 }

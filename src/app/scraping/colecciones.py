@@ -32,9 +32,7 @@ cartas = []
 # URL de la página a scrapear
 url = "https://www.wikidex.net/wiki/Base_Set_(TCG)"
 # url = "https://www.wikidex.net/wiki/Jungla_(TCG)"
-# url = "https://www.wikidex.net/wiki/Fósil_(TCG)"
-url = "https://www.wikidex.net/wiki/Escarlata_y_Púrpura_(TCG):_151"
-url = "https://www.wikidex.net/wiki/Escarlata_y_Púrpura_(TCG):_Chispas_Fulgurantes"
+url = "https://www.wikidex.net/wiki/Fósil_(TCG)"
 
 
 # Nombre de la colección (extraído de la URL)
@@ -179,63 +177,52 @@ for fila in filas:
 # Agrupar las cartas por nombre_espanol
 cartas_agrupadas = {}
 for carta in cartas:
-    nombre = carta["url_nombre"]
-    if nombre not in cartas_agrupadas:
-        cartas_agrupadas[nombre] = []
-    cartas_agrupadas[nombre].append(carta)
+    driver.get(carta["url_nombre"])  # Navegar a la página de la carta
+    imagen_url = "No disponible"  # Valor predeterminado si no se encuentra la imagen
+
+    try:
+        # Intentar encontrar la imagen principal en un <div> con clase "imagen"
+        imagen_elemento = driver.find_element(By.XPATH, "//div[@class='imagen']/a[@class='image']/img")
+        imagen_url = imagen_elemento.get_attribute("src")
+    except Exception:
+        try:
+            # Intentar encontrar la imagen en una galería (<ul class="gallery">)
+            imagen_elemento = driver.find_element(By.XPATH, "//ul[@class='gallery']//img")
+            imagen_url = imagen_elemento.get_attribute("src")
+        except Exception:
+            try:
+                # Intentar obtener la imagen desde las metaetiquetas <meta property="og:image">
+                meta_elemento = driver.find_element(By.XPATH, "//meta[@property='og:image']")
+                imagen_url = meta_elemento.get_attribute("content")
+            except Exception as e:
+                print(f"Error al obtener la imagen para {carta['nombre_espanol']}: {e}")
+
+    # Agregar la URL de la imagen a los datos de la carta
+    carta["imagen_url"] = imagen_url
+    # Esperar un tiempo para evitar saturar la página con demasiadas consultas
+    # time.sleep(1)
+    # Imprimir la información de la carta actual
+    print(f"Información de la carta actual:")
+    print(f"Código: {carta['codigo']}")
+    print(f"ID Documento: {carta['id_documento']}")
+    print(f"Nombre en Español: {carta['nombre_espanol']}")
+    print(f"Nombre en Inglés: {carta['nombre_ingles']}")
+    print(f"URL del Nombre: {carta['url_nombre']}")
+    print(f"URL de la Imagen: {carta['imagen_url']}")
+    print("-" * 40)
+    
+print("\nScraping completado. Total de productos encontrados:", len(cartas))
 
 
-# Imprimir la información ordenada
-for nombre, grupo in sorted(cartas_agrupadas.items()):
-    if len(grupo) == 1:  # Caso 1: Solo una carta en el grupo
-        print(f"Nombre en Español: {nombre}")
-        print(f"Total de cartas: {len(grupo)}")
-        for index, carta in enumerate(grupo, start=1):  # Usar enumerate para obtener el índice
-            # Obtener la imagen desde la URL
-            carta["imagen_url"] = obtener_imagen_desde_url(driver, carta["url_nombre"])
-            
-            # Esperar 1 segundo para no sobrecargar el servidor
-            time.sleep(1)
-
-            # Imprimir la información de la carta
-            print("-" * 20)
-            print(f"  Número en el grupo: {index}")  # Imprimir el número de elemento
-            print(f"  Código: {carta['codigo']}")
-            print(f"  ID Documento: {carta['id_documento']}")
-            print(f"  Nombre en Inglés: {carta['nombre_ingles']}")
-            print(f"  URL del Nombre: {carta['url_nombre']}")
-            print(f"  URL de la Imagen: {carta['imagen_url']}")
-            print("-" * 20)
-        print("=" * 40)
-
-    elif len(grupo) > 1:  # Caso 2: Más de una carta en el grupo
-        print(f"Nombre en Español: {nombre}")
-        print(f"Total de cartas: {len(grupo)}")
-
-        # Extraer todas las imágenes de la galería
-        urls_imagenes = extraer_imagenes_adicionales(driver, grupo[0]["url_nombre"])
-        
-        # Esperar 1 segundo para no sobrecargar el servidor
-        time.sleep(1)
-
-        # Asignar las imágenes a las cartas del grupo
-        for index, carta in enumerate(grupo):
-            if index < len(urls_imagenes):  # Verificar que haya suficientes imágenes
-                carta["imagen_url"] = urls_imagenes[index]
-            else:
-                carta["imagen_url"] = "No disponible"  # Asignar "No disponible" si no hay suficientes imágenes
-
-            # Imprimir la información de la carta
-            print("-" * 20)
-            print(f"  Número en el grupo: {index + 1}")  # Imprimir el número de elemento
-            print(f"  Código: {carta['codigo']}")
-            print(f"  ID Documento: {carta['id_documento']}")
-            print(f"  Nombre en Inglés: {carta['nombre_ingles']}")
-            print(f"  URL del Nombre: {carta['url_nombre']}")
-            print(f"  URL de la Imagen: {carta['imagen_url']}")
-            print("-" * 20)
-        print("=" * 40)
-
+# # Imprimir la información de las cartas
+# for carta in cartas:
+#     print(f"Código: {carta['codigo']}")
+#     print(f"ID Documento: {carta['id_documento']}")
+#     print(f"Nombre en Español: {carta['nombre_espanol']}")
+#     print(f"Nombre en Inglés: {carta['nombre_ingles']}")
+#     print(f"URL del Nombre: {carta['url_nombre']}")
+#     print(f"URL de la Imagen: {carta['imagen_url']}")
+#     print("-" * 40)
 # Guardar las cartas en Firebase
 # guardar_cartas_en_firebase(cartas, coleccion_ref)
 

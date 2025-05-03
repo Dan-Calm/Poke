@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Seleccionar expansión</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let expansion of expansiones_combinadas" (click)="seleccionarExpansion(expansion)">
+      <ion-label>
+        <h2>{{ expansion.nombre }}</h2>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

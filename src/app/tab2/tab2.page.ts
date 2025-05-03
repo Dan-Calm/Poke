@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { CartasService } from '../services/cartas.service';import { SelectorExpansionesComponent } from '../modales/selector-expansiones/selector-expansiones.component';
 
-import { ColeccionesService } from '../services/colecciones.service';
-import { AuthService } from '../services/auth.service';
-import { CartasService } from '../services/cartas.service';
 
 @Component({
   selector: 'app-tab2',
@@ -12,9 +11,13 @@ import { CartasService } from '../services/cartas.service';
 })
 export class Tab2Page {
 
+  expansiones: any[] = [];
+  
   constructor(
-    private coleccionesServies: ColeccionesService,
     private cartasService: CartasService,
+    private modalController: ModalController
+
+  ) {}
     private authService: AuthService,
   ) { }
 
@@ -23,17 +26,33 @@ export class Tab2Page {
   expansiones: any[] = []; // guarda las cartas de todas las tiendas
 
   async ngOnInit() {
-    this.idUsiuario = await this.authService.getCurrentUser(); // obtener el id del usuario logueado
-    console.log('ID del usuario:', this.idUsiuario);
-    await this.coleccionesServies.cargarColecciones(); // cargar los favoritos del usuario logueado
-    this.expansiones = await this.cartasService.expansiones(); // cargar los favoritos del usuario logueado
-    // Obtener los valores únicos del campo "coleccion"
-    const coleccionesUnicas = Array.from(
-      new Set(this.expansiones.map((expansion) => expansion.coleccion))
-    );
+    console.log('ngOnInit Tab2Page');
+    
+    this.expansiones = await this.cartasService.expansiones();
 
-    // Imprimir los valores únicos por consola
-    console.log('Valores únicos del campo "coleccion":', coleccionesUnicas);
+  }
+
+  async abrirSelectorExpansiones() {
+  
+    const modal = await this.modalController.create({
+      component: SelectorExpansionesComponent,
+      componentProps: {
+        expansiones: this.expansiones,
+      },
+    });
+  
+    await modal.present();
+  
+    const { data } = await modal.onDidDismiss();
+  
+    if (data) {
+      console.log('Expansión seleccionada:', data);
+      // Aquí puedes continuar: clonar la expansión, asociarla al usuario, etc.
+    }
+  }
+  
+  mostrarFavoritos() {
+    // Este lo implementamos en el siguiente paso
   }
 
 }
