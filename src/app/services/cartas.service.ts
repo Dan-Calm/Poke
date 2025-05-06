@@ -55,6 +55,17 @@ export class CartasService {
     }
   }
 
+  async consultarPrecios(id_carta: string, id_tienda: string) {
+    const precios_ref = collection(db, 'tiendas', id_tienda, 'productos', id_carta, 'precios');
+    const precios_doc = await getDocs(precios_ref);
+    const precios = precios_doc.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    console.log('Referencia a precios:', precios);
+    return precios;
+  }
+
   async expansiones() {
     try {
       // Si ya se han cargado las expansiones, devolverlas directamente

@@ -211,6 +211,7 @@ export class Tab1Page implements OnInit {
 
   accion3(id: string) {
     console.log(`Acción 3 ejecutada para la carta con ID: ${id}`);
+    this.router.navigate(['/tabs/tab3', id]);
   }
 
   // Función para abrir el modal con la imagen seleccionada

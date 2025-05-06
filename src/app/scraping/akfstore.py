@@ -23,10 +23,10 @@ db = firestore.client()
 
 # Configurar el navegador
 options = webdriver.ChromeOptions()
-options.add_argument("--headless=new")
-options.add_argument('--disable-gpu')
+# options.add_argument("--headless=new")
+# options.add_argument('--disable-gpu')
 options.add_argument('--no-sandbox')
-options.add_argument('--disable-dev-shm-usage')
+# options.add_argument('--disable-dev-shm-usage')
 
 # Inicializar el driver de Selenium
 driver = webdriver.Chrome(options=options)

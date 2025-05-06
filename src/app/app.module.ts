@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { firebaseConfig } from './config/firebase.config';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,7 +21,8 @@ import { firebaseConfig } from './config/firebase.config';
     AppRoutingModule,
     HttpClientModule,
     AngularFireModule.initializeApp(firebaseConfig), // Configuración de Firebase
-    AngularFireAuthModule, // Módulo de autenticación de Firebase
+    AngularFireAuthModule, // Módulo de autenticación de Firebase 
+    FormsModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
