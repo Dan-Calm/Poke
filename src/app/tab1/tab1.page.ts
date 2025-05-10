@@ -114,7 +114,7 @@ export class Tab1Page implements OnInit {
     document.getElementById('main-content')?.removeAttribute('inert');
   }
 
-  async agregarFavorito(id: string, nombre: string, codigo: string) {
+  async agregarFavorito(id: string, nombre: string, codigo: string, imagen: string) {
     console.log(`Agregar a Favorito carta con ID: ${id}`);
     const usuario = doc(db, 'usuarios', this.idUsiuario);
 
@@ -122,6 +122,7 @@ export class Tab1Page implements OnInit {
       nombre: nombre,
       codigo: codigo,
       id: id,
+      imagen: imagen,
     });
     console.log('Favorito agregado:', id);
     this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado

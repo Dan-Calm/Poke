@@ -3,6 +3,8 @@ import { ModalController } from '@ionic/angular';
 import { CartasService } from '../services/cartas.service';
 import { SelectorExpansionesComponent } from '../modales/selector-expansiones/selector-expansiones.component';
 import { AuthService } from '../services/auth.service';
+import { ColeccionesService } from '../services/colecciones.service';
+import { ModalFavoritosComponent } from '../modales/modal-favoritos/modal-favoritos.component';
 
 
 @Component({
@@ -14,11 +16,14 @@ import { AuthService } from '../services/auth.service';
 export class Tab2Page {
 
   expansiones: any[] = [];
+  cartasFavoritas: any[] = [];
+  modoFavoritos: boolean = false;
   
   constructor(
     private cartasService: CartasService,
     private modalController: ModalController,
     private authService: AuthService,
+    private coleccionesService: ColeccionesService
   ) { }
 
   async ngOnInit() {
@@ -47,8 +52,11 @@ export class Tab2Page {
     }
   }
   
-  mostrarFavoritos() {
-    // Este lo implementamos en el siguiente paso
+  async mostrarFavoritos() {
+    const modal = await this.modalController.create({
+      component: ModalFavoritosComponent,
+    });
+    await modal.present();
   }
 
 }

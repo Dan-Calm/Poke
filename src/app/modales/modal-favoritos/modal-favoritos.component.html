@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Cartas favoritas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="cerrar()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6" sizeMd="3" sizeLg="3" *ngFor="let carta of cartasFavoritas">
+        <ion-card class="tarjeta-carta">
+          <img [src]="carta.imagen" alt="Carta" />
+          <ion-card-header>
+            <ion-card-title>{{ carta.nombre }}</ion-card-title>
+            <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
+          </ion-card-header>
+        
+          <ion-card-content class="contenido-acciones">
+            <ion-button color="danger" size="small" fill="outline" expand="block" (click)="eliminarFavorito(carta)">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>
+              Eliminar
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-text *ngIf="cartasFavoritas.length === 0" color="medium">
+    <p style="text-align: center; padding: 2rem;">No tienes cartas marcadas como favoritas.</p>
+  </ion-text>
+</ion-content>

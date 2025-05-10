@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { collection, getDocs, query, where, doc, getDoc, setDoc, writeBatch } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc, setDoc, writeBatch, deleteDoc } from 'firebase/firestore';
 import { db } from '../config/firebase.config';
 import { AuthService } from '../services/auth.service';
 
@@ -72,6 +72,9 @@ export class ColeccionesService {
   async cargarFavoritos(): Promise<any[]> {
     await this.obtenerIdUsuario(); // obtener el id del usuario logueado
     try {
+      if (this.favoritos.length > 0) {
+        return this.favoritos; // Si ya se han cargado los favoritos, devolverlos directamente
+      }
       const referenciaColecciones = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'favoritos', 'cartas');
       const resultadoColecciones = await getDocs(referenciaColecciones);
       this.favoritos = resultadoColecciones.docs.map(doc => doc.data());
@@ -137,19 +140,29 @@ export class ColeccionesService {
     console.log('ID de la tienda:', id);
     console.log('Lista de cartas:', lista);
 
-    console.log("primera carta", lista[0]);
-    console.log("id de la primera carta", lista[0].id);
-    await setDoc(doc(db, "usuarios", this.idUsuarios, "colecciones", id, "cartas", lista[0].id), {
-      id: lista[0].id,
-      nombre: lista[0].nombre_espanol,
-      rareza: lista[0].rareza,
-      imagen: lista[0].imagen_url,
-      colecciones: "informacion extra"
-    }).then(() => {
-      console.log("Documento escrito correctamente");
-    }).catch((error) => {
-      console.error("Error al escribir el documento:", error);
-    });
+    for (const carta of lista) {
+        console.log("Procesando carta:", carta);
+        console.log("ID de la carta:", carta.id);
 
+        try {
+            await setDoc(doc(db, "usuarios", this.idUsuarios, "colecciones", id, "cartas", carta.id), {
+                id: carta.id,
+                nombre: carta.nombre_espanol,
+                rareza: carta.rareza,
+                imagen: carta.imagen_url,
+                colecciones: "informacion extra"
+            });
+            console.log(`Documento de la carta ${carta.id} escrito correctamente`);
+        } catch (error) {
+            console.error(`Error al escribir el documento de la carta ${carta.id}:`, error);
+        }
+    }
+}
+
+  async eliminarCartaFavorita(id: string): Promise<any[]> {
+    const idUsuario = await this.obtenerIdUsuario();
+    await deleteDoc(doc(db, 'usuarios', idUsuario, 'colecciones', 'favoritos', 'cartas', id));
+    console.log('Carta eliminada:', id);
+    return this.cargarFavoritos(); // Retorna la lista actualizada
   }
 }
