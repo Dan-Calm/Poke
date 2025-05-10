@@ -24,7 +24,11 @@ const routes: Routes = [
   { path: 'coleccion-detalle/:id', component: ColeccionDetalleComponent }, {
     path: 'registrar',
     loadChildren: () => import('./registrar/registrar.module').then(m => m.RegistrarPageModule)
+  },  {
+    path: 'tab4',
+    loadChildren: () => import('./tab4/tab4.module').then( m => m.Tab4PageModule)
   },
+
   // Ruta para la segunda pantalla
 
 ];

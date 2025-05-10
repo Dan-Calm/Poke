@@ -77,4 +77,31 @@ export class AuthService {
       });
     });
   }
+
+  getRol(): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+      this.afAuth.authState.subscribe(user => {
+        if (user) {
+          console.log("ID del usuario:", user.uid);
+          const userRef = doc(db, "usuarios", user.uid);
+          getDoc(userRef).then((docSnap) => {
+            if (docSnap.exists()) {
+              const userData = docSnap.data();
+              console.log("Datos del usuario:", userData);
+              const tipo_usuario = userData['tipo_usuario'];
+              resolve(userData['tipo_usuario']); // Devuelve el rol del usuario
+            } else {
+              console.log("No se encontró el documento del usuario");
+              resolve(null);
+            }
+          })
+          // resolve(tipo_usuario); // Devuelve el ID del usuario
+        } else {
+          resolve(null); // No hay usuario autenticado
+        }
+      }, error => {
+        reject(error); // Maneja errores
+      });
+    });
+  }
 }
