@@ -7,7 +7,7 @@ import json
 
 import firebase_admin
 from firebase_admin import credentials, firestore
-from cargarColecciones import cargar_todas_las_colecciones  # Importar la función desde cargarColecciones.py
+from app.scraping.cargar_expansiones import cargar_todas_las_colecciones  # Importar la función desde cargarColecciones.py
 
 from datetime import datetime
 
@@ -24,7 +24,7 @@ def formatear_fecha(fecha_iso):
 
 
 # Cargar todas las colecciones y sus cartas usando la función cargar_todas_las_colecciones
-from cargarColecciones import cargar_todas_las_colecciones  # Importar la función desde cargarColecciones.py
+from app.scraping.cargar_expansiones import cargar_todas_las_colecciones  # Importar la función desde cargarColecciones.py
 todas_las_cartas = cargar_todas_las_colecciones()
 
 # Verificar si Firebase ya está inicializado

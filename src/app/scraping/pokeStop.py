@@ -10,7 +10,7 @@ import datetime
 from datetime import datetime
 
 # Cargar todas las colecciones y sus cartas usando la función cargar_todas_las_colecciones
-from cargarColecciones import cargar_todas_las_colecciones  # Importar la función desde cargarColecciones.py
+from app.scraping.cargar_expansiones import cargar_todas_las_colecciones  # Importar la función desde cargarColecciones.py
 
 # Verificar si Firebase ya está inicializado
 if not firebase_admin._apps:

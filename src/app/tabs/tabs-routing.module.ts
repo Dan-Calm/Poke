@@ -5,7 +5,7 @@ import { LoginPage } from '../login/login.page';
 
 const routes: Routes = [
   {
-    path: 'tabs',
+    path: '',
     component: TabsPage,
     children: [
       {
@@ -25,17 +25,8 @@ const routes: Routes = [
         redirectTo: '/tabs/tab1',
         pathMatch: 'full'
       },
-      {
-        path: 'login',
-        loadChildren: () => import('../login/login-routing.module').then(m => m.LoginPageRoutingModule)
-      },
     ]
   },
-  {
-    path: '',
-    redirectTo: '/login',
-    pathMatch: 'full'
-  }
 ];
 
 @NgModule({

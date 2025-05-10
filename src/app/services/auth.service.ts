@@ -63,17 +63,17 @@ export class AuthService {
   }
 
   // Método para obtener el usuario actual
-getCurrentUser(): Promise<string | null> {
-  return new Promise((resolve, reject) => {
-    this.afAuth.authState.subscribe(user => {
-      if (user) {
-        resolve(user.uid); // Devuelve el ID del usuario
-      } else {
-        resolve(null); // No hay usuario autenticado
-      }
-    }, error => {
-      reject(error); // Maneja errores
+  getCurrentUser(): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+      this.afAuth.authState.subscribe(user => {
+        if (user) {
+          resolve(user.uid); // Devuelve el ID del usuario
+        } else {
+          resolve(null); // No hay usuario autenticado
+        }
+      }, error => {
+        reject(error); // Maneja errores
+      });
     });
-  });
-}
+  }
 }

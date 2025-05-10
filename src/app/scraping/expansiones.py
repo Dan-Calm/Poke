@@ -6,12 +6,14 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from selenium.common.exceptions import NoSuchElementException
 
+
 import re
 import time
 
 from bs4 import BeautifulSoup
 import requests
 from datetime import datetime
+import pytz
 
 # Configurar Firebase
 credencial = credentials.Certificate("../config/serviceAccountKey.json")  # Ruta a tu archivo JSON de credenciales
@@ -34,10 +36,11 @@ path_expansion = "/wiki/Negro_y_Blanco_(TCG):_Fronteras_Cruzadas"
 path_expansion = "/wiki/Leyendas_Luminosas_(TCG)"
 path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Corona_Astral"
 path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Chispas_Fulgurantes"
-# path_expansion = "Escarlata_y_Púrpura_(TCG):_Destinos_de_Paldea"
-# path_expansion = "SV_Black_Star_Promos_(TCG)"
+# path_expansion = "/wiki/Base_Set_(TCG)"
+# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Destinos_de_Paldea"
+# path_expansion = "/wiki/SV_Black_Star_Promos_(TCG)"
 
-expansion = "Chispas Fulgurantes"
+# expansion = "Chispas Fulgurantes"
 
 url_expansion =  url_base + path_expansion
 print("Expansion:" , url_expansion)
@@ -53,7 +56,7 @@ print("Expansion:" , url_expansion)
 # print("URL Pokemon:", url_pokemon)
 
 
-nombre_coleccion = url_expansion.split("/")[-1]  # Obtiene "Base_Set_(TCG)"
+nombre_coleccion = url_expansion.split("/")[-1].replace("(","_").replace(")","_")  # Obtiene "Base_Set_(TCG)"
 print("Nombre coleccion:", nombre_coleccion)
 
 time.sleep(2)  # Esperar a que la página cargue completamente
@@ -67,6 +70,58 @@ titulo = soup.find("h1", {"id" : "firstHeading"})
 titulo_completo = titulo.text
 print("Titulo completo:", titulo_completo)
 
+seccion_logo = soup.find("div", {"class" : "contlogo"})
+# print("Sección logo:", seccion_logo)
+
+seccion_fecha = soup.find("table", {"class" : "datos"}).find_all("tr")
+# Extraer el contenido del elemento <td>
+fechas_lanzamiento = seccion_fecha[1].find("td")
+
+# Verificar si se encontraron fechas
+if fechas_lanzamiento:
+    # Dividir las fechas por el separador <br/>
+    fechas = fechas_lanzamiento.decode_contents().split("<br/>")
+    
+    # Limpiar y asignar las fechas a variables separadas
+    fecha_ja = fechas[0].strip().replace("(JA)", "").strip()
+    fecha_in_es = fechas[1].strip().replace("(IN/ES)", "").strip()
+
+    # Eliminar espacios extra
+    fecha_ja = " ".join(fecha_ja.split())
+    fecha_in_es = " ".join(fecha_in_es.split())
+
+    # Convertir las fechas al formato datetime
+    fecha_ja_obj = datetime.strptime(fecha_ja, "%d de %b. de %Y")
+    fecha_in_es_obj = datetime.strptime(fecha_in_es, "%d de %b. de %Y")
+
+    # Asegurarse de que las fechas estén en UTC
+    utc = pytz.UTC
+    fecha_ja_obj_utc = utc.localize(fecha_ja_obj)
+    fecha_in_es_obj_utc = utc.localize(fecha_in_es_obj)
+
+    # Imprimir las fechas en UTC
+    print("Fecha JA (UTC):", fecha_ja)
+    print("Fecha IN/ES (UTC):", fecha_in_es)
+
+else:
+    print("No se encontraron fechas.")
+
+
+logo = None
+if seccion_logo:
+    logo = seccion_logo.find("img") 
+
+if logo:
+    logo_chiquito = logo.get("src")
+    logos = logo.get("srcset")
+    logo_mediano = logos.split(",")[0].split(" ")[0]  # Extraer la URL
+    logo_grande = logos.split(",")[1].split(" ")[1]  # Extraer la URL
+
+    print(">Logo pequeño:", logo_chiquito)
+    print(">Logo mediano:", logo_mediano)
+    print(">Logo grande:", logo_grande)
+    # print("Sección imagen:", logos)
+
 
 # Dividir el título por el carácter ':'
 partes_titulo = titulo_completo.split(":")
@@ -79,9 +134,9 @@ if len(partes_titulo) > 1:
     print("Expansión:", expansion)
 else:
     generacion = titulo_completo.strip()  # Solo hay un título principal
-    expansion = None
+    expansion = generacion
     print("Generación:", generacion)
-    print("Expansión: No hay subtítulo")
+    print("Expansión:", expansion)
     
 # Buscar la tabla de cartas
 tabla = soup.find("table", class_="wiki sortable")
@@ -99,19 +154,39 @@ filas = tabla.find_all("tr")
 # Crear una lista para almacenar los datos de las cartas
 cartas = []
 
-
+print("------------Información de las cartas-----------------")
 for i, fila in enumerate(filas[1:], start=1):  # Saltar la fila de encabezado
+    # time.sleep(1)  # Esperar a que la página cargue completamente
     celdas = fila.find_all("td")
-    # print("Celdas:", len(celdas))
+    print("-" * 80)
+    print("Celdas:", len(celdas))
     # print("Celdas:", celdas)
-    # print("-" * 80)
+    
+    # for j, celda in enumerate(celdas):
+    #     print(f"Celda {j}: {celda.text.strip()}")
+    #     print("Celda:", celda)
+    #     print("-" * 40)
+
 
     codigo = celdas[0].text.strip()
+    print("Codigo:", codigo)
     nombre = celdas[1].text.strip()
+    print("Nombre:", nombre)
     href = celdas[1].find("a")["href"]
+    print("Href:", href)
     tipo = celdas[2].find("a")["title"]
-    marca = celdas[3].text.strip()
-    rareza = celdas[4].find("a")["title"]
+    print("Tipo:", tipo)
+    
+    if len(celdas) > 4:
+        rareza = celdas[4].find("a")["title"]
+        print("Rareza:", rareza)
+        marca = celdas[3].text.strip()
+        print("Marca:", marca)
+    else:
+        rareza = celdas[3].find("a")["title"]
+        print("Rareza:", rareza)
+        marca = ""
+        print("Marca:", marca)
     
     cartas.append({
         "codigo": codigo,
@@ -135,8 +210,15 @@ prueba_ref = db.collection("expansiones").document(nombre_coleccion)
 
 # Escribir un documento de prueba
 prueba_ref.set({
-    "Nombre": titulo_completo,
+    "Nombre": titulo_completo if titulo_completo else "",
+    "Logo chiquito": logo_chiquito if logo_chiquito else "",
+    "Logo mediano": logo_mediano if logo_mediano else "",
+    "Logo grande": logo_grande if logo_grande else "",
+    "Fecha JA": fecha_ja,
+    "Fecha IN/ES": fecha_in_es,
 })
+
+# time.sleep(2)  # Esperar a que la página cargue completamente
 
 # Leer el documento de prueba
 doc = prueba_ref.get()
@@ -322,19 +404,19 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
 
 
 
-        cartas_ref = db.collection("expansiones").document(nombre_coleccion).collection("cartas").document((codigo + path_pokemon).replace("/", "_"))
-        cartas_ref.set({
-            "nombre_espanol": nombre_pokemon,
-            "codigo": codigo,
-            "nombre_ingles": nombre_ingles,
-            "rareza": rareza,
-            "imagen_url_grande": url_imagen_x2,
-            "imagen_url": url_imagen,
-            "tipo_carta": tipo,
-            "marca": marca,
-            "estado": "pendiente",
-            "expansion": titulo_completo
-        })
+        # cartas_ref = db.collection("expansiones").document(nombre_coleccion).collection("cartas").document((codigo + path_pokemon).replace("/", "_"))
+        # cartas_ref.set({
+        #     "nombre_espanol": nombre_pokemon,
+        #     "codigo": codigo,
+        #     "nombre_ingles": nombre_ingles,
+        #     "rareza": rareza,
+        #     "imagen_url_grande": url_imagen_x2,
+        #     "imagen_url": url_imagen,
+        #     "tipo_carta": tipo,
+        #     "marca": marca,
+        #     "estado": "pendiente",
+        #     "expansion": titulo_completo
+        # })
         print("Nombre Inglés:", nombre_ingles)
         print("Rareza:", rareza)
         print("Codigo:", codigo)
@@ -376,11 +458,11 @@ for path_pokemon, cartas in cartas_agrupadas.items():
         tipos.append(carta["tipo"])
         marcas.append(carta["marca"])
         
-        # print(f"    Nombre: {carta['nombre']}")
-        # print(f"    Href: {carta['href']}")
-        # print(f"    Tipo: {carta['tipo']}")
-        # print(f"    Marca: {carta['marca']}")
-        # print(f"    Rareza: {carta['rareza']}")
+        print(f"    Nombre: {carta['nombre']}")
+        print(f"    Href: {carta['href']}")
+        print(f"    Tipo: {carta['tipo']}")
+        print(f"    Marca: {carta['marca']}")
+        print(f"    Rareza: {carta['rareza']}")
         print("-" * 40)
     buscarImagenes(codigos, path_pokemon, rarezas, nombres, tipos, marcas)
     print("=" * 80)

@@ -19,11 +19,11 @@ const routes: Routes = [
     path: 'registrar',
     loadChildren: () => import('./registrar/registrar.module').then(m => m.RegistrarPageModule)
   },
-  { path: 'coleccion-detalle/:id', component: ColeccionDetalleComponent },   {
+  { path: 'coleccion-detalle/:id', component: ColeccionDetalleComponent }, {
     path: 'registrar',
-    loadChildren: () => import('./registrar/registrar.module').then( m => m.RegistrarPageModule)
+    loadChildren: () => import('./registrar/registrar.module').then(m => m.RegistrarPageModule)
   },
-// Ruta para la segunda pantalla
+  // Ruta para la segunda pantalla
 
 ];
 @NgModule({
