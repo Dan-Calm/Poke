@@ -72,9 +72,6 @@ export class ColeccionesService {
   async cargarFavoritos(): Promise<any[]> {
     await this.obtenerIdUsuario(); // obtener el id del usuario logueado
     try {
-      if (this.favoritos.length > 0) {
-        return this.favoritos; // Si ya se han cargado los favoritos, devolverlos directamente
-      }
       const referenciaColecciones = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'favoritos', 'cartas');
       const resultadoColecciones = await getDocs(referenciaColecciones);
       this.favoritos = resultadoColecciones.docs.map(doc => doc.data());
@@ -86,6 +83,15 @@ export class ColeccionesService {
       throw error;
     }
   }
+
+  async listaFavoritos(): Promise<any[]> {
+    if (this.favoritos.length > 0) {
+      return this.favoritos;
+    }else {
+      return await this.cargarFavoritos();
+    }
+  }
+
 
   async obtenerIdUsuario() {
     try {

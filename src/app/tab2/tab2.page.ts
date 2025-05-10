@@ -30,7 +30,7 @@ export class Tab2Page {
     console.log('ngOnInit Tab2Page');
     
     this.expansiones = await this.cartasService.expansiones();
-
+    this.cartasFavoritas = await this.coleccionesService.listaFavoritos();
   }
 
   async abrirSelectorExpansiones() {
