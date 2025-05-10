@@ -20,7 +20,7 @@ export class ModalFavoritosComponent {
   ) {}
 
   async ngOnInit() {
-    this.cartasFavoritas = await this.coleccionesService.cargarFavoritos();
+    this.cartasFavoritas = await this.coleccionesService.listaFavoritos();
   }
 
   cerrar() {
