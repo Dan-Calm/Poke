@@ -19,6 +19,9 @@ export class RegistrarPage {
   async register() {
     try {
       const datos = { nombre: this.nombre }; // Información adicional del usuario
+      console.log('Datos del usuario:', datos);
+      console.log('Email:', this.email);
+      console.log('Contraseña:', this.password);
       const user = await this.authService.register(this.email, this.password, datos);
       console.log('Usuario registrado:', user);
 

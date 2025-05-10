@@ -36,9 +36,10 @@ export class AuthService {
       console.log("ID del usuario:", userId);
 
       if (userId) {
-        await setDoc(doc(db, "usuarios", datos.nombre), {
-          nombreUsuario: datos.userId,
-          fechaCreacion: new Date(),
+        await setDoc(doc(db, "usuarios", userId), {
+          nombre_usuario: datos.nombre,
+          fecha_creacion: new Date(),
+          tipo_usuario: "usuario",
         });
         console.log('Usuario registrado:', userCredential);
       };
