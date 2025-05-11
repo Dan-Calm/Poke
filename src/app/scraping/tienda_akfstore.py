@@ -10,7 +10,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # Cargar todas las colecciones y sus cartas usando la función cargar_todas_las_colecciones
-from app.scraping.cargar_expansiones import cargar_todas_las_colecciones  # Importar la función desde cargarColecciones.py
+from cargar_expansiones import cargar_todas_las_colecciones
 
 # Verificar si Firebase ya está inicializado
 if not firebase_admin._apps:
@@ -111,8 +111,8 @@ try:
     for pagina in range(1, total_paginas + 1):
         # Actualizar la URL con el número de página
         url = f"https://www.afkstore.cl/collections/singles-pokemon?page={pagina}"
-        url = f"https://www.afkstore.cl/search?q=charizard&options%5Bprefix%5D=last"
-        url = f"https://www.afkstore.cl/search?q=pikachu&options%5Bprefix%5D=last"
+        # url = f"https://www.afkstore.cl/search?q=charizard&options%5Bprefix%5D=last"
+        # url = f"https://www.afkstore.cl/search?q=pikachu&options%5Bprefix%5D=last"
         print(f"Scraping página {pagina}: {url}")
         driver.get(url)
 
@@ -164,6 +164,36 @@ try:
                 # Buscar si el código ya existe en todas_las_cartas
                 carta_existente = next((carta for carta in todas_las_cartas if carta["codigo"] == codigo_carta), None)
 
+                # Imprimir todas las cartas de todas_las_cartas que tengan el mismo código que codigo_carta
+                candidatos_match = [carta for carta in todas_las_cartas if carta["codigo"] == codigo_carta]
+                print("--" * 40)
+                print(f"Producto encontrado: {alt}")
+                print(f"Candidatos a match para el código {codigo_carta}:")
+                for candidato in candidatos_match:
+                    print(candidato)
+
+                # Comparar palabras en común entre el alt y el nombre_espanol de los candidatos
+                def palabras_en_comun(texto1, texto2):
+                    palabras1 = set(texto1.lower().split())
+                    palabras2 = set(texto2.lower().split())
+                    return len(palabras1 & palabras2)  # Retorna el número de palabras en común
+
+                # Determinar el mejor match basado en palabras en común
+                mejor_match = None
+                max_palabras_comunes = 0
+
+                for candidato in candidatos_match:
+                    palabras_comunes = palabras_en_comun(alt, candidato["nombre_espanol"])
+                    print(f"Comparando con: {candidato['nombre_espanol']}, Palabras en común: {palabras_comunes}")
+                    if palabras_comunes > max_palabras_comunes:
+                        max_palabras_comunes = palabras_comunes
+                        mejor_match = candidato
+
+                if mejor_match:
+                    print(f"Mejor match encontrado: {mejor_match["id"]}")
+                else:
+                    print("No se encontró un match claro.")
+
                 # Preparar el campo Colección
                 coleccion = carta_existente["id"] if carta_existente else ""  # Guardar el ID de la carta en el campo coleccion
 
@@ -190,7 +220,7 @@ try:
                     "precio": precio,
                     "imagen": src,
                     "tienda": "AfkStore",
-                    "coleccion": coleccion,  
+                    "coleccion": mejor_match["id"],  
                 }
                 todos_los_productos.append(producto_data)
 

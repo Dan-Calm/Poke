@@ -95,7 +95,6 @@ export class AuthService {
               resolve(null);
             }
           })
-          // resolve(tipo_usuario); // Devuelve el ID del usuario
         } else {
           resolve(null); // No hay usuario autenticado
         }
