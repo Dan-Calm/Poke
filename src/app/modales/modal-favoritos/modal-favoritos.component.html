@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar color="secondary">
     <ion-title>{{ nombreColeccion | titlecase }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarModal()">
@@ -9,22 +9,22 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
+<ion-content>
   <ion-grid>
     <ion-row>
-      <ion-col size="6" size-sm="3" size-Lg="3" *ngFor="let carta of cartas">
-        <ion-card class="tarjeta-carta">
-          <img [src]="carta.imagen" alt="Carta Pokémon" />
-          <ion-card-header>
-            <ion-card-title>{{ carta.nombre }}</ion-card-title>
-            <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
-          </ion-card-header>
+      <ion-col size="6" *ngFor="let carta of cartas">
+        <ion-card>
           <ion-card-content class="contenido-acciones">
             <ion-button color="danger" size="small" fill="outline" expand="block" (click)="eliminarCarta(carta)">
               <ion-icon slot="start" name="trash-outline"></ion-icon>
               Eliminar
             </ion-button>
           </ion-card-content>
+          <img (click)="verCarta(carta)" [src]="carta.imagen" alt="Carta Pokémon" />
+          <ion-card-header>
+            <ion-card-title>{{ carta.nombre }}</ion-card-title>
+            <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
+          </ion-card-header>
         </ion-card>
       </ion-col>
     </ion-row>
