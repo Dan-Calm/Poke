@@ -21,13 +21,14 @@ export class ColeccionesService {
   async ngOnInit() {
 
   }
-  
 
+  
   async cargarColecciones() {
     try {
       await this.obtenerIdUsuario(); // obtener el id del usuario logueado
       const referenciaFavoritos = collection(db, 'usuarios', this.idUsuarios, 'colecciones');
-      console.log('ID del usuario:', this.idUsuarios);
+      console.log('ID del usuario DE LAS COLECCIONES:', this.idUsuarios);
+      console.log('Referencia de colecciones ESTE SI:', referenciaFavoritos);
       const resultadoFavoritos = await getDocs(referenciaFavoritos);
 
       this.colecciones = resultadoFavoritos.docs.map(async (tiendaDoc) => {
@@ -61,7 +62,7 @@ export class ColeccionesService {
       const resultadoColecciones = await getDocs(referenciaColecciones);
       this.favoritos = resultadoColecciones.docs.map(doc => doc.data());
 
-      console.log('Colecciones encontradas:', this.favoritos);
+      console.log('HISTORIAL ENCONTRADO:', this.favoritos);
       return this.favoritos;
     } catch (error) {
       console.error('Error al cargar los favoritos:', error);
@@ -76,7 +77,7 @@ export class ColeccionesService {
       const resultadoColecciones = await getDocs(referenciaColecciones);
       this.favoritos = resultadoColecciones.docs.map(doc => doc.data());
 
-      console.log('Colecciones encontradas:', this.favoritos);
+      console.log('FAVORITOS ENCONTRADOS:', this.favoritos);
       return this.favoritos;
     } catch (error) {
       console.error('Error al cargar los favoritos:', error);
@@ -171,4 +172,11 @@ export class ColeccionesService {
     console.log('Carta eliminada:', id);
     return this.cargarFavoritos(); // Retorna la lista actualizada
   }
+
+  async cargarCartasDeColeccion(nombreColeccion: string): Promise<any[]> {
+  await this.obtenerIdUsuario();
+  const ref = collection(db, 'usuarios', this.idUsuarios, 'colecciones', nombreColeccion, 'cartas');
+  const snapshot = await getDocs(ref);
+  return snapshot.docs.map(doc => doc.data());
+}
 }

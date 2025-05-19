@@ -5,6 +5,8 @@ import { SelectorExpansionesComponent } from '../modales/selector-expansiones/se
 import { AuthService } from '../services/auth.service';
 import { ColeccionesService } from '../services/colecciones.service';
 import { ModalFavoritosComponent } from '../modales/modal-favoritos/modal-favoritos.component';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../config/firebase.config';
 
 
 @Component({
@@ -18,6 +20,7 @@ export class Tab2Page {
   expansiones: any[] = [];
   cartasFavoritas: any[] = [];
   modoFavoritos: boolean = false;
+  coleccionesUsuario: string[] = [];
   
   constructor(
     private cartasService: CartasService,
@@ -25,6 +28,10 @@ export class Tab2Page {
     private authService: AuthService,
     private coleccionesService: ColeccionesService
   ) { }
+
+  async ionViewWillEnter() {
+  await this.cargarColecciones();
+}
 
   async ngOnInit() {
     console.log('ngOnInit Tab2Page');
@@ -58,5 +65,26 @@ export class Tab2Page {
     });
     await modal.present();
   }
+
+  async mostrarColeccion(nombreColeccion: string) {
+  const modal = await this.modalController.create({
+    component: ModalFavoritosComponent,
+    componentProps: {
+      nombreColeccion: nombreColeccion
+    }
+  });
+  await modal.present();
+}
+
+async cargarColecciones() {
+  await this.coleccionesService.obtenerIdUsuario(); // asegúrate que idUsuarios esté listo
+  const referencia = collection(db, 'usuarios', this.coleccionesService.idUsuarios, 'colecciones');
+  const snapshot = await getDocs(referencia);
+  this.coleccionesUsuario = snapshot.docs
+    .map(doc => doc.id)
+    .filter(id => id !== 'favoritos'); // opcional: excluir favoritos
+  console.log('Colecciones de usuario tab2:', this.coleccionesUsuario);
+}
+
 
 }

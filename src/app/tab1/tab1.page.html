@@ -90,7 +90,7 @@
                 </ion-col>
                 <!--Agregar a una colección -->
                 <ion-col size="auto">
-                  <ion-button size="small" (click)="agregarPropia(carta.id, carta.nombre_espanol, carta.codigo)">
+                  <ion-button size="small" (click)="agregarPropia(carta.id, carta.nombre_espanol, carta.codigo, carta.imagen_url)">
                     <ion-icon slot="icon-only" name="duplicate"></ion-icon>
                   </ion-button>
                 </ion-col>
@@ -102,7 +102,7 @@
                 </ion-col>
                 <!-- Ver carta -->
                 <ion-col size="auto">
-                  <ion-button size="small" (click)="cotizar(carta.id, carta.nombre_espanol, carta.codigo)">
+                  <ion-button size="small" (click)="cotizar(carta.id, carta.nombre_espanol, carta.codigo, carta.imagen_url)">
                     <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
                   </ion-button>
                 </ion-col>
