@@ -47,7 +47,7 @@ export class SelectorExpansionesComponent {
     const expansionSeleccionada = this.expansiones.filter(exp => exp.coleccion === expansion.id);
     console.log("Expansion seleccionada", expansionSeleccionada); // Lista de cartas de la expansión seleccionada
 
-    this.coleccionesService.completarColeccion(expansion.id, expansionSeleccionada)
+    this.coleccionesService.completarColeccion(expansion)
     // this.modalCtrl.dismiss(); // cierra el modal
   }
 }

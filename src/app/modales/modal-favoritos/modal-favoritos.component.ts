@@ -6,7 +6,7 @@ import { NavParams } from '@ionic/angular';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from 'src/app/config/firebase.config';
 
-
+import { CartasService } from '../../services/cartas.service';
 
 @Component({
   selector: 'app-modal-favoritos',
@@ -19,11 +19,13 @@ export class ModalFavoritosComponent {
   @Input() nombreColeccion!: string;
   cartasFavoritas: any[] = [];
   cartas: any[] = [];
+  expansiones: any[] = [];
 
   constructor(
     private modalCtrl: ModalController,
     private coleccionesService: ColeccionesService,
     private navParams: NavParams,
+    private cartasService: CartasService,
   ) {}
 
   async ngOnInit() {
@@ -31,7 +33,28 @@ export class ModalFavoritosComponent {
     this.cartas = await this.coleccionesService.cargarCartasDeColeccion(this.nombreColeccion);
     this.cartasFavoritas = await this.coleccionesService.listaFavoritos();
     this.cartas = await this.coleccionesService.cargarCartasDeColeccion(this.nombreColeccion);
-    
+    console.log('cartas:', this.cartas);
+if (this.cartas.length === 0) {
+  console.log('No hay cartas en la colección:', this.nombreColeccion);
+  this.expansiones = await this.cartasService.expansiones();
+  console.log('Expansiones:', this.expansiones);
+
+  // Filtra y mapea para unificar el formato
+  this.cartas = this.expansiones
+    .filter(expansion => expansion.coleccion === this.nombreColeccion)
+    .map(expansion => ({
+      id: expansion.id,
+      nombre: expansion.nombre_espanol,
+      imagen: expansion.imagen_url,
+      rareza: expansion.rareza,
+      codigo: expansion.codigo,
+      expansion: expansion.expansion,
+      tipo_carta: expansion.tipo_carta,
+      estado: expansion.estado,
+    }));
+
+  console.log('Cartas filtradas y mapeadas:', this.cartas);
+}
   }
 
   cerrar() {
