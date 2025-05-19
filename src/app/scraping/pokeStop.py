@@ -10,7 +10,7 @@ import datetime
 from datetime import datetime
 
 # Cargar todas las colecciones y sus cartas usando la función cargar_todas_las_colecciones
-from app.scraping.cargar_expansiones import cargar_todas_las_colecciones  # Importar la función desde cargarColecciones.py
+from cargar_expansiones import cargar_todas_las_colecciones  # Importar la función desde cargarColecciones.py
 
 # Verificar si Firebase ya está inicializado
 if not firebase_admin._apps:
@@ -22,7 +22,7 @@ db = firestore.client()
 
 # Configurar el navegador
 options = webdriver.ChromeOptions()
-# options.add_argument('--headless')  # Para ejecutar en modo sin interfaz gráfica
+options.add_argument('--headless')  # Para ejecutar en modo sin interfaz gráfica
 options.add_argument('--disable-gpu')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
@@ -175,6 +175,13 @@ try:
                 precio_elementos = producto.find_elements(By.CSS_SELECTOR, ".js-price-display")
                 precio = precio_elementos[0].text.strip() if precio_elementos else "Precio no disponible"
                 
+                # Extraer stock
+                stock_elementos = producto.find_elements(By.CSS_SELECTOR, ".js-item-stock-container")
+                # print("Stock elementos:", stock_elementos)
+                for stock_elemento in stock_elementos:
+                    print("Stock elemento:", stock_elemento)
+                stock = precio_elementos[0].text.strip() if precio_elementos else "Precio no disponible"
+                
                 # Convertir el precio a un número eliminando caracteres no numéricos
                 precio = int(re.sub(r"[^\d]", "", precio))
                 
@@ -217,7 +224,8 @@ try:
                     "precio": precio,
                     "imagen": srcset,
                     "tienda": "PokeStop",
-                    "coleccion": coleccion,  
+                    "coleccion": coleccion,
+                    "stock": stock,
                 }
                 if nombre_limpio and precio and link and srcset:
                     todos_los_productos.append(producto_data)
@@ -239,10 +247,11 @@ try:
         print(f"  Tipo: {producto['tipo_carta']}")
         print(f"  Precio: {producto['precio']}")
         print(f"  Imagen: {producto['imagen']}")
+        print(f"  Stock: {producto['stock']}")
         print("-" * 40)
         
         # Guardar los productos en Firebase
-        # guardar_en_firebase(todos_los_productos)
+        guardar_en_firebase(todos_los_productos)
         
     fin = time.time()
     tiempo_total = fin - inicio

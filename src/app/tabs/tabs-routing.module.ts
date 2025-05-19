@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
 import { LoginPage } from '../login/login.page';
 import { AuthGuard } from '../guards/auth.guard';
+import { ColeccionDetalleComponent } from '../pages/coleccion-detalle/coleccion-detalle.component';
 
 const routes: Routes = [
   {
@@ -40,6 +41,9 @@ const routes: Routes = [
         data: { rol: 'administrador' } // Requiere rol de usuario
       },
       {
+        path: 'coleccion-detalle/:id', component: ColeccionDetalleComponent
+      },
+      {
         path: '',
         redirectTo: '/tabs/tab1',
         pathMatch: 'full'
@@ -51,4 +55,4 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forChild(routes)],
 })
-export class TabsPageRoutingModule {}
+export class TabsPageRoutingModule { }

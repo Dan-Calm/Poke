@@ -8,35 +8,60 @@ import { db } from '../config/firebase.config';
 export class CartasService {
   private listaExpansiones: any[] = []; // Almacena el listado de cartas
   private listaTiendas: any[] = []; // Almacena el listado de cartas
+  private lista_iconos: any[] = []; // Almacena el listado de cartas
 
   constructor() { }
+
+  async listar_expansiones() {
+    const referenciaTiendas = collection(db, 'expansiones');
+    const resultadoTiendas = await getDocs(referenciaTiendas);
+
+    const colecciones = resultadoTiendas.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return colecciones;
+  }
+
+  async cargar_iconos() {
+    const ref = collection(db, 'iconos');
+    const querySnapshot = await getDocs(ref);
+    const iconos = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    // console.log('Iconos:', iconos);
+    this.lista_iconos = iconos;
+    return this.lista_iconos;
+  }
 
   async descargarCartasDeTiendas() {
     try {
       const referenciaTiendas = collection(db, 'tiendas');
       const resultadoTiendas = await getDocs(referenciaTiendas);
-  
+
       console.log('Tiendas encontradas:', resultadoTiendas.docs.map(doc => doc.id));
-  
+
       if (resultadoTiendas.empty) {
         console.warn('La colección "tiendas" está vacía.');
         return [];
       }
-  
+
       const todasLasCartas = await Promise.all(
         resultadoTiendas.docs.map(async (tiendaDoc) => {
           const tiendaId = tiendaDoc.id;
           const referenciaProductos = collection(db, `tiendas/${tiendaId}/productos`);
           const resultadoProductos = await getDocs(referenciaProductos);
-  
+
           // console.log(`Productos de la tienda ${tiendaId}:`, resultadoProductos.docs.map(doc => doc.data()));
-  
+
           const cartas = resultadoProductos.docs.map((productoDoc) => ({
             id: productoDoc.id,
             tienda: tiendaId,
             ...productoDoc.data(),
           }));
-  
+
           return cartas;
         })
       );
@@ -56,8 +81,10 @@ export class CartasService {
   }
 
   async consultarPrecios(id_carta: string, id_tienda: string) {
+    console.log('Consultando precios para la carta:', id_carta, 'en la tienda:', id_tienda);
     const precios_ref = collection(db, 'tiendas', id_tienda, 'productos', id_carta, 'precios');
     const precios_doc = await getDocs(precios_ref);
+    console.log('Precios encontrados:', precios_doc.docs.map(doc => doc.data()));
     const precios = precios_doc.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),

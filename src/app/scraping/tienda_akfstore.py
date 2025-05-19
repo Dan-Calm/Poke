@@ -5,6 +5,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 import re
 from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
+
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -25,7 +31,7 @@ db = firestore.client()
 options = webdriver.ChromeOptions()
 # options.add_argument("--headless=new")
 # options.add_argument('--disable-gpu')
-options.add_argument('--no-sandbox')
+# options.add_argument('--no-sandbox')
 # options.add_argument('--disable-dev-shm-usage')
 
 # Inicializar el driver de Selenium
@@ -44,12 +50,19 @@ def guardar_en_firebase(productos):
     try:
         # Crear una referencia a la colección "tiendas" y al documento "productos_afkstore"
         tienda_ref = db.collection("tiendas").document("productos_afkstore")
+        tienda_ref.set({
+            "nombre": "AfkStore",
+        })
         
         for producto in productos:
             print(f"Guardando producto: {producto['nombre']}")
-
-            # Generar un ID válido para el documento utilizando el enlace del producto
-            id_documento = re.sub(r"[^\w\s-]", "", producto["link"]).replace(" ", "_")  # Limpia caracteres no válidos
+            
+            # Generar un ID válido para el documento utilizando el enlace del producto y el idioma
+            # Construir el id_documento: "afk_store" + nombre_limpio + codigo_carta (999/999 -> 999_999) + idioma
+            codigo_carta_id = producto["codigo_carta"].replace("/", "_")
+            nombre_id = re.sub(r"[^\w\s-]", "", producto["nombre_limpio"]).replace(" ", "_")
+            id_documento = f"afk_store_{nombre_id}_{codigo_carta_id}"
+            id_documento = f"{id_documento}_{producto['idioma']}"
 
             # Crear o actualizar el documento del producto dentro de la subcolección "productos"
             producto_ref = tienda_ref.collection("productos").document(id_documento)
@@ -62,7 +75,10 @@ def guardar_en_firebase(productos):
                 "precio": producto["precio"],
                 "imagen": producto["imagen"],
                 "tienda": producto["tienda"],
-                "coleccion": producto["coleccion"], 
+                "id_tienda": "productos_afkstore",
+                "coleccion": producto["coleccion"],
+                "idioma": producto["idioma"],
+                "stock": producto["stock"]
             }, merge=True)  # Merge asegura que no se sobrescriban datos existentes
 
             # Obtener la subcolección "precios"
@@ -99,6 +115,36 @@ def guardar_en_firebase(productos):
                     "fecha_inicial": fecha_actual,
                     "fecha_final": fecha_actual
                 })
+                
+            stocks_ref = producto_ref.collection("stocks")
+
+            # Obtener el stock más reciente (documento con la fecha final más actual)
+            stocks_docs = stocks_ref.order_by("fecha_final", direction="DESCENDING").limit(1).stream()
+            stock_mas_reciente = None
+            for doc in stocks_docs:
+                stock_mas_reciente = doc
+
+            if stock_mas_reciente:
+                datos_stock = stock_mas_reciente.to_dict()
+                if datos_stock["stock"] == producto["stock"]:
+                    # Si el stock es igual, actualizar la fecha final
+                    stocks_ref.document(stock_mas_reciente.id).update({
+                        "fecha_final": fecha_actual
+                    })
+                else:
+                    # Si el stock es diferente, agregar un nuevo documento
+                    stocks_ref.add({
+                        "stock": producto["stock"],
+                        "fecha_inicial": fecha_actual,
+                        "fecha_final": fecha_actual
+                    })
+            else:
+                # Si no hay stocks registrados, agregar el primer stock
+                stocks_ref.add({
+                    "stock": producto["stock"],
+                    "fecha_inicial": fecha_actual,
+                    "fecha_final": fecha_actual
+                })
 
         print("Los productos y sus precios se han guardado correctamente en Firebase.")
     except Exception as e:
@@ -112,7 +158,7 @@ try:
         # Actualizar la URL con el número de página
         url = f"https://www.afkstore.cl/collections/singles-pokemon?page={pagina}"
         # url = f"https://www.afkstore.cl/search?q=charizard&options%5Bprefix%5D=last"
-        # url = f"https://www.afkstore.cl/search?q=pikachu&options%5Bprefix%5D=last"
+        url = f"https://www.afkstore.cl/search?q=pikachu&options%5Bprefix%5D=last"
         print(f"Scraping página {pagina}: {url}")
         driver.get(url)
 
@@ -135,8 +181,8 @@ try:
 
                 # Extraer enlace del producto
                 link_elementos = producto.find_elements(By.CSS_SELECTOR, "a")
-                link = link_elementos[0].get_attribute('href') if link_elementos else "Enlace no disponible"
-
+                link = link_elementos[0].get_attribute('href')
+                
                 # Extraer precios
                 precio_habitual_elementos = producto.find_elements(By.CSS_SELECTOR, ".price__regular .price-item--regular")
                 precio_oferta_elementos = producto.find_elements(By.CSS_SELECTOR, ".price__sale .price-item--sale")
@@ -230,20 +276,78 @@ try:
 
     print("\nScraping completado. Total de productos encontrados:", len(todos_los_productos))
     # Imprimir los datos de todos los productos ordenadamente
+    todos_los_productos_idioma = []
+
     for idx, producto in enumerate(todos_los_productos, start=1):
         print(f"Producto {idx}:")
         print(f"  Nombre: {producto['nombre']}")
         print(f"  Nombre limpio: {producto['nombre_limpio']}")
         print(f"  Enlace: {producto['link']}")
-        print(f"  Código: {producto['codigo_carta']}")
-        print(f"  Colección: {producto['coleccion']}")
-        print(f"  Tipo: {producto['tipo_carta']}")
-        print(f"  Precio: {producto['precio']}")
-        print(f"  Imagen: {producto['imagen']}")
+        driver.get(producto['link'])
+        time.sleep(2)
+
+        radios = driver.find_elements(By.CSS_SELECTOR, 'input[type="radio"][name="Idioma"]')
+        print(f"  Se encontraron {len(radios)} botones de idioma.")
+
+        for radio in radios:
+            try:
+                driver.execute_script("arguments[0].click();", radio)
+                time.sleep(1)  # Espera a que el DOM se actualice
+
+                idioma_valor = radio.get_attribute('value')
+
+                # Extraer el precio
+                try:
+                    precio_elem = driver.find_element(By.CSS_SELECTOR, ".price-item.price-item--regular")
+                    precio = precio_elem.text.strip()
+                    # Limpiar el precio para dejarlo como número entero
+                    precio = int(re.sub(r"[^\d]", "", precio))
+                except Exception:
+                    precio = 0
+
+                # Extraer el stock
+                try:
+                    stock_elem = driver.find_element(By.CSS_SELECTOR, ".product__inventory.no-js-hidden")
+                    stock_text = stock_elem.text.strip()
+                    if "Agotado" in stock_text:
+                        stock = 0
+                    else:
+                        import re
+                        match = re.search(r'(\d+)', stock_text)
+                        stock = int(match.group(1)) if match else 0
+                except Exception:
+                    stock = 0
+
+                print(f"    Idioma: {idioma_valor}")
+                print(f"      Precio: {precio}")
+                print(f"      Stock: {stock}")
+
+                # Crear un producto por idioma
+                producto_data_idioma = {
+                    "nombre": producto["nombre"],
+                    "nombre_limpio": producto["nombre_limpio"],
+                    "link": producto["link"],
+                    "codigo_carta": producto["codigo_carta"],
+                    "tipo_carta": producto["tipo_carta"],
+                    "precio": precio,
+                    "stock": stock,
+                    "imagen": producto["imagen"],
+                    "tienda": producto["tienda"],
+                    "coleccion": producto["coleccion"],
+                    "idioma": idioma_valor
+                }
+                todos_los_productos_idioma.append(producto_data_idioma)
+
+            except Exception as e:
+                print(f"    Error al hacer click en el radio: {str(e)}")
+
         print("-" * 40)
 
+    # Ahora todos_los_productos_idioma contiene un producto por cada idioma/variante
+    # Puedes guardar estos productos en Firebase o procesarlos como desees
+
     # Guardar los productos en Firebase
-    guardar_en_firebase(todos_los_productos)
+    guardar_en_firebase(todos_los_productos_idioma)
 
 except Exception as e:
     print(f"Error general: {str(e)}")

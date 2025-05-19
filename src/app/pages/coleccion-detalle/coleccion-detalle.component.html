@@ -16,6 +16,8 @@
       <ion-label>
         <h2>{{ carta.nombre }}</h2>
         <p><strong>Código:</strong> {{ carta.codigo_carta }}</p>
+        <p><strong>Idioma:</strong> {{ carta.idioma }}</p>
+        <p><strong>Stock:</strong> {{ carta.stock }}</p>
         <p><strong>Precio:</strong> {{ carta.precio }}</p>
         <ion-button expand="block" (click)="openLink(carta.link)">
           {{ carta.tienda }}

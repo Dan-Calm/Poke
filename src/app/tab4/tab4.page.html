@@ -1,13 +1,52 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>tab4</ion-title>
+    <ion-title>Revisión de Cartas</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">tab4</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content *ngIf="cartaActual">
+  <ion-card class="swipe-card" *ngIf="cartaActual" style="position: relative;">
+    <!-- Imagen grande -->
+    <img [src]="cartaActual.imagen_url_grande" alt="{{ cartaActual.nombre_espanol }}"
+      style="width:100%;max-width:350px;margin:auto;display:block;">
+
+    <!-- Imagen pequeña sobrepuesta ENCIMA en la esquina inferior derecha -->
+    <img *ngIf="cartaActual.imagen_url" [src]="cartaActual.imagen_url" alt="Miniatura" style="
+         position: absolute;
+         bottom: 260px;   /* Ajusta para que quede más arriba si lo deseas */
+         right: 16px;
+         width: 150px;
+         height: 200px;
+         border: 2px solid #fff;
+         border-radius: 8px;
+         background: #fff;
+         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+         z-index: 10;
+       ">
+
+    <ion-card-header>
+      <ion-card-title>{{ cartaActual.nombre_espanol }}</ion-card-title>
+      <ion-card-subtitle>{{ cartaActual.codigo }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Rareza: {{ cartaActual.rareza }}</p>
+      <p>Tipo: {{ cartaActual.tipo_carta }}</p>
+      <p>Expansión: {{ cartaActual.expansion }}</p>
+    </ion-card-content>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="6">
+        <ion-button expand="block" color="success" (click)="confirmarCarta(cartaActual)">
+          ✔ Imagen Correcta
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-button expand="block" color="warning" (click)="editarImagen(cartaActual)">
+          ✏️ Cambiar Imagen
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-card>
+  <div *ngIf="cartaActualIndex >= cartas_pendientes.length" style="text-align:center;margin-top:2em;">
+    <h2>¡Revisión completada!</h2>
+  </div>
 </ion-content>

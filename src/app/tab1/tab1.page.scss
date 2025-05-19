@@ -32,9 +32,9 @@ ion-card-title {
 // }
 
 /* Ocultar la barra de scroll en navegadores modernos */
-ion-content::-webkit-scrollbar {
-  display: none; /* Oculta la barra de scroll en Chrome, Safari y Edge */
-}
+// ion-content::-webkit-scrollbar {
+//   display: none; /* Oculta la barra de scroll en Chrome, Safari y Edge */
+// }
 
 ion-content {
   -ms-overflow-style: none; /* Oculta la barra de scroll en Internet Explorer y Edge */

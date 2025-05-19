@@ -41,19 +41,37 @@
 </ion-menu>
 
 <div class="ion-page" id="main-content">
+
   <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
-      <ion-title>Cartas Guardadas</ion-title>
+      <ion-title>Biblioteca</ion-title>
     </ion-toolbar>
 
-    <!-- Barra de búsqueda -->
-    <ion-searchbar [(ngModel)]="textoBusqueda" (input)="filtrarCartas()" placeholder="Buscar"></ion-searchbar>
+    <!-- Ajusta la estructura del ion-grid para la barra de búsqueda y el botón -->
+    <div style="padding: 12px;">
+      <ion-grid class="searchbar-grid" style="padding: 0;">
+        <ion-row class="ion-align-items-center">
+          <ion-col size="10" class="ion-no-padding">
+            <ion-searchbar [(ngModel)]="textoBusqueda" (input)="filtrarCartas()" placeholder="Buscar"
+              style="height: 44px; margin-right: 8px; --border-radius: 8px;"></ion-searchbar>
+          </ion-col>
+          <ion-col size="2" class="ion-no-padding ion-text-center">
+            <ion-button (click)="abrirModalFiltros()" expand="block"
+              style="height: 36px; --border-radius: 8px; margin-left: 0;">
+              <ion-icon slot="icon-only" name="options-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
   </ion-header>
 
   <ion-content>
+
     <ion-grid>
       <ion-row>
         <!-- Cartas -->
@@ -64,8 +82,10 @@
               <ion-row class="ion-justify-content-center ion-align-items-center">
                 <!-- Agregar a favorito -->
                 <ion-col size="auto">
-                  <ion-button size="small" (click)="agregarFavorito(carta.id, carta.nombre_espanol, carta.codigo, carta.imagen_url)">
-                    <ion-icon slot="icon-only" name="heart-outline"></ion-icon>
+                  <ion-button size="small"
+                    (click)="favoritosSet.has(carta.id) ? eliminarFavorito(carta.id) : agregarFavorito(carta.id, carta.nombre_espanol, carta.codigo, carta.imagen_url)">
+                    <ion-icon slot="icon-only"
+                      [name]="favoritosSet.has(carta.id) ? 'heart' : 'heart-outline'"></ion-icon>
                   </ion-button>
                 </ion-col>
                 <!--Agregar a una colección -->
@@ -91,8 +111,8 @@
             </ion-grid>
 
             <!-- Imagen de la carta -->
-            <img (click)="verCarta(carta)"
-              [src]="carta.imagen_url || 'assets/placeholder.png'" alt="{{ carta.nombre_espanol || 'Carta' }}" />
+            <img (click)="verCarta(carta)" [src]="carta.imagen_url || 'assets/placeholder.png'"
+              alt="{{ carta.nombre_espanol || 'Carta' }}" />
 
             <!-- Nombre y código de la carta -->
             <ion-card-header>
@@ -103,37 +123,6 @@
         </ion-col>
       </ion-row>
     </ion-grid>
-
-    <!-- Modal para mostrar la imagen -->
-    <ion-modal [isOpen]="mostrarModal" (willDismiss)="cerrarModal()">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-buttons slot="end">
-              <ion-button (click)="cerrarModal()">Cerrar</ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-
-        <ion-content class="modal-content">
-          <ion-card class="">
-            <img [src]="imagen_carta_seleccionada" alt="Carta" style="width: 100%; height: auto;" />
-            <ion-card-header>
-              <ion-card-title>{{ nombre_carta_seleccionada }}</ion-card-title>
-              <ion-card-subtitle>{{ codigo_carta_seleccionada }}</ion-card-subtitle>
-            </ion-card-header>
-
-            <ion-card-content>
-              <div class="info-container">
-                <ion-label>Expansión: {{ expansion_carta_seleccionada }}</ion-label>
-                <ion-label>Tipo: {{ tipo_carta_seleccionada }}</ion-label>
-                <ion-label>Rareza: {{ rareza_carta_seleccionada }}</ion-label>
-              </div>
-            </ion-card-content>
-          </ion-card>
-        </ion-content>
-      </ng-template>
-    </ion-modal>
 
     <!-- Scroll Infinito -->
     <ion-infinite-scroll threshold="50px" (ionInfinite)="onIonInfinite($event)">

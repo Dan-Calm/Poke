@@ -14,22 +14,20 @@ const routes: Routes = [
   },
   {
     path: 'tabs',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule),
-    canActivate: [AuthGuard],
+    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
     path: 'registrar',
     loadChildren: () => import('./registrar/registrar.module').then(m => m.RegistrarPageModule)
   },
-  { path: 'coleccion-detalle/:id', component: ColeccionDetalleComponent }, {
+  {
     path: 'registrar',
     loadChildren: () => import('./registrar/registrar.module').then(m => m.RegistrarPageModule)
-  },  {
-    path: 'tab4',
-    loadChildren: () => import('./tab4/tab4.module').then( m => m.Tab4PageModule)
   },
-
-  // Ruta para la segunda pantalla
+  {
+    path: 'tab4',
+    loadChildren: () => import('./tab4/tab4.module').then(m => m.Tab4PageModule)
+  },
 
 ];
 @NgModule({

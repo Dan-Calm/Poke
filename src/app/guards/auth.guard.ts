@@ -22,6 +22,7 @@ export class AuthGuard implements CanActivate {
 
       // Verificar el rol requerido para la ruta
       const rolRequerido = route.data['rol'];
+      console.log('Rol requerido:', rolRequerido);
       if (rol === rolRequerido) {
         return true; // Permitir acceso si el rol coincide
       } else {

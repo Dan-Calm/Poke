@@ -11,6 +11,10 @@ import { InfiniteScrollCustomEvent } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { AlertController } from '@ionic/angular';
 
+import { ModalController } from '@ionic/angular';
+import { FiltrosComponent } from '../modales/filtros/filtros.component';
+import { DetalleCartaComponent } from '../modales/detalle-carta/detalle-carta.component'
+
 
 @Component({
   selector: 'app-tab1',
@@ -28,6 +32,8 @@ export class Tab1Page implements OnInit {
   favoritos: any[] = []; // guarda las cartas de todas las tiendas
   historial: any[] = []; // guarda las cartas de todas las tiendas
 
+  favoritosSet: Set<string> = new Set();
+
   textoBusqueda: string = ''; // Texto ingresado en la barra de búsqueda
 
   idUsiuario: any = ''; // ID del usuario logueado
@@ -40,13 +46,22 @@ export class Tab1Page implements OnInit {
   tipo_carta_seleccionada: string = ''; // 
   expansion_carta_seleccionada: string = ''; // 
 
+  filtrosSeleccionados = {
+    niveles: [],
+    rarezas: [],
+    tipos_carta: [],
+    generaciones: [],
+    expansiones: []
+  };
+
 
   constructor(
     private cartasService: CartasService,
     private router: Router,
     private authService: AuthService,
     private coleccionesServies: ColeccionesService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private modalController: ModalController,
   ) { }
 
   async ngOnInit() {
@@ -54,7 +69,55 @@ export class Tab1Page implements OnInit {
     this.cartasTienda = await this.cartasService.descargarCartasDeTiendas();
     await this.obtenerIdUsuario(); // obtener el id del usuario logueado
     this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado
+    console.log('Favoritos cargados:', this.favoritos);
+    this.favoritosSet = new Set(this.favoritos.map(fav => fav.id));
     this.historial = await this.coleccionesServies.cargarHistorial(); // cargar los historial del usuario logueado
+  }
+
+
+
+  async abrirModalFiltros() {
+    const modal = await this.modalController.create({
+      component: FiltrosComponent,
+      cssClass: 'filtros-modal',
+      componentProps: {
+        filtros: this.filtrosSeleccionados // <-- pasa los filtros actuales
+      },
+      backdropDismiss: true,
+    });
+
+    modal.onDidDismiss().then((data) => {
+      if (data.data) {
+        console.log('Datos recibidos del modal:', data.data);
+        this.filtrosSeleccionados = data.data; // <-- guarda los filtros seleccionados
+        this.aplicarFiltrosPersonalizados(data.data);
+      }
+    });
+
+    await modal.present();
+  }
+
+  aplicarFiltrosPersonalizados(filtros: any) {
+    const { niveles, categoria, rarezas, tipos_carta, generaciones, expansiones } = filtros;
+    console.log('Filtros aplicados:', filtros);
+
+    // Filtrar las cartas según los niveles seleccionados, categoría, rarezas, tipos de carta, generaciones y expansiones
+    this.cartas_filtradas = this.cartas_expansiones.filter((carta: any) => {
+      return (
+        (!niveles || niveles.length === 0 || niveles.includes(carta.categoria)) && // Filtrar por niveles
+        (!categoria || carta.tipo_carta?.toLowerCase() === categoria.toLowerCase()) && // Filtrar por categoría
+        (!rarezas || rarezas.length === 0 || rarezas.includes(carta.rareza)) && // Filtrar por rarezas
+        (!tipos_carta || tipos_carta.length === 0 || tipos_carta.includes(carta.tipo_carta)) && // Filtrar por tipos de carta
+        (!generaciones || generaciones.length === 0 || generaciones.some((gen: string) => carta.expansion.includes(gen))) && // Filtrar por generaciones
+        (!expansiones || expansiones.length === 0 || expansiones.some((gen: string) => carta.expansion.includes(gen))) // Filtrar por expansiones
+      );
+    });
+
+    // Actualizar las cartas mostradas con los primeros 12 elementos de las cartas filtradas
+    this.cartas_mostradas = this.cartas_filtradas.slice(0, 12);
+
+    console.log('Cartas filtradas:', this.cartas_filtradas);
+    console.log('Cartas cargadas:', this.cartas_mostradas);
   }
 
   async obtenerIdUsuario() {
@@ -125,14 +188,16 @@ export class Tab1Page implements OnInit {
       imagen: imagen,
     });
     console.log('Favorito agregado:', id);
-    this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado
+    this.favoritos = await this.coleccionesServies.cargarFavoritos();
+    this.favoritosSet = new Set(this.favoritos.map(fav => fav.id)); // <-- Actualiza el Set
   }
 
   async eliminarFavorito(id: string) {
     console.log("eliminar favorito", id);
 
     await deleteDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "favoritos", "cartas", id));
-    this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado
+    this.favoritos = await this.coleccionesServies.cargarFavoritos();
+    this.favoritosSet = new Set(this.favoritos.map(fav => fav.id)); // <-- Actualiza el Set
   }
 
   async agregarPropia(id: string, nombre: string, codigo: string) {
@@ -215,16 +280,20 @@ export class Tab1Page implements OnInit {
     this.router.navigate(['/tabs/tab3', id]);
   }
 
-  // Función para abrir el modal con la imagen seleccionada
-  verCarta(carta: any): void {
-    this.imagen_carta_seleccionada = carta.imagen_url_grande;
-    this.nombre_carta_seleccionada = carta.nombre_espanol;
-    this.codigo_carta_seleccionada = carta.codigo;
-    this.rareza_carta_seleccionada = carta.rareza;
-    this.tipo_carta_seleccionada = carta.tipo_carta;
-    this.expansion_carta_seleccionada = carta.expansion;
-
-    this.mostrarModal = true; // Mostrar el modal
+  async verCarta(carta: any) {
+    console.log('Ver carta:', carta);
+    const modal = await this.modalController.create({
+      component: DetalleCartaComponent,
+      componentProps: {
+        imagen: carta.imagen_url_grande,
+        nombre: carta.nombre_espanol,
+        codigo: carta.codigo,
+        rareza: carta.rareza,
+        tipo: carta.tipo_carta,
+        expansion: carta.expansion
+      }
+    });
+    await modal.present();
   }
 
   // Función para cerrar el modal
@@ -236,13 +305,19 @@ export class Tab1Page implements OnInit {
   filtrarCartas() {
     const texto = this.textoBusqueda.toLowerCase();
 
-    // filtrar por nombre y codigo
+    // Filtrar por todos los campos relevantes excepto las imágenes
     this.cartas_filtradas = this.cartas_expansiones.filter((carta: any) => {
       return (
-        carta.id.toLowerCase().includes(texto) ||
+        (carta.id && carta.id.toLowerCase().includes(texto)) ||
         (carta.nombre_espanol && carta.nombre_espanol.toLowerCase().includes(texto)) ||
         (carta.nombre_ingles && carta.nombre_ingles.toLowerCase().includes(texto)) ||
-        (carta.codigo && carta.codigo.toLowerCase().includes(texto))
+        (carta.codigo && carta.codigo.toLowerCase().includes(texto)) ||
+        (carta.coleccion && carta.coleccion.toLowerCase().includes(texto)) ||
+        (carta.expansion && carta.expansion.toLowerCase().includes(texto)) ||
+        (carta.categoria && carta.categoria.toLowerCase().includes(texto)) ||
+        (carta.rareza && carta.rareza.toLowerCase().includes(texto)) ||
+        (carta.tipo_carta && carta.tipo_carta.toLowerCase().includes(texto)) ||
+        (carta.estado && carta.estado.toLowerCase().includes(texto))
       );
     });
 

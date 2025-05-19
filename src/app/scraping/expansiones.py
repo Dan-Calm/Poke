@@ -13,7 +13,7 @@ import time
 from bs4 import BeautifulSoup
 import requests
 from datetime import datetime
-import pytz
+# import pytz
 
 # Configurar Firebase
 credencial = credentials.Certificate("../config/serviceAccountKey.json")  # Ruta a tu archivo JSON de credenciales
@@ -31,17 +31,23 @@ db = firestore.client()
 # driver = webdriver.Chrome(options=options)
 
 url_base = "https://www.wikidex.net"
-path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_151"
-path_expansion = "/wiki/Negro_y_Blanco_(TCG):_Fronteras_Cruzadas"
-path_expansion = "/wiki/Leyendas_Luminosas_(TCG)"
-path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Corona_Astral"
+
 path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Chispas_Fulgurantes"
-# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Juntos_de_Aventuras"
+# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Corona_Astral"
+# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Evoluciones_Prismáticas"
+# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Fábula_Sombría"
 path_expansion = "/wiki/Espada_y_Escudo_(TCG):_Oscuridad_Incandescente"
-# path_expansion = "/wiki/Base_Set_(TCG)"
+# path_expansion = "/wiki/Espada_y_Escudo_(TCG):_Resplandor_Astral"
+# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Mascarada_Crepuscular"
+# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Fuerzas_Temporales"
 # path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Destinos_de_Paldea"
+# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Brecha_Paradójica"
+# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_151"
+# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Llamas_Obsidianas"
+
+# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Juntos_de_Aventuras"
+# path_expansion = "/wiki/Base_Set_(TCG)"
 # path_expansion = "/wiki/SV_Black_Star_Promos_(TCG)"
-path_expansion = "/wiki/Espada_y_Escudo_(TCG):_Resplandor_Astral"
 
 # expansion = "Chispas Fulgurantes"
 
@@ -116,6 +122,10 @@ logo = None
 logo_chiquito = ""
 logo_mediano = ""
 logo_grande = ""
+
+url_imagen = ""
+url_imagen_x2 = ""
+
 if seccion_logo:
     logo = seccion_logo.find("img") 
 
@@ -146,14 +156,14 @@ prueba_ref = db.collection("expansiones").document(nombre_coleccion)
 
 # Escribir un documento de prueba
 prueba_ref.set({
-    "Nombre": titulo_completo if titulo_completo else "",
-    "Nombre generacion": generacion if generacion else "",
-    "Nombre expansion": expansion if expansion else "",
-    "Logo chiquito": logo_chiquito if logo_chiquito else "",
-    "Logo mediano": logo_mediano if logo_mediano else "",
-    "Logo grande": logo_grande if logo_grande else "",
-    "Fecha JA": fecha_ja,
-    "Fecha IN/ES": fecha_in_es,
+    "nombre": titulo_completo if titulo_completo else "",
+    "nombre_generacion": generacion if generacion else "",
+    "nombre_expansion": expansion if expansion else "",
+    "logo_chiquito": logo_chiquito if logo_chiquito else "",
+    "logo_mediano": logo_mediano if logo_mediano else "",
+    "logo_grande": logo_grande if logo_grande else "",
+    "fecha_JA": fecha_ja,
+    "fecha_IN_ES": fecha_in_es,
 })
 
     
@@ -186,7 +196,7 @@ for i, fila in enumerate(filas[1:], start=1):  # Saltar la fila de encabezado
     #     print("Celda:", celda)
     #     print("-" * 40)
 
-    nivel = ""
+    categoria = ""
     nombre = celdas[1].text.strip()
     codigo = celdas[0].text.strip()
     href = celdas[1].find("a")["href"]
@@ -217,11 +227,11 @@ for i, fila in enumerate(filas[1:], start=1):  # Saltar la fila de encabezado
                     # print("Nombre:", nombre)
                 if (n ==1):
                     try:
-                        nivel = c["alt"]
-                        nombre = nombre + " " + nivel
+                        categoria = c["alt"]
+                        nombre = nombre + " " + categoria
                     except KeyError:
                         print("Posible energía", c)                            
-                        nivel = ""
+                        categoria = ""
                     # print("Tipo:", nombre)
                 if (n ==2):
                     nombre = nombre + " " + c.text.strip()
@@ -231,7 +241,7 @@ for i, fila in enumerate(filas[1:], start=1):  # Saltar la fila de encabezado
     # time.sleep(2)
     print("Codigo:", codigo)
     print("Nombre:", nombre)
-    print("Nivel:", nivel)
+    print("Nivel:", categoria)
     print("Href:", href)
     print("Tipo:", tipo)
     print("Rareza:", rareza)
@@ -242,7 +252,7 @@ for i, fila in enumerate(filas[1:], start=1):  # Saltar la fila de encabezado
     cartas.append({
         "codigo": codigo,
         "nombre": nombre,
-        "nivel" : nivel,
+        "categoria" : categoria,
         "href": href,
         "tipo": tipo,
         "marca": marca,
@@ -277,7 +287,7 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
     # print("Tipos: ", tipos)
     # print("Marcas: ", marcas)
     print("Niveles: ", niveles)
-    for codigo, rareza, nombre_pokemon, tipo, marca, nivel in zip(codigos, rarezas, nombres_pokemones, tipos, marcas, niveles):
+    for codigo, rareza, nombre_pokemon, tipo, marca, categoria in zip(codigos, rarezas, nombres_pokemones, tipos, marcas, niveles):
         print("|" * 40)
         print("Codigo:", codigo)
         posicion = codigo.split("/")[0]
@@ -312,11 +322,11 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
             galeria = soup.find(class_="imagen")
             # print("Galeria:", galeria)
             img = galeria.find("img")  # Buscar la imagen dentro del enlace
-            # print("Imagen:", img)
+            print("Imagen:", img)
             srcset = img.get("srcset")
             src = img.get("src")
             print("Src:", src)
-            # print("Srcset:", srcset)
+            print("Srcset:", srcset)
             try:
                 srcset_x2 = srcset.split(",")[1]
             except IndexError:
@@ -467,7 +477,7 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
             "imagen_url_grande": url_imagen_x2,
             "imagen_url": url_imagen,
             "tipo_carta": tipo,
-            "nivel": nivel,
+            "categoria": categoria,
             "marca": marca,
             "estado": "pendiente",
             "expansion": titulo_completo
@@ -512,14 +522,14 @@ for path_pokemon, cartas in cartas_agrupadas.items():
         rarezas.append(carta["rareza"])
         nombres.append(carta["nombre"])
         tipos.append(carta["tipo"])
-        niveles.append(carta["nivel"])
+        niveles.append(carta["categoria"])
         marcas.append(carta["marca"])
         
         print(f"    Nombre: {carta['nombre']}")
         print("    Codigo:", carta['codigo'])
         print(f"    Href: {carta['href']}")
         print(f"    Tipo: {carta['tipo']}")
-        print(f"    Nivel: {carta['nivel']}")
+        print(f"    Nivel: {carta['categoria']}")
         print(f"    Marca: {carta['marca']}")
         print(f"    Rareza: {carta['rareza']}")
         print("-" * 40)

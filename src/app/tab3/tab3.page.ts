@@ -44,10 +44,11 @@ export class Tab3Page {
     let totalPrecio = 0;
     for (let index = 0; index < this.carta_tiendas.length; index++) {
       const carta = this.carta_tiendas[index];
+      console.log("Carta:", carta);
       console.log(`Carta ${index + 1}: ${carta.id} - Precio: ${carta.precio}`);
       totalPrecio += carta.precio;
 
-      console.log("ID de la carta:", carta.id_tienda);
+      console.log("ID de la tienda:", carta.id_tienda);
       let precios : any [] = [];
       precios = await this.cartasService.consultarPrecios(carta.id, carta.id_tienda);
       this.referenciasPrecios.push(...precios);

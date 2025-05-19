@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Filtros</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+
+    <ion-item>
+      <ion-label>Generación</ion-label>
+      <ion-select [(ngModel)]="generaciones_seleccionadas" multiple="true" placeholder="Selecciona una generación"
+        (ionChange)="filtrar_extensiones($event)">
+        <ion-select-option *ngFor="let generacion of generaciones_unicas" [value]="generacion">
+          {{ generacion }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Expansion</ion-label>
+      <ion-select [(ngModel)]="expansiones_seleccionadas" multiple="true" placeholder="Selecciona una expansión">
+        <ion-select-option *ngFor="let expansion of expansiones_unicas_filtradas" [value]="expansion">
+          {{ expansion }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Categoría</ion-label>
+      <ion-select [(ngModel)]="nivelesSeleccionados" multiple="true" placeholder="Selecciona niveles">
+        <ion-select-option *ngFor="let categoria of niveles" [value]="categoria">
+          {{ categoria }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Rarezas</ion-label>
+      <ion-select [(ngModel)]="rareza_seleccionada" multiple="true" placeholder="Selecciona rarezas">
+        <ion-select-option *ngFor="let rareza of rarezas" [value]="rareza">
+          {{ rareza }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Tipo Carta</ion-label>
+      <ion-select class="tipo-carta-select" [(ngModel)]="tipos_carta_seleccionada" multiple="true"
+        placeholder="Selecciona tipo de carta">
+        <ion-select-option *ngFor="let tipo_carta of tipos_carta" [value]="tipo_carta">
+          {{ tipo_carta }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+  </ion-list>
+
+  <ion-button expand="block" color="success" (click)="aplicarFiltros()">Aplicar Filtros</ion-button>
+</ion-content>
