@@ -5,6 +5,7 @@ import { ColeccionesService } from 'src/app/services/colecciones.service';
 import { NavParams } from '@ionic/angular';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from 'src/app/config/firebase.config';
+import { DetalleCartaComponent } from '../detalle-carta/detalle-carta.component';
 
 
 
@@ -19,6 +20,7 @@ export class ModalFavoritosComponent {
   @Input() nombreColeccion!: string;
   cartasFavoritas: any[] = [];
   cartas: any[] = [];
+  modalController: any;
 
   constructor(
     private modalCtrl: ModalController,
@@ -57,4 +59,21 @@ async eliminarCarta(carta: any) {
   await deleteDoc(doc(db, "usuarios", this.coleccionesService.idUsuarios, "colecciones", this.nombreColeccion, "cartas", carta.id));
   this.cartas = await this.coleccionesService.cargarCartasDeColeccion(this.nombreColeccion);
 }
+
+async verCarta(carta: any) {
+    console.log('Ver carta:', carta);
+    const modal = await this.modalCtrl.create({
+      component: DetalleCartaComponent,
+      componentProps: {
+        imagen: carta.imagen,
+        nombre: carta.nombre,
+        codigo: carta.codigo,
+        rareza: carta.rareza,
+        tipo: carta.tipo_carta,
+        expansion: carta.expansion
+      }
+    });
+    await modal.present();
+  }
+
 }
