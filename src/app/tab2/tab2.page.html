@@ -27,6 +27,27 @@
         </ion-card-content>
       </ion-card>
     </ion-col>
+
+    <ion-col size="6">
+      <!-- historial -->
+      <ion-card (click)="mostrarColeccion('historial')" class="cuadro-seleccion">
+        <ion-card-content class="icono-centro">
+          <ion-icon name="alarm-outline" size="large"></ion-icon>
+          <div>Historial</div>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+
+    <ion-col size="6">
+      <!-- propias -->
+      <ion-card (click)="mostrarColeccion('propias')" class="cuadro-seleccion">
+        <ion-card-content class="icono-centro">
+          <ion-icon name="happy-outline" size="large"></ion-icon>
+          <div>Propias</div>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+   
   </ion-row>
 
   <ion-row>
