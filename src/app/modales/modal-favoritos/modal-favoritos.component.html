@@ -10,6 +10,17 @@
 </ion-header>
 
 <ion-content>
+
+  <!-- Resumen de colección -->
+  <div style="padding: 1rem; text-align: center;">
+    <ion-text color="primary">
+      <strong>Cartas en colección:</strong> {{ cartas.length }}<br>
+      <strong>Cartas que tienes:</strong> {{ cantidadMatches }}<br>
+      <strong>Valorización inicial:</strong> ${{ totalPrecio | number:'1.0-0' }}
+
+    </ion-text>
+  </div>
+
   <ion-grid>
     <ion-row>
       <ion-col size="6" *ngFor="let carta of cartas">
@@ -20,10 +31,15 @@
               Eliminar
             </ion-button>
           </ion-card-content>
-          <img (click)="verCarta(carta)" [src]="carta.imagen" alt="Carta Pokémon" />
+          <img (click)="verCarta(carta)" [src]="carta.imagen" alt="Carta Pokémon"
+            [ngStyle]="cartasPropiasSet.has(carta.id) ? {} : {'filter': 'grayscale(1)'}" />
           <ion-card-header>
             <ion-card-title>{{ carta.nombre }}</ion-card-title>
             <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
+            <div style="margin-top: 8px;">
+              <div><strong>Cantidad:</strong> {{ carta.cantidad }}</div>
+              <div><strong>Precio:</strong> ${{ carta.precio | number:'1.0-0' }}</div>
+            </div>
           </ion-card-header>
         </ion-card>
       </ion-col>
