@@ -48,6 +48,12 @@ const routes: Routes = [
         redirectTo: '/tabs/tab1',
         pathMatch: 'full'
       },
+      {
+        path: 'tab5',
+        loadChildren: () => import('../tab5/tab5.module').then(m => m.Tab5PageModule),
+        canActivate: [AuthGuard],
+        data: { rol: 'usuario' } // Requiere rol de usuario
+      },
     ]
   },
 ];
