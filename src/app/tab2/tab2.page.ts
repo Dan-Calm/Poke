@@ -82,7 +82,7 @@ async cargarColecciones() {
   const snapshot = await getDocs(referencia);
   this.coleccionesUsuario = snapshot.docs
     .map(doc => doc.id)
-    .filter(id => id !== 'favoritos'); // opcional: excluir favoritos
+    .filter(id => id !== 'favoritos' && id !== 'propias' && id !== 'historial'); // excluir colecciones no deseadas
   console.log('Colecciones de usuario tab2:', this.coleccionesUsuario);
 }
 
