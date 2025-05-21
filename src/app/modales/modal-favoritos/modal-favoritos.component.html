@@ -17,8 +17,10 @@
       <strong>Cartas en colección:</strong> {{ cartas.length }}<br>
       <strong>Cartas que tienes:</strong> {{ cantidadMatches }}<br>
       <strong>Valorización inicial:</strong> ${{ totalPrecio | number:'1.0-0' }}
-
     </ion-text>
+
+    <!-- barra de progreso de colección -->
+    <app-barra-progreso [valor]="cantidadMatches" [total]="cartas.length"></app-barra-progreso>
   </div>
 
   <ion-grid>

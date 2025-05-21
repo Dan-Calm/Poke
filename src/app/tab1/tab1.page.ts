@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgModule, OnInit } from '@angular/core';
 import { CartasService } from '../services/cartas.service';
 import { ColeccionesService } from '../services/colecciones.service';
 import { Router } from '@angular/router';
@@ -13,7 +13,8 @@ import { AlertController } from '@ionic/angular';
 
 import { ModalController } from '@ionic/angular';
 import { FiltrosComponent } from '../modales/filtros/filtros.component';
-import { DetalleCartaComponent } from '../modales/detalle-carta/detalle-carta.component'
+import { DetalleCartaComponent } from '../modales/detalle-carta/detalle-carta.component';
+
 
 
 @Component({
@@ -21,8 +22,9 @@ import { DetalleCartaComponent } from '../modales/detalle-carta/detalle-carta.co
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
   standalone: false,
-
+  
 })
+
 export class Tab1Page implements OnInit {
   cartas_expansiones: any[] = []; // guarda las cartas de la wikidex
   cartas_filtradas: any[] = []; // listra con las cartas filtradas por la barra de busqqueda

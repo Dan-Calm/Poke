@@ -6,60 +6,33 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-grid>
-  <ion-row>
-    <ion-col size="6">
-      <!-- Cuadro con símbolo + -->
-      <ion-card (click)="abrirSelectorExpansiones()" class="cuadro-seleccion">
-        <ion-card-content class="icono-centro">
-          <ion-icon name="add-circle-outline" size="large"></ion-icon>
-          <div>Añadir colección</div>
-        </ion-card-content>
-      </ion-card>
-    </ion-col>
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <!-- Botón para añadir colección -->
+      <ion-col size="6">
+        <ion-card (click)="abrirSelectorExpansiones()" class="cuadro-seleccion">
+          <ion-card-content class="icono-centro">
+            <ion-icon name="add-circle-outline" size="large"></ion-icon>
+            <div>Añadir colección</div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
 
-    <ion-col size="6">
-      <!-- Cuadro con corazón (lo implementaremos en el siguiente paso) -->
-      <ion-card (click)="mostrarColeccion('favoritos')" class="cuadro-seleccion">
-        <ion-card-content class="icono-centro">
-          <ion-icon name="heart-outline" size="large"></ion-icon>
-          <div>Favoritos</div>
-        </ion-card-content>
-      </ion-card>
-    </ion-col>
+      <ion-col size="6" *ngFor="let coleccion of colecciones_usuario">
+        <ion-card (click)="mostrarColeccion(coleccion.id)" class="cuadro-seleccion">
+          <ion-card-content class="icono-centro">
+            <ng-container *ngIf="coleccion.logo_mediano; else iconoPorDefecto">
+              <img [src]="coleccion.logo_mediano" alt="Logo colección"/>
+            </ng-container>
+            <ng-template #iconoPorDefecto>
+              <ion-icon name="albums-outline" size="large"></ion-icon>
+              <div>{{ coleccion.nombre | titlecase }}</div>
+            </ng-template>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
 
-    <ion-col size="6">
-      <!-- historial -->
-      <ion-card (click)="mostrarColeccion('historial')" class="cuadro-seleccion">
-        <ion-card-content class="icono-centro">
-          <ion-icon name="alarm-outline" size="large"></ion-icon>
-          <div>Historial</div>
-        </ion-card-content>
-      </ion-card>
-    </ion-col>
-
-    <ion-col size="6">
-      <!-- propias -->
-      <ion-card (click)="mostrarColeccion('propias')" class="cuadro-seleccion">
-        <ion-card-content class="icono-centro">
-          <ion-icon name="happy-outline" size="large"></ion-icon>
-          <div>Propias</div>
-        </ion-card-content>
-      </ion-card>
-    </ion-col>
-   
-  </ion-row>
-
-  <ion-row>
-    <!-- colecciones del usuario  -->
-  <ion-col size="6" *ngFor="let coleccion of coleccionesUsuario">
-    <ion-card (click)="mostrarColeccion(coleccion)" class="cuadro-seleccion">
-      <ion-card-content class="icono-centro">
-        <ion-icon name="albums-outline" size="large"></ion-icon>
-        <div>{{ coleccion | titlecase }}</div>
-      </ion-card-content>
-    </ion-card>
-  </ion-col>
-</ion-row>
-
-</ion-grid>
+  </ion-grid>
+</ion-content>

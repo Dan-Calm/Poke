@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-title> Propias </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Resumen de colección -->
+  <div style="padding: 1rem; text-align: center;">
+    <ion-text color="primary">
+      <strong>Cartas en colección:</strong> {{ propias.length }}<br>
+      <strong>Valorización inicial:</strong> ${{ total_precio | number:'1.0-0' }}
+    </ion-text>
+
+  </div>
+
+    <ion-grid>
+    <ion-row>
+      <ion-col size="6" *ngFor="let carta of propias">
+        <ion-card>
+          <img (click)="verCarta(carta)" [src]="carta.imagen" alt="Carta Pokémon" />
+          <ion-card-header>
+            <ion-card-title>{{ carta.nombre }}</ion-card-title>
+            <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
+            <div style="margin-top: 8px;">
+              <div><strong>Cantidad:</strong> {{ carta.cantidad }}</div>
+              <div><strong>Precio:</strong> ${{ carta.precio | number:'1.0-0' }}</div>
+            </div>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

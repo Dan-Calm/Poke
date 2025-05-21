@@ -1,44 +1,9 @@
-<ion-menu contentId="main-content" (ionDidOpen)="onMenuOpen()" (ionDidClose)="onMenuClose()">
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Menú</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content>
-    <ion-list>
-      <!-- Acordeón para Favoritos -->
-      <ion-accordion-group>
-        <ion-accordion value="favoritos">
-          <ion-item slot="header">
-            <ion-label>Favoritos</ion-label>
-          </ion-item>
-          <div slot="content">
-            <ion-list>
-              <!-- Iterar sobre los favoritos y mostrar sus nombres -->
-              <ion-item *ngFor="let favorito of favoritos">
-                <ion-button slot="start" (click)="eliminarFavorito(favorito.id)">X</ion-button>
-                <ion-label (click)="irAFavoritos(favorito.id)">
-                  {{ favorito.codigo }} - {{ favorito.nombre }}
-                </ion-label>
-              </ion-item>
-            </ion-list>
-          </div>
-        </ion-accordion>
-      </ion-accordion-group>
-    </ion-list>
-
-    <!-- Lista de historial -->
-    <ion-list>
-      <ion-item-divider>
-        <ion-label>Historial</ion-label>
-      </ion-item-divider>
-      <!-- Iterar sobre los favoritos y mostrar sus nombres -->
-      <ion-item *ngFor="let histo of historial">
-        {{ histo.nombre }}
-      </ion-item>
-    </ion-list>
-  </ion-content>
-</ion-menu>
+<app-menu
+  [favoritos]="favoritos"
+  [historial]="historial"
+  (eliminarFavoritoEvent)="eliminarFavorito($event)"
+  (irAFavoritosEvent)="irAFavoritos($event)">
+</app-menu>
 
 <div class="ion-page" id="main-content">
 
