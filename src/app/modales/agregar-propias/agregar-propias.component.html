@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Agregar a tu colección</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancelar()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item>
+      <ion-label position="stacked">Dinero (CLP)</ion-label>
+      <ion-input
+        [(ngModel)]="dinero"
+        (ionInput)="formatearCLP($event)"
+        placeholder="$0"
+        inputmode="numeric"
+        maxlength="12">
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Cantidad</ion-label>
+      <ion-input
+        type="number"
+        [(ngModel)]="cantidad"
+        min="1"
+        placeholder="Ej: 1">
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Idioma</ion-label>
+      <ion-select [(ngModel)]="idioma" placeholder="Selecciona un idioma">
+        <ion-select-option *ngFor="let lang of idiomas" [value]="lang">{{ lang }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+  <ion-button expand="block" color="primary" (click)="agregar()">Añadir a colección</ion-button>
+
+  <ion-list *ngIf="cartasPorIdioma.length > 0">
+    <ion-list-header>
+      <ion-label>Cartas añadidas</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let carta of cartasPorIdioma">
+      <ion-label>
+        <div><strong>Idioma:</strong> {{ carta.idioma }}</div>
+        <div><strong>Dinero:</strong> {{ carta.dinero | currency:'CLP':'symbol':'1.0-0':'es-CL' }}</div>
+        <div><strong>Cantidad:</strong> {{ carta.cantidad }}</div>
+      </ion-label>
+      <ion-button color="danger" fill="clear" slot="end" (click)="eliminarDeLista(carta.idioma)">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="block" color="success" (click)="guardar()" [disabled]="cartasPorIdioma.length === 0">Guardar</ion-button>
+</ion-content>

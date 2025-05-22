@@ -1,4 +1,4 @@
-import { Component, NgModule, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CartasService } from '../services/cartas.service';
 import { ColeccionesService } from '../services/colecciones.service';
 import { Router } from '@angular/router';
@@ -13,7 +13,8 @@ import { AlertController } from '@ionic/angular';
 
 import { ModalController } from '@ionic/angular';
 import { FiltrosComponent } from '../modales/filtros/filtros.component';
-import { DetalleCartaComponent } from '../modales/detalle-carta/detalle-carta.component';
+import { DetalleCartaComponent } from '../modales/detalle-carta/detalle-carta.component'
+import { AgregarPropiasComponent } from '../modales/agregar-propias/agregar-propias.component';
 
 
 
@@ -22,9 +23,8 @@ import { DetalleCartaComponent } from '../modales/detalle-carta/detalle-carta.co
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
   standalone: false,
-  
-})
 
+})
 export class Tab1Page implements OnInit {
   cartas_expansiones: any[] = []; // guarda las cartas de la wikidex
   cartas_filtradas: any[] = []; // listra con las cartas filtradas por la barra de busqqueda
@@ -180,26 +180,26 @@ export class Tab1Page implements OnInit {
   }
 
   async agregarFavorito(id: string, nombre: string, codigo: string, imagen: string) {
-  console.log(`Agregar a Favorito carta con ID: ${id}`);
-  const usuario = doc(db, 'usuarios', this.idUsiuario);
+    console.log(`Agregar a Favorito carta con ID: ${id}`);
+    const usuario = doc(db, 'usuarios', this.idUsiuario);
 
-  // 1. Crear (o actualizar) el documento 'favoritos' en 'colecciones'
-  await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "favoritos"), {
-    nombre: "favoritos",
-    creado: new Date()
-  }, { merge: true });
+    // 1. Crear (o actualizar) el documento 'favoritos' en 'colecciones'
+    await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "favoritos"), {
+      nombre: "favoritos",
+      creado: new Date()
+    }, { merge: true });
 
-  // 2. Agregar la carta a la subcolección 'cartas'
-  await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "favoritos", "cartas", id), {
-    nombre: nombre,
-    codigo: codigo,
-    id: id,
-    imagen: imagen,
-  });
-  console.log('Favorito agregado:', id);
-  this.favoritos = await this.coleccionesServies.cargarFavoritos();
+    // 2. Agregar la carta a la subcolección 'cartas'
+    await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "favoritos", "cartas", id), {
+      nombre: nombre,
+      codigo: codigo,
+      id: id,
+      imagen: imagen,
+    });
+    console.log('Favorito agregado:', id);
+    this.favoritos = await this.coleccionesServies.cargarFavoritos();
     this.favoritosSet = new Set(this.favoritos.map(fav => fav.id)); // <-- Actualiza el Set
-}
+  }
 
   async eliminarFavorito(id: string) {
     console.log("eliminar favorito", id);
@@ -210,83 +210,57 @@ export class Tab1Page implements OnInit {
   }
 
   async agregarPropia(id: string, nombre: string, codigo: string, imagen: string) {
-  console.log(`Acción 2 ejecutada para la carta con ID: ${id}`);
+    console.log(`Acción 2 ejecutada para la carta con ID: ${id}`);
+    console.log("Cartas de la tienda", this.cartasTienda);
 
-  console.log("Cartas de la tienda", this.cartasTienda);
+    const cartasConPrecio = this.cartasTienda.filter((carta) => carta.coleccion === id);
+    console.log(`Cartas filtradas por la colección "${id}":`, cartasConPrecio);
 
-  const cartasConPrecio = this.cartasTienda.filter((carta) => carta.coleccion === id);
-  console.log(`Cartas filtradas por la colección "${id}":`, cartasConPrecio);
+    const sumaPrecios = cartasConPrecio.reduce((acumulador: number, carta: any) => acumulador + carta.precio, 0);
+    const precioPromedio = cartasConPrecio.length ? sumaPrecios / cartasConPrecio.length : 0;
 
-  const sumaPrecios = cartasConPrecio.reduce((acumulador: number, carta: any) => acumulador + carta.precio, 0);
+    // Abre el modal personalizado
+    const modal = await this.modalController.create({
+      component: AgregarPropiasComponent,
+      componentProps: {
+        dinero: precioPromedio ? `$${parseInt(precioPromedio.toString(), 10).toLocaleString('es-CL')}` : '',
+        cantidad: 1,
+        idioma: 'Español'
+      }
+    });
 
-  const precioPromedio = sumaPrecios / cartasConPrecio.length;
-  console.log(`Suma de precios de todas las cartas: ${precioPromedio}`);
+    modal.onDidDismiss().then(async (result) => {
+      if (result.data && Array.isArray(result.data)) {
+        // 1. Crear (o actualizar) el documento 'propias' en 'colecciones'
+        await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "propias"), {
+          nombre: "propias",
+          creado: new Date()
+        }, { merge: false });
 
-  // Crear y mostrar la alerta
-  const alert = await this.alertController.create({
-    header: 'Agregar a tu colección',
-    inputs: [
-      {
-        name: 'precioPromedio',
-        type: 'number',
-        placeholder: `Precio promedio: ${precioPromedio.toString()}`,
-      },
-      {
-        name: 'cantidad',
-        type: 'number',
-        placeholder: `Unidades`,
-        min: 1,
-      },
-    ],
-    buttons: [
-      {
-        text: 'Cancelar',
-        role: 'cancel',
-        handler: () => {
-          console.log('Acción cancelada');
-        },
-      },
-      {
-        text: 'Guardar',
-        handler: async (data) => {
-          // Validar que la cantidad sea al menos 1
-          const cantidad = parseInt(data.cantidad, 10);
-          if (!cantidad || cantidad < 1) {
-            console.error('La cantidad debe ser al menos 1.');
-            alert.dismiss();
-            return false;
-          }
+        // 2. Guardar cada carta en la subcolección 'cartas'
+        for (const carta of result.data) {
+          console.log('Carta seleccionada:', carta);
+          await setDoc(
+            doc(db, "usuarios", this.idUsiuario, "colecciones", "propias", "cartas", id + '-' + carta.idioma),
+            {
+              nombre: nombre,
+              codigo: codigo,
+              id: id,
+              precio: carta.dinero,
+              cantidad: carta.cantidad,
+              idioma: carta.idioma,
+              imagen: imagen
+            }
+          );
+        }
+      }
+    });
 
-          // Validar el precio promedio
-          const precioFinal = data.precioPromedio ? parseFloat(data.precioPromedio) : precioPromedio;
+    console.log('Propia agregada:', id);
 
-          console.log(`Precio final guardado: ${precioFinal}`);
-          console.log(`Cantidad guardada: ${cantidad}`);
 
-          // 1. Crear (o actualizar) el documento 'propias' en 'colecciones'
-          await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "propias"), {
-            nombre: "propias",
-            creado: new Date()
-          }, { merge: true });
-
-          // 2. Guardar los datos en la subcolección 'cartas'
-          await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "propias", "cartas", id), {
-            nombre: nombre,
-            codigo: codigo,
-            id: id,
-            precio: precioFinal,
-            cantidad: cantidad,
-            imagen: imagen
-          });
-
-          return true;
-        },
-      },
-    ],
-  });
-
-  await alert.present();
-}
+    await modal.present();
+  }
 
   accion3(id: string) {
     console.log(`Acción 3 ejecutada para la carta con ID: ${id}`);
@@ -342,29 +316,29 @@ export class Tab1Page implements OnInit {
   }
 
   async cotizar(id: string, nombre: string, codigo: string, imagen: string) {
-  console.log("ID del usuario:", this.idUsiuario);
-  console.log(`Cotizar carta con ID: ${id}`);
+    console.log("ID del usuario:", this.idUsiuario);
+    console.log(`Cotizar carta con ID: ${id}`);
 
-  // 1. Crear (o actualizar) el documento 'historial' en 'colecciones'
-  await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "historial"), {
-    nombre: "historial",
-    creado: new Date()
-  }, { merge: true });
+    // 1. Crear (o actualizar) el documento 'historial' en 'colecciones'
+    await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "historial"), {
+      nombre: "historial",
+      creado: new Date()
+    }, { merge: true });
 
-  // 2. Agregar la carta a la subcolección 'cartas'
-  await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "historial", "cartas", id), {
-    nombre: nombre,
-    codigo: codigo,
-    id: id,
-    imagen: imagen,
-  });
+    // 2. Agregar la carta a la subcolección 'cartas'
+    await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "historial", "cartas", id), {
+      nombre: nombre,
+      codigo: codigo,
+      id: id,
+      imagen: imagen,
+    });
 
-  console.log('Historial agregado:', id);
-  this.historial = await this.coleccionesServies.cargarHistorial(); // cargar el historial del usuario logueado
+    console.log('Historial agregado:', id);
+    this.historial = await this.coleccionesServies.cargarHistorial(); // cargar el historial del usuario logueado
 
-  // Navegar a la segunda pantalla pasando el ID de la colección como parámetro
-  this.router.navigate(['/coleccion-detalle', id]);
-}
+    // Navegar a la segunda pantalla pasando el ID de la colección como parámetro
+    this.router.navigate(['/coleccion-detalle', id]);
+  }
 
   accionMantenerPresionada(id: string, nombre: string, codigo: string): void {
     console.log('Imagen mantenida presionada');
