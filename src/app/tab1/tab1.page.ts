@@ -209,7 +209,7 @@ export class Tab1Page implements OnInit {
     this.favoritosSet = new Set(this.favoritos.map(fav => fav.id)); // <-- Actualiza el Set
   }
 
-  async agregarPropia(id: string, nombre: string, codigo: string, imagen: string) {
+  async agregarPropia(id: string, nombre: string, codigo: string, imagen: string, rareza:string) {
   console.log(`Acción 2 ejecutada para la carta con ID: ${id}`);
 
   console.log("Cartas de la tienda", this.cartasTienda);
@@ -276,7 +276,8 @@ export class Tab1Page implements OnInit {
             id: id,
             precio: precioFinal,
             cantidad: cantidad,
-            imagen: imagen
+            imagen: imagen,
+            rareza: rareza
           });
 
           return true;

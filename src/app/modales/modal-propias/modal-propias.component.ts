@@ -18,7 +18,8 @@ import { BarraProgresoComponent } from 'src/app/componentes/barra-progreso/barra
   imports: [CommonModule, IonicModule],
 })
 export class ModalPropiasComponent implements OnInit {
-
+  @Input() nombreColeccion!: string;
+  cartas: any[] = [];
   propias: any[] = [];
   total_precio: number = 0;
 
@@ -60,6 +61,12 @@ export class ModalPropiasComponent implements OnInit {
       }
     });
     await modal.present();
+  }
+
+  async eliminarCarta(carta: any) {
+    console.log("eliminar carta:", carta.id);
+    await deleteDoc(doc(db, "usuarios", this.coleccionesService.idUsuarios, "colecciones", this.nombreColeccion, "cartas", carta.id));
+    this.cartas = await this.coleccionesService.cargarCartasDeColeccion(this.nombreColeccion);
   }
 
 }

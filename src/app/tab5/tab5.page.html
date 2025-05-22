@@ -1,13 +1,58 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>tab5</ion-title>
+    <ion-title>Mi Perfil</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">tab5</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <div class="perfil-container ion-text-center">
+    <ion-avatar class="avatar-perfil">
+      <img [src]="imagenPerfil">
+    </ion-avatar>
+    <h2>{{ nombreUsuario }}</h2>
+    <p>Usuario desde: {{ fechaCreacion }}</p>
+    <p>Rol: {{ tipoUsuario }}</p>
+  </div>
+
+  <!-- Medallas -->
+  <ion-grid>
+    <ion-row class="medallas-row" justify-content-center>
+      <ion-col size="4" class="medalla-col">
+        <div class="medalla" (click)="mostrarInfoMedalla('legendaria')">
+          <img 
+            src="https://images.wikidexcdn.net/mwuploads/wikidex/9/93/latest/20180812035749/Medalla_Volc%C3%A1n.png" 
+            alt="Medalla Carta Legendaria"
+            [ngStyle]="tieneMedallaCartaLegendaria ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}"
+          />
+          <p class="medalla-titulo" style="font-size: 0.95em; white-space: normal; text-align: center; margin: 0.5em 0 0 0;">
+            Legendaria
+          </p>
+        </div>
+      </ion-col>
+      <ion-col size="4" class="medalla-col">
+        <div class="medalla" (click)="mostrarInfoMedalla('coleccionista')">
+          <img 
+            src="https://images.wikidexcdn.net/mwuploads/wikidex/3/39/latest/20180812014627/Medalla_Roca.png" 
+            alt="Medalla Coleccionista de Verdad"
+            [ngStyle]="tieneMedallaColeccionistaVerdadero ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}"
+          />
+          <p class="medalla-titulo" style="font-size: 0.95em; white-space: normal; text-align: center; margin: 0.5em 0 0 0;">
+            Coleccionista
+          </p>
+        </div>
+      </ion-col>
+      <ion-col size="4" class="medalla-col">
+        <div class="medalla" (click)="mostrarInfoMedalla('cienCartas')">
+          <img 
+            src="https://images.wikidexcdn.net/mwuploads/wikidex/6/60/latest/20180812013531/Medalla_Cascada.png" 
+            alt="Medalla 100 Cartas"
+            [ngStyle]="tieneMedallaCienCartas ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}"
+          />
+          <p class="medalla-titulo" style="font-size: 0.95em; white-space: normal; text-align: center; margin: 0.5em 0 0 0;">
+            100 Cartas
+          </p>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

@@ -12,7 +12,12 @@ import { getAuth } from "firebase/auth";
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private afAuth: AngularFireAuth, private fireStore: AngularFirestore) { }
+  private datosUsuarioCache: any = null
+  
+  constructor(
+    private afAuth: AngularFireAuth,
+    private fireStore: AngularFirestore,
+  ) { }
 
   // Método para iniciar sesión con correo y contraseña
   async login(email: string, password: string): Promise<any> {
@@ -102,5 +107,37 @@ export class AuthService {
         reject(error); // Maneja errores
       });
     });
+  }
+
+  async getDatosUsuario(): Promise<any> {
+    // Si ya tenemos los datos en caché, los devolvemos
+    if (this.datosUsuarioCache) {
+      return this.datosUsuarioCache;
+    }
+
+    // Si no, los obtenemos desde Firebase
+    return new Promise((resolve, reject) => {
+      this.afAuth.authState.subscribe(user => {
+        if (user) {
+          const userRef = doc(db, "usuarios", user.uid);
+          getDoc(userRef).then((docSnap) => {
+            if (docSnap.exists()) {
+              const userData = docSnap.data();
+              this.datosUsuarioCache = userData; // Guardamos en caché
+              resolve(userData);
+            } else {
+              resolve(null);
+            }
+          }).catch(error => reject(error));
+        } else {
+          resolve(null);
+        }
+      }, error => reject(error));
+    });
+  }
+
+  // Por si en algún momento el usuario edita sus datos y quieres forzar una recarga
+  limpiarCacheUsuario() {
+    this.datosUsuarioCache = null;
   }
 }

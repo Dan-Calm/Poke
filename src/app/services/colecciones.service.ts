@@ -156,4 +156,49 @@ export class ColeccionesService {
     const snapshot = await getDocs(ref);
     return snapshot.docs.map(doc => doc.data());
   }
+
+  async evaluarMedallaCartaLegendaria(): Promise<boolean> {
+  await this.obtenerIdUsuario();
+
+  const cartasRef = collection(
+    db,
+    "usuarios",
+    this.idUsuarios,
+    "colecciones",
+    "propias",
+    "cartas"
+  );
+
+  const snapshot = await getDocs(cartasRef);
+
+  for (const doc of snapshot.docs) {
+    const carta = doc.data();
+    console.log('Carta obtenida:', carta); // Verifica contenido
+
+    const rareza = carta?.['rareza'];
+
+    if (
+      rareza === "Rara Ilustración Especial" ||
+      rareza === "Rara Híper"
+    ) {
+      return true; // ¡Tiene una carta legendaria!
+    }
+  }
+
+  return false; // No tiene cartas con rareza legendaria
+}
+
+async tieneCincoColecciones(): Promise<boolean> {
+  await this.obtenerIdUsuario();
+  const coleccionesRef = collection(db, "usuarios", this.idUsuarios, "colecciones");
+  const snapshot = await getDocs(coleccionesRef);
+  return snapshot.docs.length >= 5;
+}
+
+async tieneCienCartas(): Promise<boolean> {
+  await this.obtenerIdUsuario();
+  const cartasRef = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'propias', 'cartas');
+  const cartasSnap = await getDocs(cartasRef);
+  return cartasSnap.size >= 100;
+}
 }
