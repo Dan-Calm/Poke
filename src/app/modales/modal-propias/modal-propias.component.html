@@ -20,8 +20,10 @@
   </div>
 
     <ion-grid>
+
     <ion-row>
       <ion-col size="6" *ngFor="let carta of propias">
+
         <ion-card>
           <ion-card-content class="contenido-acciones">
             <ion-button color="danger" size="small" fill="outline" expand="block" (click)="eliminarCarta(carta)">
@@ -38,9 +40,17 @@
               <div><strong>Precio:</strong> ${{ carta.precio | number:'1.0-0' }}</div>
             </div>
           </ion-card-header>
+          <ion-card-content>
+            <ion-button expand="block" size="small" color="primary" (click)="editarCarta(carta)">
+              <ion-icon name="create-outline" slot="start"></ion-icon>
+              Editar
+            </ion-button>
+          </ion-card-content>
         </ion-card>
+
       </ion-col>
     </ion-row>
+
   </ion-grid>
 
 </ion-content>
