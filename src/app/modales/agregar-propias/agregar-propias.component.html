@@ -1,15 +1,5 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Agregar a tu colección</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="cancelar()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding">
+<app-modal>
+  <span modal-title>Agregar carta a colección</span>
   <ion-list>
     <ion-item>
       <ion-label position="stacked">Dinero (CLP)</ion-label>
@@ -56,4 +46,4 @@
   </ion-list>
 
   <ion-button expand="block" color="success" (click)="guardar()" [disabled]="cartasPorIdioma.length === 0">Guardar</ion-button>
-</ion-content>
+</app-modal>
