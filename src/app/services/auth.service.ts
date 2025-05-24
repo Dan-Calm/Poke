@@ -7,6 +7,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { db } from '../config/firebase.config';
 
 import { getAuth } from "firebase/auth";
+import { e } from '@angular/core/weak_ref.d-DOjz-6fK';
 
 @Injectable({
   providedIn: 'root',
@@ -45,6 +46,7 @@ export class AuthService {
           nombre_usuario: datos.nombre,
           fecha_creacion: new Date(),
           tipo_usuario: "usuario",
+          email: email,
         });
         console.log('Usuario registrado:', userCredential);
       };
