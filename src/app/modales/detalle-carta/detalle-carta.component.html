@@ -1,12 +1,5 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Detalle de la carta</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="cerrar()">Cerrar</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-<ion-content class="modal-content">
+<app-modal>
+  <span modal-title>Detalle de la carta</span>
   <ion-card>
     <img [src]="imagen" alt="Carta" style="width: 100%; height: auto;" />
     <ion-card-header>
@@ -23,7 +16,7 @@
           <ion-label>
             <img
               src="https://images.wikidexcdn.net/mwuploads/wikidex/8/88/latest/20200830110343/Energ%C3%ADa_planta.png"
-              alt="Tipo" style="width: 20; height: 20; vertical-align: middle; margin-right: 8px;">
+              alt="Tipo" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
              {{ tipo }}
           </ion-label>
         </ion-item>
@@ -33,4 +26,4 @@
       </ion-list>
     </ion-card-content>
   </ion-card>
-</ion-content>
+</app-modal>

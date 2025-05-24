@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms'; // Importar FormsModule para usar 
 import { IonicModule, ModalController } from '@ionic/angular';
 import { ColeccionesService } from '../../services/colecciones.service';
 import { CartasService } from '../../services/cartas.service'; // Importar el servicio de cartas
+import { ModalComponent } from '../../componentes/modal/modal.component';
 
 @Component({
   selector: 'app-filtros',
   templateUrl: './filtros.component.html',
   styleUrls: ['./filtros.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule], // Agregar FormsModule aquí
+  imports: [CommonModule, FormsModule, IonicModule, ModalComponent], // Agregar ModalComponent aquí
 })
 export class FiltrosComponent {
 

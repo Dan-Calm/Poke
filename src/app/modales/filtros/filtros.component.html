@@ -1,15 +1,5 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Filtros</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="cerrarModal()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding">
+<app-modal>
+  <span modal-title>Filtros</span>
   <ion-list>
 
     <ion-item>
@@ -62,4 +52,4 @@
   </ion-list>
 
   <ion-button expand="block" color="success" (click)="aplicarFiltros()">Aplicar Filtros</ion-button>
-</ion-content>
+</app-modal>
