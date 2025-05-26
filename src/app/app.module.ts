@@ -22,7 +22,8 @@ import { FormsModule } from '@angular/forms';
     HttpClientModule,
     AngularFireModule.initializeApp(firebaseConfig), // Configuración de Firebase
     AngularFireAuthModule, // Módulo de autenticación de Firebase 
-    FormsModule
+    FormsModule,
+    
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

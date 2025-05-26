@@ -7,6 +7,7 @@ import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from 'src/app/config/firebase.config';
 import { DetalleCartaComponent } from '../detalle-carta/detalle-carta.component';
 import { CartasService } from '../../services/cartas.service';
+import { ModalComponent } from 'src/app/componentes/modal/modal.component';
 
 import { BarraProgresoComponent } from 'src/app/componentes/barra-progreso/barra-progreso.component';
 
@@ -15,7 +16,7 @@ import { BarraProgresoComponent } from 'src/app/componentes/barra-progreso/barra
   templateUrl: './modal-favoritos.component.html',
   styleUrls: ['./modal-favoritos.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, BarraProgresoComponent],
+  imports: [CommonModule, IonicModule, BarraProgresoComponent, ModalComponent],
 })
 export class ModalFavoritosComponent implements OnInit {
   // nombre de la colección que se pasa desde el modal

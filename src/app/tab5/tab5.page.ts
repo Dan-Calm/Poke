@@ -19,6 +19,9 @@ export class Tab5Page implements OnInit {
   tieneMedallaCartaLegendaria: boolean = false;
   tieneMedallaColeccionistaVerdadero = false;
   tieneMedallaCienCartas = false;
+  progresoLegendaria: number = 0;      // 0 o 1 (o más si quieres mostrar progreso parcial)
+  progresoColeccionista: number = 0;   // cantidad de colecciones
+  progresoCienCartas: number = 0;      // cantidad de cartas
 
   constructor(
     private authService: AuthService,
@@ -35,7 +38,7 @@ export class Tab5Page implements OnInit {
     const datos = await this.authService.getDatosUsuario();
     if (datos) {
       this.nombreUsuario = datos.nombre_usuario || 'Sin nombre';
-      this.correoUsuario = datos.email || 'Sin correo'; // Asegúrate de guardar el correo
+      this.correoUsuario = datos.email || 'Sin correo';
       this.fechaCreacion = datos.fecha_creacion?.seconds
         ? new Date(datos.fecha_creacion.seconds * 1000).toLocaleDateString()
         : '';
@@ -47,16 +50,26 @@ export class Tab5Page implements OnInit {
     const [
       tieneMedallaCartaLegendaria,
       tieneMedallaColeccionistaVerdadero,
-      tieneMedallaCienCartas
+      tieneMedallaCienCartas,
+      cantidadColecciones,
+      cantidadCartas,
+      cantidadLegendarias
     ] = await Promise.all([
       this.coleccionesService.evaluarMedallaCartaLegendaria(),
       this.coleccionesService.tieneCincoColecciones(),
-      this.coleccionesService.tieneCienCartas()
+      this.coleccionesService.tieneCienCartas(),
+      this.coleccionesService.getCantidadColecciones(),
+      this.coleccionesService.getCantidadCartas(),
+      this.coleccionesService.cantidadCartasLegendarias()
     ]);
 
     this.tieneMedallaCartaLegendaria = tieneMedallaCartaLegendaria;
     this.tieneMedallaColeccionistaVerdadero = tieneMedallaColeccionistaVerdadero;
     this.tieneMedallaCienCartas = tieneMedallaCienCartas;
+
+    this.progresoLegendaria = cantidadLegendarias; // 0 o más
+    this.progresoColeccionista = cantidadColecciones;
+    this.progresoCienCartas = cantidadCartas;
   }
 
   async mostrarInfoMedalla(medalla: string) {
@@ -75,7 +88,7 @@ export class Tab5Page implements OnInit {
       mensaje =
         '🏅 Coleccionista\n\n' +
         'Requisito:\n' +
-        'Crea almenos 5 colecciones\n';
+        'Crea al menos 5 colecciones\n';
     }
 
     if (medalla === 'cienCartas') {

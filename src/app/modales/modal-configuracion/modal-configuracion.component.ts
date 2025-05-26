@@ -4,13 +4,14 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from 'src/app/config/firebase.config';
 import { IonicModule } from '@ionic/angular';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { ModalComponent } from 'src/app/componentes/modal/modal.component';
 
 @Component({
   selector: 'app-modal-configuracion',
   templateUrl: './modal-configuracion.component.html',
   styleUrls: ['./modal-configuracion.component.scss'],
   standalone: true,
-  imports: [IonicModule]
+  imports: [IonicModule, ModalComponent]
 })
 export class ModalConfiguracionComponent implements OnInit {
 

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { ModalComponent } from 'src/app/componentes/modal/modal.component';
 
 interface CartaIdioma {
   dinero: number;
@@ -14,7 +15,7 @@ interface CartaIdioma {
   templateUrl: './agregar-propias.component.html',
   styleUrls: ['./agregar-propias.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule, ModalComponent]
 })
 export class AgregarPropiasComponent {
   dinero: string = '';

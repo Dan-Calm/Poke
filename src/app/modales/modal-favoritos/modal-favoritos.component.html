@@ -1,16 +1,5 @@
-<ion-header>
-  <ion-toolbar color="danger">
-    <ion-title>{{ nombreColeccion | titlecase }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="cerrarModal()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-
+<app-modal>
+  <span modal-title>{{ nombreColeccion | titlecase }}</span>
   <!-- Resumen de colección -->
   <div style="padding: 1rem; text-align: center;">
     <ion-text color="primary">
@@ -51,4 +40,7 @@
   <ion-text *ngIf="cartas.length === 0" color="medium">
     <p style="text-align: center; padding: 2rem;">No tienes cartas en esta coleccion.</p>
   </ion-text>
-</ion-content>
+</app-modal>
+
+
+

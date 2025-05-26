@@ -1,15 +1,6 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Configuración</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="cerrarModal()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<app-modal>
+  <span modal-title>Configuracion del Usuario</span>
 
-<ion-content class="ion-padding">
   <ion-list>
     <ion-item button (click)="editarNombre()">
       <ion-icon name="person-outline" slot="start"></ion-icon>
@@ -37,4 +28,5 @@
       </ion-label>
     </ion-item>
   </ion-list>
-</ion-content>
+
+</app-modal>

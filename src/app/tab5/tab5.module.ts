@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { Tab5PageRoutingModule } from './tab5-routing.module';
 
 import { Tab5Page } from './tab5.page';
+import { BarraProgresoComponent } from '../componentes/barra-progreso/barra-progreso.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    Tab5PageRoutingModule
+    Tab5PageRoutingModule,
+    BarraProgresoComponent
   ],
   declarations: [Tab5Page]
 })

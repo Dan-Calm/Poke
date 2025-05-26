@@ -13,12 +13,14 @@ import { BarraProgresoComponent } from 'src/app/componentes/barra-progreso/barra
 
 import { AuthService } from '../../services/auth.service';
 
+import { ModalComponent } from 'src/app/componentes/modal/modal.component';
+
 @Component({
   selector: 'app-modal-propias',
   templateUrl: './modal-propias.component.html',
   styleUrls: ['./modal-propias.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, ModalComponent],
 })
 export class ModalPropiasComponent implements OnInit {
   @Input() nombreColeccion!: string;

@@ -19,45 +19,57 @@
     <p>Rol: {{ tipoUsuario }}</p>
   </div>
 
-  <!-- Medallas -->
-  <ion-grid>
-    <ion-row class="medallas-row" justify-content-center>
-      <ion-col size="4" class="medalla-col">
-        <div class="medalla" (click)="mostrarInfoMedalla('legendaria')">
-          <img 
-            src="https://images.wikidexcdn.net/mwuploads/wikidex/9/93/latest/20180812035749/Medalla_Volc%C3%A1n.png" 
-            alt="Medalla Carta Legendaria"
-            [ngStyle]="tieneMedallaCartaLegendaria ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}"
-          />
-          <p class="medalla-titulo" style="font-size: 0.95em; white-space: normal; text-align: center; margin: 0.5em 0 0 0;">
-            Legendaria
-          </p>
-        </div>
-      </ion-col>
-      <ion-col size="4" class="medalla-col">
-        <div class="medalla" (click)="mostrarInfoMedalla('coleccionista')">
-          <img 
-            src="https://images.wikidexcdn.net/mwuploads/wikidex/3/39/latest/20180812014627/Medalla_Roca.png" 
-            alt="Medalla Coleccionista de Verdad"
-            [ngStyle]="tieneMedallaColeccionistaVerdadero ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}"
-          />
-          <p class="medalla-titulo" style="font-size: 0.95em; white-space: normal; text-align: center; margin: 0.5em 0 0 0;">
-            Coleccionista
-          </p>
-        </div>
-      </ion-col>
-      <ion-col size="4" class="medalla-col">
-        <div class="medalla" (click)="mostrarInfoMedalla('cienCartas')">
-          <img 
-            src="https://images.wikidexcdn.net/mwuploads/wikidex/6/60/latest/20180812013531/Medalla_Cascada.png" 
-            alt="Medalla 100 Cartas"
-            [ngStyle]="tieneMedallaCienCartas ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}"
-          />
-          <p class="medalla-titulo" style="font-size: 0.95em; white-space: normal; text-align: center; margin: 0.5em 0 0 0;">
-            100 Cartas
-          </p>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <!-- Medallas en lista vertical -->
+  <ion-list>
+    <ion-item lines="full">
+      <ion-avatar slot="start">
+        <img 
+          src="https://images.wikidexcdn.net/mwuploads/wikidex/9/93/latest/20180812035749/Medalla_Volc%C3%A1n.png"
+          [ngStyle]="tieneMedallaCartaLegendaria ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}"
+        />
+      </ion-avatar>
+      <ion-label>
+        <h2>Legendaria</h2>
+        <p>Debes tener al menos una carta con rareza "Rara Ilustración Especial" o "Rara Híper" en tu colección propia.</p>
+        <app-barra-progreso 
+          [valor]="progresoLegendaria" 
+          [total]="1">
+        </app-barra-progreso>
+      </ion-label>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-avatar slot="start">
+        <img 
+          src="https://images.wikidexcdn.net/mwuploads/wikidex/3/39/latest/20180812014627/Medalla_Roca.png"
+          [ngStyle]="tieneMedallaColeccionistaVerdadero ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}"
+        />
+      </ion-avatar>
+      <ion-label>
+        <h2>Coleccionista</h2>
+        <p>Crea al menos 5 colecciones.</p>
+        <app-barra-progreso 
+          [valor]="progresoColeccionista" 
+          [total]="5">
+        </app-barra-progreso>
+      </ion-label>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-avatar slot="start">
+        <img 
+          src="https://images.wikidexcdn.net/mwuploads/wikidex/6/60/latest/20180812013531/Medalla_Cascada.png"
+          [ngStyle]="tieneMedallaCienCartas ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}"
+        />
+      </ion-avatar>
+      <ion-label>
+        <h2>100 Cartas</h2>
+        <p>Debes tener al menos 100 cartas en tu colección propia.</p>
+        <app-barra-progreso 
+          [valor]="progresoCienCartas" 
+          [total]="100">
+        </app-barra-progreso>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>

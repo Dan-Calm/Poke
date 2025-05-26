@@ -1,15 +1,5 @@
-<ion-header>
-  <ion-toolbar color="danger">
-    <ion-title> Propias </ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="cerrarModal()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
+<app-modal>
+  <span modal-title>Cartas Propias</span>
   <!-- Resumen de colección -->
   <div style="padding: 1rem; text-align: center;">
     <ion-text color="primary">
@@ -52,5 +42,7 @@
     </ion-row>
 
   </ion-grid>
+</app-modal>
 
-</ion-content>
+
+

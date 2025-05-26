@@ -201,4 +201,40 @@ async tieneCienCartas(): Promise<boolean> {
   const cartasSnap = await getDocs(cartasRef);
   return cartasSnap.size >= 100;
 }
+
+// Devuelve la cantidad de colecciones del usuario
+async getCantidadColecciones(): Promise<number> {
+  await this.obtenerIdUsuario();
+  const coleccionesRef = collection(db, "usuarios", this.idUsuarios, "colecciones");
+  const snapshot = await getDocs(coleccionesRef);
+  return snapshot.docs.length;
+}
+
+// Devuelve la cantidad de cartas propias del usuario
+async getCantidadCartas(): Promise<number> {
+  await this.obtenerIdUsuario();
+  const cartasRef = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'propias', 'cartas');
+  const cartasSnap = await getDocs(cartasRef);
+  return cartasSnap.size;
+}
+
+// Devuelve la cantidad de cartas legendarias (Rara Ilustración Especial o Rara Híper)
+async cantidadCartasLegendarias(): Promise<number> {
+  await this.obtenerIdUsuario();
+  const cartasRef = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'propias', 'cartas');
+  const snapshot = await getDocs(cartasRef);
+  let cantidad = 0;
+  for (const docu of snapshot.docs) {
+    const carta = docu.data();
+    const rareza = carta?.['rareza'];
+    if (
+      rareza === "Rara Ilustración Especial" ||
+      rareza === "Rara Híper"
+    ) {
+      cantidad++;
+    }
+  }
+  return cantidad;
+}
+
 }
