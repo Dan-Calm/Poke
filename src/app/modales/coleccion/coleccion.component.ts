@@ -3,12 +3,20 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { ColeccionesService } from 'src/app/services/colecciones.service';
 import { NavParams } from '@ionic/angular';
-import { deleteDoc, doc } from 'firebase/firestore';
-import { db } from 'src/app/config/firebase.config';
+import { collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { db } from '../../config/firebase.config';
 import { DetalleCartaComponent } from '../detalle-carta/detalle-carta.component';
 import { CartasService } from '../../services/cartas.service';
 
 import { BarraProgresoComponent } from 'src/app/componentes/barra-progreso/barra-progreso.component';
+import { ModalComponent } from "../../componentes/modal/modal.component";
+
+import { AuthService } from '../../services/auth.service';
+
+import { Router } from '@angular/router';
+
+import { AgregarPropiasComponent } from '../../modales/agregar-propias/agregar-propias.component';
+import { image } from 'd3';
 
 
 @Component({
@@ -16,9 +24,11 @@ import { BarraProgresoComponent } from 'src/app/componentes/barra-progreso/barra
   templateUrl: './coleccion.component.html',
   styleUrls: ['./coleccion.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, BarraProgresoComponent],
+  imports: [CommonModule, IonicModule, BarraProgresoComponent, ModalComponent],
 })
 export class ColeccionComponent implements OnInit {
+
+  idUsiuario: any = ''; // ID del usuario logueado
 
   // nombre de la colección que se pasa desde el modal
   @Input() nombreColeccion!: string;
@@ -32,15 +42,24 @@ export class ColeccionComponent implements OnInit {
   cartas_tiendas: any[] = [];
   cartas_tiendas_propias: any[] = [];
 
+  favoritos: any[] = []; // guarda las cartas de todas las tiendas
+  favoritosSet: Set<string> = new Set();
+
+  cartasTienda: any[] = []; // guarda las cartas de todas las tiendas
+
   constructor(
-    private modalCtrl: ModalController,
+    private router: Router,
+    private modalController: ModalController,
     private coleccionesService: ColeccionesService,
     private navParams: NavParams,
     private cartasService: CartasService,
+    private coleccionesServies: ColeccionesService,
+    private authService: AuthService,
   ) { }
 
   // función principal que se ejecuta al iniciar el componente
   async ngOnInit() {
+    this.idUsiuario = await this.authService.getCurrentUser();
     // obtiene el nombre de la colección desde los parámetros del modal
     this.nombreColeccion = this.navParams.get('nombreColeccion');
 
@@ -51,68 +70,83 @@ export class ColeccionComponent implements OnInit {
     if (this.cartas.length === 0) {
       await this.cargarCartasDesdeExpansiones();
     }
-
-    // crea un set con los ids de las cartas propias para comparación rápida
-    this.crearSetCartasPropias();
-
     // carga las cartas de tiendas y filtra las que tienes en propias
     await this.cargarCartasTiendasYPropias();
 
     // agrega los datos de precio y cantidad a las cartas de la colección si existen en cartas propias
-    this.unificarDatosCartas();
+    // this.unificarDatosCartas();
 
     // calcula la cantidad de matches y el total del precio de las cartas propias de la colección
     this.calcularResumenColeccion();
+
+    this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado
+    // console.log('Favoritos cargados:', this.favoritos);
+    this.favoritosSet = new Set(this.favoritos.map(fav => fav.id));
+
+    
+    this.cartasTienda = await this.cartasService.descargarCartasDeTiendas();
+    
+    // crea un set con los ids de las cartas propias para comparación rápida
+    await this.crearSetCartasPropias();
+    
+    // agrega los datos de precio y cantidad a las cartas de la colección si existen en cartas propias
+    this.unificarDatosCartas();
+    console.log('cartas al final del ngOnInit:', this.cartas);
   }
   // carga las cartas de la colección seleccionada y las cartas propias del usuario
   async cargarCartasColeccionYPropias() {
+    // console.log('Cargando cartas de la colección:', this.nombreColeccion);
     this.cartas = await this.coleccionesService.cargarCartasDeColeccion(this.nombreColeccion);
-    this.cartas_propias = await this.coleccionesService.cargarCartasDeColeccion("propias");
     // muestra en consola las cartas obtenidas
-    console.log('cartas:', this.cartas);
-    console.log('cartas propias:', this.cartas_propias);
+    // console.log('cartas:', this.cartas);
   }
 
   // si no hay cartas en la colección, las obtiene desde las expansiones y las mapea al formato estándar
   async cargarCartasDesdeExpansiones() {
-    console.log('no hay cartas en la colección:', this.nombreColeccion);
+
     this.expansiones = await this.cartasService.expansiones();
-    console.log('expansiones:', this.expansiones);
+    // console.log('expansiones:', this.expansiones);
 
     // filtra y mapea para unificar el formato
     this.cartas = this.expansiones
       .filter(expansion => expansion.coleccion === this.nombreColeccion)
       .map(expansion => ({
         id: expansion.id,
-        nombre: expansion.nombre_espanol,
-        imagen: expansion.imagen_url,
-        rareza: expansion.rareza,
+        nombre_espanol: expansion.nombre_espanol,
         codigo: expansion.codigo,
-        expansion: expansion.expansion,
-        tipo_carta: expansion.tipo_carta,
+        imagen_url: expansion.imagen_url,
+        imagen_url_grande: expansion.imagen_url_grande,
+        rareza: expansion.rareza,
         estado: expansion.estado,
+        expansion: expansion.expansion,
+        coleccion: expansion.coleccion,
+        tipo_carta: expansion.tipo_carta,
       }));
 
-    console.log('cartas filtradas y mapeadas:', this.cartas);
+    // console.log('cartas filtradas y mapeadas:', this.cartas);
   }
 
   // compara la cartas propias con las del set y crea un set de ids
-  crearSetCartasPropias() {
+  async crearSetCartasPropias() {
+    this.cartas_propias = await this.coleccionesService.cargarCartasDeColeccion("propias");
+    console.log('cartas propias:', this.cartas_propias);
     this.cartasPropiasSet = new Set(this.cartas_propias.map(c => c.id));
-    console.log('set de cartas propias:', this.cartasPropiasSet);
+    // console.log('set de cartas propias:', this.cartasPropiasSet);
   }
 
   // carga las cartas de tiendas y filtra las que tienes en propias
   async cargarCartasTiendasYPropias() {
     this.cartas_tiendas = await this.cartasService.descargarCartasDeTiendas();
-    console.log('cartas de tiendas:', this.cartas_tiendas);
+    // console.log('cartas de tiendas:', this.cartas_tiendas);
 
     this.cartas_tiendas_propias = this.cartas_tiendas.filter(carta => this.cartasPropiasSet.has(carta.coleccion));
-    console.log('cartas de tiendas que tienes en propias:', this.cartas_tiendas_propias);
+    // console.log('cartas de tiendas que tienes en propias:', this.cartas_tiendas_propias);
   }
 
   // agrega los datos de precio y cantidad a las cartas de la colección si existen en cartas propias
   unificarDatosCartas() {
+    // console.log('unificando datos de cartas');
+    // console.log('cartas:', this.cartas);
     this.cartas = this.cartas.map(carta => {
       const propia = this.cartas_propias.find(cp => cp.id === carta.id);
       return {
@@ -128,7 +162,7 @@ export class ColeccionComponent implements OnInit {
     // obtiene las cartas de la colección que también están en cartas propias
     const matches = this.cartas.filter(carta => this.cartasPropiasSet.has(carta.id));
     this.cantidadMatches = matches.length;
-    console.log('cantidad de cartas de la expansión que tienes en propias:', this.cantidadMatches);
+    // console.log('cantidad de cartas de la expansión que tienes en propias:', this.cantidadMatches);
 
     // suma el precio total de las cartas propias de la colección (considerando cantidad)
     this.totalPrecio = matches.reduce((acc, carta) => {
@@ -140,27 +174,18 @@ export class ColeccionComponent implements OnInit {
       return acc;
     }, 0);
 
-    console.log('total precio de cartas propias de la colección:', this.totalPrecio);
-    console.log('cantidad de cartas en la colección:', this.cartas.length);
+    // console.log('total precio de cartas propias de la colección:', this.totalPrecio);
+    // console.log('cantidad de cartas en la colección:', this.cartas.length);
   }
 
   // cierra el modal
   cerrar() {
-    this.modalCtrl.dismiss();
-  }
-
-  // elimina una carta de favoritos
-  async eliminarFavorito(carta: any) {
-    try {
-      this.cartasFavoritas = await this.coleccionesService.eliminarCartaFavorita(carta.id);
-    } catch (error) {
-      console.error('error al eliminar carta favorita:', error);
-    }
+    this.modalController.dismiss();
   }
 
   // cierra el modal (alias)
   async cerrarModal() {
-    this.modalCtrl.dismiss();
+    this.modalController.dismiss();
   }
 
   // elimina una carta de la colección seleccionada
@@ -170,14 +195,32 @@ export class ColeccionComponent implements OnInit {
     this.cartas = await this.coleccionesService.cargarCartasDeColeccion(this.nombreColeccion);
   }
 
-  // abre el modal de detalle de carta
+  async agregarFavorito(carta: any) {
+    console.log(`Agregar a Favorito carta con ID: ${carta}`);
+    await this.coleccionesService.agregar_a_coleccion(carta, "favoritos");
+
+    console.log('Favorito agregado:', carta.id);
+    this.favoritos = await this.coleccionesServies.recargarFavoritos();
+    this.favoritosSet = new Set(this.favoritos.map(fav => fav.id)); // <-- Actualiza el Set
+  }
+
+  async eliminarFavorito(id: string) {
+    console.log("eliminar favorito", id);
+    console.log("eliminar favorito", this.idUsiuario);
+
+    await deleteDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "favoritos", "cartas", id));
+    this.favoritos = await this.coleccionesServies.recargarFavoritos();
+    this.favoritosSet = new Set(this.favoritos.map(fav => fav.id)); // <-- Actualiza el Set
+  }
+
+
   async verCarta(carta: any) {
-    console.log('ver carta:', carta);
-    const modal = await this.modalCtrl.create({
+    console.log('Ver carta:', carta);
+    const modal = await this.modalController.create({
       component: DetalleCartaComponent,
       componentProps: {
-        imagen: carta.imagen,
-        nombre: carta.nombre,
+        imagen: carta.imagen_url_grande,
+        nombre: carta.nombre_espanol,
         codigo: carta.codigo,
         rareza: carta.rareza,
         tipo: carta.tipo_carta,
@@ -186,4 +229,89 @@ export class ColeccionComponent implements OnInit {
     });
     await modal.present();
   }
+
+  estadisticas(carta:any) {
+    console.log(`Acción 3 ejecutada para la carta con ID: ${carta.id}`);
+    this.router.navigate(['/tabs/tab3', carta.id]);
+    this.cerrar();
+  }
+
+  async cotizar(carta: any) {
+    console.log("ID del usuario:", this.idUsiuario);
+    console.log(`Cotizar carta con ID: ${carta.id}`);
+
+    this.coleccionesService.agregar_a_coleccion(carta, "historial")
+    // Navegar a la segunda pantalla pasando el ID de la colección como parámetro
+    this.router.navigate(['/coleccion-detalle', carta.id]);
+  }
+
+  async agregarPropia(carta_guardada: any) {
+    // console.log(`Acción 2 ejecutada para la carta con ID: `, carta_guardada);
+
+    // console.log("Cartas de la tienda", this.cartasTienda);
+
+    const cartasConPrecio = this.cartasTienda.filter((carta) => carta.coleccion === carta.id);
+    // console.log(`Cartas filtradas por la colección "${carta_guardada.id}":`, cartasConPrecio);
+
+    const sumaPrecios = cartasConPrecio.reduce((acumulador: number, carta: any) => acumulador + carta.precio, 0);
+    const precioPromedio = cartasConPrecio.length ? sumaPrecios / cartasConPrecio.length : 0;
+
+    // Abre el modal personalizado
+    const modal = await this.modalController.create({
+      component: AgregarPropiasComponent,
+      componentProps: {
+        dinero: precioPromedio ? `$${parseInt(precioPromedio.toString(), 10).toLocaleString('es-CL')}` : '',
+        cantidad: 1,
+        idioma: 'Español'
+      }
+    });
+
+    modal.onDidDismiss().then(async (result) => {
+      // console.log('Modal cerrado con resultado:', result);
+      if (result.data && Array.isArray(result.data)) {
+        // 1. Crear (o actualizar) el documento 'propias' en 'colecciones'
+        await setDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "propias"), {
+          nombre: "propias",
+          creado: new Date()
+        }, { merge: false });
+
+        // 2. Guardar cada carta en la subcolección 'car  tas'
+        for (const carta of result.data) {
+          // console.log('Carta seleccionada:', carta);
+          await setDoc(
+            doc(db, "usuarios", this.idUsiuario, "colecciones", "propias", "cartas", carta_guardada.id + '-' + carta.idioma),
+            { 
+              codigo: carta_guardada.codigo,
+              coleccion: carta_guardada.coleccion,
+              estado: carta_guardada.estado,
+              expansion: carta_guardada.expansion,
+              id: carta_guardada.id,
+              imagen_url: carta_guardada.imagen_url,
+              imagen_url_grande: carta_guardada.imagen_url_grande,
+              nombre_espanol: carta_guardada.nombre_espanol,
+              rareza: carta_guardada.rareza,
+              tipo_carta: carta_guardada.tipo_carta,
+              precio: carta.dinero,
+              cantidad: carta.cantidad,
+              idioma: carta.idioma,
+            }, { merge: true }
+          );
+        }
+
+        // console.log('Cartas guardadas en la colección "propias"');
+
+        await this.crearSetCartasPropias();
+      }
+    });
+
+    // console.log('Propia agregada:', carta_guardada.id);
+
+    await modal.present();
+
+  }
+  
+  accionInferior1(carta: any){
+    console.log(`Acción 1 ejecutada para la carta con ID: ${carta.id}`);
+  }
+
 }

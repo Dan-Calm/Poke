@@ -103,6 +103,7 @@ guardar() {
     this.mostrarToast('Debes agregar al menos una carta a la lista.');
     return;
   }
+  console.log('Cartas por idioma:', this.cartasPorIdioma);
   this.modalCtrl.dismiss(this.cartasPorIdioma);
 }
 

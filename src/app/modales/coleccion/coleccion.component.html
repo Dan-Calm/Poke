@@ -1,6 +1,6 @@
 <ion-header>
-  <ion-toolbar color="danger">
-    <ion-title>{{ nombreColeccion | titlecase }}</ion-title>
+  <ion-toolbar>
+    <ion-title>{{ nombreColeccion }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarModal()">
         <ion-icon name="close-outline"></ion-icon>
@@ -9,8 +9,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-
+<ion-content class="ion-padding">
   <!-- Resumen de colección -->
   <div style="padding: 1rem; text-align: center;">
     <ion-text color="primary">
@@ -18,37 +17,68 @@
       <strong>Cartas que tienes:</strong> {{ cantidadMatches }}<br>
       <strong>Valorización inicial:</strong> ${{ totalPrecio | number:'1.0-0' }}
     </ion-text>
-
     <!-- barra de progreso de colección -->
     <app-barra-progreso [valor]="cantidadMatches" [total]="cartas.length"></app-barra-progreso>
   </div>
 
-  <ion-grid>
+
+  <ion-grid style="flex: 1 1 auto;">
     <ion-row>
+
       <ion-col size="6" *ngFor="let carta of cartas">
-        <ion-card>
-          <ion-card-content class="contenido-acciones">
-            <ion-button color="danger" size="small" fill="outline" expand="block" (click)="eliminarCarta(carta)">
-              <ion-icon slot="start" name="trash-outline"></ion-icon>
-              Eliminar
-            </ion-button>
-          </ion-card-content>
-          <img (click)="verCarta(carta)" [src]="carta.imagen" alt="Carta Pokémon"
-            [ngStyle]="cartasPropiasSet.has(carta.id) ? {} : {'filter': 'grayscale(1)'}" />
-          <ion-card-header>
-            <ion-card-title>{{ carta.nombre }}</ion-card-title>
-            <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
-            <div style="margin-top: 8px;">
-              <div><strong>Cantidad:</strong> {{ carta.cantidad }}</div>
-              <div><strong>Precio:</strong> ${{ carta.precio | number:'1.0-0' }}</div>
+        <ion-card class="carta-card">
+          <!-- Fila superior de 4 botones (puedes dejarla arriba del card si la necesitas) -->
+          <ion-row class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="3">
+              <ion-button expand="block" size="small"
+                (click)="favoritosSet.has(carta.id) ? eliminarFavorito(carta.id) : agregarFavorito(carta)">
+                <ion-icon slot="icon-only" [name]="favoritosSet.has(carta.id) ? 'heart' : 'heart-outline'"></ion-icon>
+              </ion-button>
+            </ion-col>
+            <ion-col size="3">
+              <ion-button size="small" (click)="agregarPropia(carta)">
+                <ion-icon slot="icon-only" name="duplicate"></ion-icon>
+              </ion-button>
+            </ion-col>
+            <ion-col size="3">
+              <ion-button size="small" (click)="estadisticas(carta)">
+                <ion-icon slot="icon-only" name="bar-chart"></ion-icon>
+              </ion-button>
+            </ion-col>
+            <ion-col size="3">
+              <ion-button size="small" (click)="cotizar(carta)">
+                <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+
+          <!-- Imagen con botones flotantes -->
+          <div class="carta-img-container">
+            <img (click)="verCarta(carta)" [src]="carta.imagen_url" alt="Carta Pokémon"
+              [ngStyle]="cartasPropiasSet.has(carta.id) ? {} : {'filter': 'grayscale(1)'}" />
+            <div class="carta-botones-flotantes">
+              <img src="assets/banderas/chile.png" alt="Favorito" class="icon-btn" (click)="accionInferior1(carta)">
+              <img src="assets/banderas/united-kingdom.png" alt="Ver" class="icon-btn" (click)="accionInferior1(carta)">
+              <img src="assets/banderas/japan.png" alt="Compartir" class="icon-btn" (click)="accionInferior1(carta)">
             </div>
+          </div>
+
+          <ion-card-header>
+            <ion-card-title>{{ carta.nombre_espanol }}</ion-card-title>
+            <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
           </ion-card-header>
+          <ion-card-content>
+            <div><strong>Cantidad:</strong> {{ carta.cantidad }}</div>
+            <div><strong>Precio:</strong> ${{ carta.precio | number:'1.0-0' }}</div>
+          </ion-card-content>
         </ion-card>
       </ion-col>
+
     </ion-row>
   </ion-grid>
 
   <ion-text *ngIf="cartas.length === 0" color="medium">
     <p style="text-align: center; padding: 2rem;">No tienes cartas en esta coleccion.</p>
   </ion-text>
+
 </ion-content>
