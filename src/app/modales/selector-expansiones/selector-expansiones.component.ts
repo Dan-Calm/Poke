@@ -5,6 +5,7 @@ import { CartasService } from 'src/app/services/cartas.service';
 import { ColeccionesService } from 'src/app/services/colecciones.service';
 import { ModalComponent } from 'src/app/componentes/modal/modal.component';
 
+
 @Component({
   standalone: true,
   selector: 'app-selector-expansiones',

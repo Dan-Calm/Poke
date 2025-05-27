@@ -48,26 +48,26 @@
                 <!-- Agregar a favorito -->
                 <ion-col size="auto">
                   <ion-button size="small"
-                    (click)="favoritosSet.has(carta.id) ? eliminarFavorito(carta.id) : agregarFavorito(carta.id, carta.nombre_espanol, carta.codigo, carta.imagen_url)">
+                    (click)="favoritosSet.has(carta.id) ? eliminarFavorito(carta.id) : agregarFavorito(carta)">
                     <ion-icon slot="icon-only"
                       [name]="favoritosSet.has(carta.id) ? 'heart' : 'heart-outline'"></ion-icon>
                   </ion-button>
                 </ion-col>
                 <!--Agregar a una colección -->
                 <ion-col size="auto">
-                  <ion-button size="small" (click)="agregarPropia(carta.id, carta.nombre_espanol, carta.codigo, carta.imagen_url, carta.rareza)">
+                  <ion-button size="small" (click)="agregarPropia(carta)">
                     <ion-icon slot="icon-only" name="duplicate"></ion-icon>
                   </ion-button>
                 </ion-col>
                 <!-- Ver estadísticas -->
                 <ion-col size="auto">
-                  <ion-button size="small" (click)="accion3(carta.id)">
+                  <ion-button size="small" (click)="estadisticas(carta.id)">
                     <ion-icon slot="icon-only" name="bar-chart"></ion-icon>
                   </ion-button>
                 </ion-col>
                 <!-- Ver carta -->
                 <ion-col size="auto">
-                  <ion-button size="small" (click)="cotizar(carta.id, carta.nombre_espanol, carta.codigo, carta.imagen_url)">
+                  <ion-button size="small" (click)="cotizar(carta)">
                     <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
                   </ion-button>
                 </ion-col>

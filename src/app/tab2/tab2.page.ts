@@ -4,8 +4,7 @@ import { CartasService } from '../services/cartas.service';
 import { SelectorExpansionesComponent } from '../modales/selector-expansiones/selector-expansiones.component';
 import { AuthService } from '../services/auth.service';
 import { ColeccionesService } from '../services/colecciones.service';
-import { ModalFavoritosComponent } from '../modales/modal-favoritos/modal-favoritos.component';
-import { ModalPropiasComponent } from '../modales/modal-propias/modal-propias.component';
+import { ColeccionComponent } from '../modales/coleccion/coleccion.component';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase.config';
 
@@ -63,27 +62,9 @@ export class Tab2Page {
     }
   }
 
-  async mostrarFavoritos() {
-    const modal = await this.modalController.create({
-      component: ModalFavoritosComponent,
-    });
-    await modal.present();
-  }
-
   async mostrarColeccion(nombreColeccion: string) {
-    console.log('Nombre de la colección:', nombreColeccion);
-    if (nombreColeccion === 'propias') {
-      const modal = await this.modalController.create({
-        component: ModalPropiasComponent,
-        componentProps: {
-          nombreColeccion: nombreColeccion
-        }
-      });
-      await modal.present();
-      return;
-    }
     const modal = await this.modalController.create({
-      component: ModalFavoritosComponent,
+      component: ColeccionComponent,
       componentProps: {
         nombreColeccion: nombreColeccion
       }

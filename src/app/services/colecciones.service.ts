@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { collection, getDocs, query, where, doc, getDoc, setDoc, writeBatch, deleteDoc } from 'firebase/firestore';
 import { db } from '../config/firebase.config';
 import { AuthService } from '../services/auth.service';
+import { race } from 'rxjs';
 
 
 @Injectable({
@@ -73,14 +74,63 @@ export class ColeccionesService {
   async cargarFavoritos(): Promise<any[]> {
     await this.obtenerIdUsuario(); // obtener el id del usuario logueado
     try {
+      if(this.favoritos.length > 0) {
+        console.log('Ya tienes favoritos cargados');
+        return this.favoritos;
+      }
+      return this.recargarFavoritos();
+    } catch (error) {
+      console.error('Error al cargar los favoritos:', error);
+      throw error;
+    }
+  }
+
+  async recargarFavoritos(): Promise<any[]> {
+    try {
       const referenciaColecciones = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'favoritos', 'cartas');
       const resultadoColecciones = await getDocs(referenciaColecciones);
-      this.favoritos = resultadoColecciones.docs.map(doc => doc.data());
-
-      console.log('FAVORITOS ENCONTRADOS:', this.favoritos);
+      this.favoritos = resultadoColecciones.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      console.log('Carga de favoritos desde colecciones service:', this.favoritos);
       return this.favoritos;
     } catch (error) {
       console.error('Error al cargar los favoritos:', error);
+      throw error;
+    }
+  }
+
+  async agregar_a_coleccion(carta: any, nombre_coleccion: string): Promise<boolean> {
+    console.log('Agregar a Favorito carta con ID:', carta.id);
+    await this.obtenerIdUsuario(); // obtener el id del usuario logueado
+    console.log('ID del usuario:', this.idUsuarios);
+    console.log('Carta: ', carta);
+
+    try {
+      const ref_favoritos = doc(db, 'usuarios', this.idUsuarios, 'colecciones', nombre_coleccion);
+      await setDoc(ref_favoritos, {
+        nombre: nombre_coleccion,
+      }, { merge: true });
+
+      const referencia_documento = doc(db, 'usuarios', this.idUsuarios, 'colecciones', nombre_coleccion, 'cartas', carta.id);
+      await setDoc(referencia_documento, {
+        id: carta.id,
+        nombre_espanol: carta.nombre_espanol,
+        codigo: carta.codigo,
+        imagen_url: carta.imagen_url,
+        imagen_url_grande: carta.imagen_url_grande,
+        rareza: carta.rareza,
+        estado: carta.estado,
+        expansion: carta.expansion,
+        coleccion: carta.coleccion,
+        tipo_carta: carta.tipo_carta,
+
+      }, { merge: true });
+
+      return true;
+    } catch (error) {
+      console.error('Error al cargar los documentos de favoritos:', error);
       throw error;
     }
   }
@@ -93,11 +143,10 @@ export class ColeccionesService {
     }
   }
 
-
   async obtenerIdUsuario() {
     try {
       if (this.idUsuarios) {
-        console.log('ID del usuario:', this.idUsuarios);
+        // console.log('ID del usuario desde colecciones services:', this.idUsuarios);
         return this.idUsuarios;
       } else {
         this.idUsuarios = await this.authService.getCurrentUser();
@@ -154,46 +203,48 @@ export class ColeccionesService {
     await this.obtenerIdUsuario();
     const ref = collection(db, 'usuarios', this.idUsuarios, 'colecciones', nombreColeccion, 'cartas');
     const snapshot = await getDocs(ref);
-    return snapshot.docs.map(doc => doc.data());
+    const cartas = snapshot.docs.map(doc => doc.data());
+    console.log('Cartas encontradas de la coleccion ',nombreColeccion,': ', cartas);
+    return cartas;
   }
 
   async evaluarMedallaCartaLegendaria(): Promise<boolean> {
-  await this.obtenerIdUsuario();
+    await this.obtenerIdUsuario();
 
-  const cartasRef = collection(
-    db,
-    "usuarios",
-    this.idUsuarios,
-    "colecciones",
-    "propias",
-    "cartas"
-  );
+    const cartasRef = collection(
+      db,
+      "usuarios",
+      this.idUsuarios,
+      "colecciones",
+      "propias",
+      "cartas"
+    );
 
-  const snapshot = await getDocs(cartasRef);
+    const snapshot = await getDocs(cartasRef);
 
-  for (const doc of snapshot.docs) {
-    const carta = doc.data();
-    console.log('Carta obtenida:', carta); // Verifica contenido
+    for (const doc of snapshot.docs) {
+      const carta = doc.data();
+      console.log('Carta obtenida:', carta); // Verifica contenido
 
-    const rareza = carta?.['rareza'];
+      const rareza = carta?.['rareza'];
 
-    if (
-      rareza === "Rara Ilustración Especial" ||
-      rareza === "Rara Híper"
-    ) {
-      return true; // ¡Tiene una carta legendaria!
+      if (
+        rareza === "Rara Ilustración Especial" ||
+        rareza === "Rara Híper"
+      ) {
+        return true; // ¡Tiene una carta legendaria!
+      }
     }
+
+    return false; // No tiene cartas con rareza legendaria
   }
 
-  return false; // No tiene cartas con rareza legendaria
-}
-
-async tieneCincoColecciones(): Promise<boolean> {
-  await this.obtenerIdUsuario();
-  const coleccionesRef = collection(db, "usuarios", this.idUsuarios, "colecciones");
-  const snapshot = await getDocs(coleccionesRef);
-  return snapshot.docs.length >= 5;
-}
+  async tieneCincoColecciones(): Promise<boolean> {
+    await this.obtenerIdUsuario();
+    const coleccionesRef = collection(db, "usuarios", this.idUsuarios, "colecciones");
+    const snapshot = await getDocs(coleccionesRef);
+    return snapshot.docs.length >= 5;
+  }
 
 async tieneCienCartas(): Promise<boolean> {
   await this.obtenerIdUsuario();

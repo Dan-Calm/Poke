@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
-import { ModalComponent } from 'src/app/componentes/modal/modal.component';
+import { ModalComponent } from '../../componentes/modal/modal.component';
 
 interface CartaIdioma {
   dinero: number;
@@ -24,6 +24,8 @@ export class AgregarPropiasComponent {
   idiomas: string[] = ['Español', 'Inglés', 'Japonés'];
 
   cartasPorIdioma: CartaIdioma[] = [];
+
+  propias: any[] = []; 
 
   constructor(
     private modalCtrl: ModalController,
@@ -101,6 +103,7 @@ guardar() {
     this.mostrarToast('Debes agregar al menos una carta a la lista.');
     return;
   }
+  console.log('Cartas por idioma:', this.cartasPorIdioma);
   this.modalCtrl.dismiss(this.cartasPorIdioma);
 }
 
