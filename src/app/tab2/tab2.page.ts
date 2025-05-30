@@ -62,11 +62,12 @@ export class Tab2Page {
     }
   }
 
-  async mostrarColeccion(nombreColeccion: string) {
+  async mostrarColeccion(coleccion: any) {
+    console.log('Mostrar colección:', coleccion);
     const modal = await this.modalController.create({
       component: ColeccionComponent,
       componentProps: {
-        nombreColeccion: nombreColeccion
+        coleccion: coleccion
       }
     });
     await modal.present();

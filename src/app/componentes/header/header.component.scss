@@ -1,0 +1,21 @@
+.app-header-toolbar {
+  --background: #d32f2f; /* Fondo rojo */
+  --color: #fff;
+  border-radius: 0 0 16px 16px;
+}
+
+ion-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #000 !important;
+  text-shadow:
+    -1px -1px 0 #fff,
+     1px -1px 0 #fff,
+    -1px  1px 0 #fff,
+     1px  1px 0 #fff; /* Borde blanco */
+  letter-spacing: 1px;
+}
+
+ion-menu-button {
+  color: #000000 !important; /* Color del botón de menú */
+}

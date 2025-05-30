@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ nombreColeccion }}</ion-title>
+    <ion-title>{{ coleccion.nombre }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarModal()">
         <ion-icon name="close-outline"></ion-icon>
@@ -25,7 +25,7 @@
   <ion-grid style="flex: 1 1 auto;">
     <ion-row>
 
-      <ion-col size="6" *ngFor="let carta of cartas">
+      <ion-col size="6" *ngFor="let carta of cartas_mostradas">
         <ion-card class="carta-card">
           <!-- Fila superior de 4 botones (puedes dejarla arriba del card si la necesitas) -->
           <ion-row class="ion-justify-content-center ion-align-items-center">
@@ -56,11 +56,14 @@
           <div class="carta-img-container">
             <img (click)="verCarta(carta)" [src]="carta.imagen_url" alt="Carta Pokémon"
               [ngStyle]="cartasPropiasSet.has(carta.id) ? {} : {'filter': 'grayscale(1)'}" />
-            <div class="carta-botones-flotantes">
-              <img src="assets/banderas/chile.png" alt="Favorito" class="icon-btn" (click)="accionInferior1(carta)">
-              <img src="assets/banderas/united-kingdom.png" alt="Ver" class="icon-btn" (click)="accionInferior1(carta)">
-              <img src="assets/banderas/japan.png" alt="Compartir" class="icon-btn" (click)="accionInferior1(carta)">
-            </div>
+          <div class="carta-botones-flotantes">
+            <img src="assets/banderas/chile.png" alt="Español" class="icon-btn"
+              [class.selected]="carta.idioma === 'Español'" (click)="seleccionarIdioma(carta, 'Español')">
+            <img src="assets/banderas/united-kingdom.png" alt="Inglés" class="icon-btn"
+              [class.selected]="carta.idioma === 'Inglés'" (click)="seleccionarIdioma(carta, 'Inglés')">
+            <img src="assets/banderas/japan.png" alt="Japonés" class="icon-btn"
+              [class.selected]="carta.idioma === 'Japonés'" (click)="seleccionarIdioma(carta, 'Japonés')">
+          </div>
           </div>
 
           <ion-card-header>
@@ -68,7 +71,7 @@
             <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
           </ion-card-header>
           <ion-card-content>
-            <div><strong>Cantidad:</strong> {{ carta.cantidad }}</div>
+            <div><strong>Cantidad:</strong> {{ carta.cantidad}}</div>
             <div><strong>Precio:</strong> ${{ carta.precio | number:'1.0-0' }}</div>
           </ion-card-content>
         </ion-card>

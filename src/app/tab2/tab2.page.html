@@ -1,10 +1,4 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Colecciones
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header [title]="'Colecciones'"></app-header>
 
 <ion-content>
   <ion-grid>
@@ -20,7 +14,7 @@
       </ion-col>
 
       <ion-col size="6" *ngFor="let coleccion of colecciones_usuario">
-        <ion-card (click)="mostrarColeccion(coleccion.id)" class="cuadro-seleccion">
+        <ion-card (click)="mostrarColeccion(coleccion)" class="cuadro-seleccion">
           <ion-card-content class="icono-centro">
             <ng-container *ngIf="coleccion.logo_mediano; else iconoPorDefecto">
               <img [src]="coleccion.logo_mediano" alt="Logo colección"/>
