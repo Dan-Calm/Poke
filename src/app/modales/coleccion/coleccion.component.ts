@@ -24,7 +24,7 @@ import { image } from 'd3';
   templateUrl: './coleccion.component.html',
   styleUrls: ['./coleccion.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, BarraProgresoComponent, ModalComponent],
+  imports: [CommonModule, IonicModule, BarraProgresoComponent],
 })
 export class ColeccionComponent implements OnInit {
 

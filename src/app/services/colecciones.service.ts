@@ -16,12 +16,13 @@ export class ColeccionesService {
   expansiones: any[] = []; // guarda las expansiones
 
   colecciones: any[] = []; // guarda las cartas de todas las tiendas
-
+  fechaCreacion: string | null = null;
   constructor(private authService: AuthService) { }
 
   async ngOnInit() {
 
   }
+
 
 
   async cargarColecciones() {
@@ -238,20 +239,36 @@ export class ColeccionesService {
 
     return false; // No tiene cartas con rareza legendaria
   }
-
+// medalla cinco colecciones
   async tieneCincoColecciones(): Promise<boolean> {
     await this.obtenerIdUsuario();
     const coleccionesRef = collection(db, "usuarios", this.idUsuarios, "colecciones");
     const snapshot = await getDocs(coleccionesRef);
     return snapshot.docs.length >= 5;
   }
-
+// Medalla 100 cartas
 async tieneCienCartas(): Promise<boolean> {
   await this.obtenerIdUsuario();
   const cartasRef = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'propias', 'cartas');
   const cartasSnap = await getDocs(cartasRef);
   return cartasSnap.size >= 100;
 }
+
+async evaluarMedallaInvestigador(): Promise<{ progreso: number, tieneMedalla: boolean }> {
+  const vistas = await this.contarCartasVistas();
+  const progreso = Math.min(vistas, 50); // Máximo 50 para la barra de progreso
+  const tieneMedalla = vistas >= 50;
+  return { progreso, tieneMedalla };
+}
+
+async evaluarMedallaFavoritos(): Promise<{ progreso: number, tieneMedalla: boolean }> {
+  const cantidadFavoritos = await this.contarFavoritos();
+  const progreso = Math.min(cantidadFavoritos, 20); // Progreso en cantidad de favoritos, máximo 20
+  const tieneMedalla = cantidadFavoritos >= 20;
+  return { progreso, tieneMedalla };
+}
+
+
 
 // Devuelve la cantidad de colecciones del usuario
 async getCantidadColecciones(): Promise<number> {
@@ -286,6 +303,79 @@ async cantidadCartasLegendarias(): Promise<number> {
     }
   }
   return cantidad;
+}
+
+async contarCartasVistas(): Promise<number> {
+  await this.obtenerIdUsuario();
+  try {
+    const referenciaHistorial = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'historial', 'cartas');
+    const snapshot = await getDocs(referenciaHistorial);
+    const totalVistas = snapshot.size;
+    return totalVistas;
+  } catch (error) {
+    console.error('Error al contar las cartas vistas:', error);
+    return 0;
+  }
+}
+
+async contarFavoritos(): Promise<number> {
+  await this.obtenerIdUsuario();
+  try {
+    const referenciaFavoritos = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'favoritos', 'cartas');
+    const snapshot = await getDocs(referenciaFavoritos);
+    const totalFavoritos = snapshot.size;
+    return totalFavoritos;
+  } catch (error) {
+    console.error('Error al contar favoritos:', error);
+    return 0;
+  }
+}
+
+async evaluarMedallaVeterano(): Promise<{ progreso: number, tieneMedalla: boolean }> {
+  if (!this.fechaCreacion) return { progreso: 0, tieneMedalla: false };
+
+  const fechaCreacionDate = new Date(this.fechaCreacion);
+  const ahora = new Date();
+  const diferenciaMs = ahora.getTime() - fechaCreacionDate.getTime();
+  const diferenciaDias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24)); // Suma 1 para incluir el día de creación
+
+  const progreso = Math.min(diferenciaDias, 30); // Máximo 30 días para la barra
+  const tieneMedalla = diferenciaDias >= 30;
+  return { progreso, tieneMedalla };
+}
+
+async cargarFechaCreacionUsuario(): Promise<void> {
+  await this.obtenerIdUsuario();
+  const userRef = doc(db, "usuarios", this.idUsuarios);
+  const docSnap = await getDoc(userRef);
+  if (docSnap.exists()) {
+    const userData = docSnap.data();
+    // Si es un Timestamp de Firestore
+    if (userData['fecha_creacion'] && userData['fecha_creacion'].seconds) {
+      this.fechaCreacion = new Date(userData['fecha_creacion'].seconds * 1000).toISOString();
+    } else {
+      // Si es un string ISO
+      this.fechaCreacion = userData['fecha_creacion'] || null;
+    }
+    console.log('Fecha de creación cargada:', this.fechaCreacion);
+  } else {
+    this.fechaCreacion = null;
+    console.log('No se encontró el usuario');
+  }
+}
+
+async evaluarMedallaPrimeraCaptura(): Promise<{ progreso: number, tieneMedalla: boolean }> {
+  await this.obtenerIdUsuario();
+  try {
+    const referencia = collection(db, 'usuarios', this.idUsuarios, 'colecciones', 'propias', 'cartas');
+    const snapshot = await getDocs(referencia);
+    const progreso = snapshot.size > 0 ? 1 : 0;
+    const tieneMedalla = snapshot.size > 0;
+    return { progreso, tieneMedalla };
+  } catch (error) {
+    console.error('Error al verificar Primera Captura:', error);
+    return { progreso: 0, tieneMedalla: false };
+  }
 }
 
 }
