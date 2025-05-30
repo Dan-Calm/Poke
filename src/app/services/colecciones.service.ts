@@ -48,7 +48,7 @@ export class ColeccionesService {
 
         return cartas;
       });
-      console.log('Favoritos encontrados:', resultadoFavoritos.docs.map(doc => doc.id));
+      // console.log('Favoritos encontrados:', resultadoFavoritos.docs.map(doc => doc.id));
 
 
     } catch (error) {
@@ -64,7 +64,7 @@ export class ColeccionesService {
       const resultadoColecciones = await getDocs(referenciaColecciones);
       this.favoritos = resultadoColecciones.docs.map(doc => doc.data());
 
-      console.log('HISTORIAL ENCONTRADO:', this.favoritos);
+      // console.log('HISTORIAL ENCONTRADO:', this.favoritos);
       return this.favoritos;
     } catch (error) {
       console.error('Error al cargar los favoritos:', error);
@@ -76,7 +76,7 @@ export class ColeccionesService {
     await this.obtenerIdUsuario(); // obtener el id del usuario logueado
     try {
       if(this.favoritos.length > 0) {
-        console.log('Ya tienes favoritos cargados');
+        // console.log('Ya tienes favoritos cargados');
         return this.favoritos;
       }
       return this.recargarFavoritos();
@@ -94,7 +94,7 @@ export class ColeccionesService {
         id: doc.id,
         ...doc.data()
       }));
-      console.log('Carga de favoritos desde colecciones service:', this.favoritos);
+      // console.log('Carga de favoritos desde colecciones service:', this.favoritos);
       return this.favoritos;
     } catch (error) {
       console.error('Error al cargar los favoritos:', error);

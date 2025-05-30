@@ -41,20 +41,24 @@ ion-content {
   scrollbar-width: none; /* Oculta la barra de scroll en Firefox */
 }
 
-.custom-modal {
-  --width: auto; /* Ajusta el ancho automáticamente */
-  --height: auto; /* Ajusta la altura automáticamente */
-  --border-radius: 10px; /* Opcional: bordes redondeados */
-  --background: transparent; /* Fondo transparente si es necesario */
+ion-content::part(background) {
+  background: #ffffff00;
 }
 
-.custom-modal-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%; /* Ocupa toda la altura del modal */
-  background: rgba(0, 0, 0, 0.8); /* Fondo oscuro semitransparente */
-}
+// .custom-modal {
+//   --width: auto; /* Ajusta el ancho automáticamente */
+//   --height: auto; /* Ajusta la altura automáticamente */
+//   --border-radius: 10px; /* Opcional: bordes redondeados */
+//   --background: transparent; /* Fondo transparente si es necesario */
+// }
+
+// .custom-modal-content {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   height: 100%; /* Ocupa toda la altura del modal */
+//   background: rgba(0, 0, 0, 0.8); /* Fondo oscuro semitransparente */
+// }
 
 .image-container {
   max-width: 90%; /* Ajusta el ancho máximo al 90% de la pantalla */

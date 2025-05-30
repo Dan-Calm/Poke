@@ -16,8 +16,6 @@ import { FiltrosComponent } from '../modales/filtros/filtros.component';
 import { DetalleCartaComponent } from '../modales/detalle-carta/detalle-carta.component'
 import { AgregarPropiasComponent } from '../modales/agregar-propias/agregar-propias.component';
 
-
-
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',

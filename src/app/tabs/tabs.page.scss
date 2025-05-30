@@ -9,3 +9,10 @@ ion-tab-bar ion-icon {
 //   font-size: 2.2rem;
   color: #000 !important; /* Negro */
 }
+
+/* Borde blanco al icono de la tab activa */
+ion-tab-button.tab-selected ion-icon {
+  box-shadow: 0 0 0 3px #fff;
+  border-radius: 50%;
+  background: transparent;
+}

@@ -38,7 +38,7 @@ options = webdriver.ChromeOptions()
 driver = webdriver.Chrome(options=options)
 
 # Número total de páginas
-total_paginas = 1
+total_paginas = 3
 
 # Lista para almacenar todos los productos con imagen
 todos_los_productos = []
@@ -159,6 +159,7 @@ try:
         url = f"https://www.afkstore.cl/collections/singles-pokemon?page={pagina}"
         # url = f"https://www.afkstore.cl/search?q=charizard&options%5Bprefix%5D=last"
         url = f"https://www.afkstore.cl/search?q=pikachu&options%5Bprefix%5D=last"
+        url = f"https://www.afkstore.cl/collections/surging-sparks?page={pagina}"
         print(f"Scraping página {pagina}: {url}")
         driver.get(url)
 

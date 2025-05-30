@@ -7,7 +7,7 @@ import { ExploreContainerComponentModule } from '../explore-container/explore-co
 
 import { Tab2PageRoutingModule } from './tab2-routing.module';
 
-// import { SelectorExpansionesComponent } from '../modales/selector-expansiones/selector-expansiones.component';
+import { HeaderComponent } from '../componentes/header/header.component'
 
 @NgModule({
   imports: [
@@ -15,7 +15,8 @@ import { Tab2PageRoutingModule } from './tab2-routing.module';
     CommonModule,
     FormsModule,
     ExploreContainerComponentModule,
-    Tab2PageRoutingModule
+    Tab2PageRoutingModule,
+    HeaderComponent
   ],
   declarations: [Tab2Page]
 })

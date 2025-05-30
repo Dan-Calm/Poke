@@ -41,7 +41,7 @@ export class CartasService {
       const referenciaTiendas = collection(db, 'tiendas');
       const resultadoTiendas = await getDocs(referenciaTiendas);
 
-      console.log('Tiendas encontradas:', resultadoTiendas.docs.map(doc => doc.id));
+      // console.log('Tiendas encontradas:', resultadoTiendas.docs.map(doc => doc.id));
 
       if (resultadoTiendas.empty) {
         console.warn('La colección "tiendas" está vacía.');
@@ -71,7 +71,7 @@ export class CartasService {
         return acumulador.concat(cartas);
       }, []);
 
-      console.log('Todas las cartas de todas las tiendas:', this.listaTiendas);
+      // console.log('Todas las cartas de todas las tiendas:', this.listaTiendas);
 
       return this.listaTiendas;
     } catch (error) {
@@ -97,7 +97,7 @@ export class CartasService {
     try {
       // Si ya se han cargado las expansiones, devolverlas directamente
       if (this.listaExpansiones.length > 0) {
-        console.log('Usando datos en caché de expansiones:', this.listaExpansiones);
+        // console.log('Usando datos en caché de expansiones:', this.listaExpansiones);
         return this.listaExpansiones;
       }
 
@@ -128,7 +128,7 @@ export class CartasService {
         return acumulador.concat(cartas);
       }, []);
 
-      console.log('Todas las cartas de todas las expansiones:', this.listaExpansiones);
+      // console.log('Todas las cartas de todas las expansiones:', this.listaExpansiones);
       return this.listaExpansiones;
     } catch (error) {
       console.error('Error al descargar la información de expansiones:', error);

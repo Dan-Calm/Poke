@@ -9,7 +9,6 @@ import { DetalleCartaComponent } from '../detalle-carta/detalle-carta.component'
 import { CartasService } from '../../services/cartas.service';
 
 import { BarraProgresoComponent } from 'src/app/componentes/barra-progreso/barra-progreso.component';
-import { ModalComponent } from "../../componentes/modal/modal.component";
 
 import { AuthService } from '../../services/auth.service';
 
@@ -31,10 +30,12 @@ export class ColeccionComponent implements OnInit {
   idUsiuario: any = ''; // ID del usuario logueado
 
   // nombre de la colección que se pasa desde el modal
-  @Input() nombreColeccion!: string;
+  @Input() coleccion: any;
+  nombreColeccion: string = '';
   cartasFavoritas: any[] = [];
   cartas: any[] = [];
   cartas_propias: any[] = [];
+  cartas_mostradas: any[] = [];
   cartasPropiasSet: Set<string> = new Set();
   expansiones: any[] = [];
   cantidadMatches: number = 0;
@@ -59,9 +60,9 @@ export class ColeccionComponent implements OnInit {
 
   // función principal que se ejecuta al iniciar el componente
   async ngOnInit() {
+    // console.log('coleccion: ', this.coleccion);
+    this.nombreColeccion = this.coleccion.id
     this.idUsiuario = await this.authService.getCurrentUser();
-    // obtiene el nombre de la colección desde los parámetros del modal
-    this.nombreColeccion = this.navParams.get('nombreColeccion');
 
     // carga las cartas de la colección seleccionada y las cartas propias del usuario
     await this.cargarCartasColeccionYPropias();
@@ -83,12 +84,12 @@ export class ColeccionComponent implements OnInit {
     // console.log('Favoritos cargados:', this.favoritos);
     this.favoritosSet = new Set(this.favoritos.map(fav => fav.id));
 
-    
+
     this.cartasTienda = await this.cartasService.descargarCartasDeTiendas();
-    
+
     // crea un set con los ids de las cartas propias para comparación rápida
     await this.crearSetCartasPropias();
-    
+
     // agrega los datos de precio y cantidad a las cartas de la colección si existen en cartas propias
     this.unificarDatosCartas();
     console.log('cartas al final del ngOnInit:', this.cartas);
@@ -145,16 +146,24 @@ export class ColeccionComponent implements OnInit {
 
   // agrega los datos de precio y cantidad a las cartas de la colección si existen en cartas propias
   unificarDatosCartas() {
-    // console.log('unificando datos de cartas');
-    // console.log('cartas:', this.cartas);
+    // Para cada carta de la colección, busca todas las cartas_propias con el mismo id
     this.cartas = this.cartas.map(carta => {
-      const propia = this.cartas_propias.find(cp => cp.id === carta.id);
+      const propias = this.cartas_propias.filter(cp => cp.id === carta.id);
       return {
         ...carta,
-        precio: propia ? propia.precio : null,
-        cantidad: propia ? propia.cantidad : null
+        precio: propias.map(p => p.precio),
+        cantidad: propias.map(p => p.cantidad),
+        idioma: propias.map(p => p.idioma)
       };
     });
+
+    // cartas_mostradas: toma el primer valor de precio, cantidad e idioma (si existen), además de todos los valores de cartas
+    this.cartas_mostradas = this.cartas.map(carta => ({
+      ...carta,
+      precio: Array.isArray(carta.precio) && carta.precio.length > 0 ? carta.precio[0] : "",
+      cantidad: Array.isArray(carta.cantidad) && carta.cantidad.length > 0 ? carta.cantidad[0] : "",
+      idioma: Array.isArray(carta.idioma) && carta.idioma.length > 0 ? carta.idioma[0] : "",
+    }));
   }
 
   // calcula la cantidad de matches y el total del precio de las cartas propias de la colección
@@ -230,7 +239,7 @@ export class ColeccionComponent implements OnInit {
     await modal.present();
   }
 
-  estadisticas(carta:any) {
+  estadisticas(carta: any) {
     console.log(`Acción 3 ejecutada para la carta con ID: ${carta.id}`);
     this.router.navigate(['/tabs/tab3', carta.id]);
     this.cerrar();
@@ -280,7 +289,7 @@ export class ColeccionComponent implements OnInit {
           // console.log('Carta seleccionada:', carta);
           await setDoc(
             doc(db, "usuarios", this.idUsiuario, "colecciones", "propias", "cartas", carta_guardada.id + '-' + carta.idioma),
-            { 
+            {
               codigo: carta_guardada.codigo,
               coleccion: carta_guardada.coleccion,
               estado: carta_guardada.estado,
@@ -309,9 +318,28 @@ export class ColeccionComponent implements OnInit {
     await modal.present();
 
   }
-  
-  accionInferior1(carta: any){
-    console.log(`Acción 1 ejecutada para la carta con ID: ${carta.id}`);
+
+  idioma_seleccionado: number = 0; // Variable para almacenar el idioma seleccionado
+
+  seleccionarIdioma(carta: any, idioma: string) {
+    // Busca la carta en la lista this.cartas por id
+    const cartaEncontrada = this.cartas.find(c => c.id === carta.id);
+    const indice = cartaEncontrada && cartaEncontrada.idioma ? cartaEncontrada.idioma.indexOf(idioma) : -1;
+
+    if (indice !== -1) {
+      // Busca la carta en cartas_mostradas y actualiza solo esa carta
+      const cartaMostrada = this.cartas_mostradas.find(c => c.id === carta.id);
+      if (cartaMostrada) {
+        cartaMostrada.precio = Array.isArray(cartaEncontrada.precio) ? cartaEncontrada.precio[indice] : cartaEncontrada.precio;
+        cartaMostrada.cantidad = Array.isArray(cartaEncontrada.cantidad) ? cartaEncontrada.cantidad[indice] : cartaEncontrada.cantidad;
+        cartaMostrada.idioma = idioma;
+      }
+    }
+    // this.cartas_mostradas = [...this.cartas_mostradas];
+
+    // console.log(`Idioma seleccionado para la carta con ID ${carta.id}: ${idioma}, índice: ${indice}`);
+    // console.log('Cartas encontradas:', cartaEncontrada);
+    // console.log('Cartas mostradas encontradas:', this.cartas_mostradas.find(c => c.id === carta.id));
   }
 
 }

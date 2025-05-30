@@ -1,99 +1,88 @@
-<app-menu
-  [favoritos]="favoritos"
-  [historial]="historial"
-  (eliminarFavoritoEvent)="eliminarFavorito($event)"
+<app-menu [favoritos]="favoritos" [historial]="historial" (eliminarFavoritoEvent)="eliminarFavorito($event)"
   (irAFavoritosEvent)="irAFavoritos($event)">
 </app-menu>
 
-<div class="ion-page" id="main-content">
+<ion-header>
+  <!-- Reemplaza el ion-toolbar por esto -->
+  <app-header [title]="'Biblioteca'"></app-header>
 
-  <ion-header>
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-menu-button></ion-menu-button>
-      </ion-buttons>
-      <ion-title>Biblioteca</ion-title>
-    </ion-toolbar>
-
-    <!-- Ajusta la estructura del ion-grid para la barra de búsqueda y el botón -->
-    <div style="padding: 12px;">
-      <ion-grid class="searchbar-grid" style="padding: 0;">
-        <ion-row class="ion-align-items-center">
-          <ion-col size="10" class="ion-no-padding">
-            <ion-searchbar [(ngModel)]="textoBusqueda" (input)="filtrarCartas()" placeholder="Buscar"
-              style="height: 44px; margin-right: 8px; --border-radius: 8px;"></ion-searchbar>
-          </ion-col>
-          <ion-col size="2" class="ion-no-padding ion-text-center">
-            <ion-button (click)="abrirModalFiltros()" expand="block"
-              style="height: 36px; --border-radius: 8px; margin-left: 0;">
-              <ion-icon slot="icon-only" name="options-outline"></ion-icon>
-            </ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </div>
-
-  </ion-header>
-
-  <ion-content>
-
-    <ion-grid>
-      <ion-row>
-        <!-- Cartas -->
-        <ion-col size="6" *ngFor="let carta of cartas_mostradas">
-          <ion-card>
-
-            <ion-grid>
-              <ion-row class="ion-justify-content-center ion-align-items-center">
-                <!-- Agregar a favorito -->
-                <ion-col size="auto">
-                  <ion-button size="small"
-                    (click)="favoritosSet.has(carta.id) ? eliminarFavorito(carta.id) : agregarFavorito(carta)">
-                    <ion-icon slot="icon-only"
-                      [name]="favoritosSet.has(carta.id) ? 'heart' : 'heart-outline'"></ion-icon>
-                  </ion-button>
-                </ion-col>
-                <!--Agregar a una colección -->
-                <ion-col size="auto">
-                  <ion-button size="small" (click)="agregarPropia(carta)">
-                    <ion-icon slot="icon-only" name="duplicate"></ion-icon>
-                  </ion-button>
-                </ion-col>
-                <!-- Ver estadísticas -->
-                <ion-col size="auto">
-                  <ion-button size="small" (click)="estadisticas(carta.id)">
-                    <ion-icon slot="icon-only" name="bar-chart"></ion-icon>
-                  </ion-button>
-                </ion-col>
-                <!-- Ver carta -->
-                <ion-col size="auto">
-                  <ion-button size="small" (click)="cotizar(carta)">
-                    <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
-                  </ion-button>
-                </ion-col>
-
-              </ion-row>
-            </ion-grid>
-
-            <!-- Imagen de la carta -->
-            <img (click)="verCarta(carta)" [src]="carta.imagen_url || 'assets/placeholder.png'"
-              alt="{{ carta.nombre_espanol || 'Carta' }}" />
-
-            <!-- Nombre y código de la carta -->
-            <ion-card-header>
-              <ion-card-title>{{ carta.nombre_espanol }}</ion-card-title>
-              <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
-            </ion-card-header>
-          </ion-card>
+  <!-- Ajusta la estructura del ion-grid para la barra de búsqueda y el botón -->
+  <div style="padding: 12px;">
+    <ion-grid class="searchbar-grid" style="padding: 0;">
+      <ion-row class="ion-align-items-center">
+        <ion-col size="10" class="ion-no-padding">
+          <ion-searchbar [(ngModel)]="textoBusqueda" (input)="filtrarCartas()" placeholder="Buscar"
+            style="height: 44px; margin-right: 8px; --border-radius: 8px;"></ion-searchbar>
+        </ion-col>
+        <ion-col size="2" class="ion-no-padding ion-text-center">
+          <ion-button (click)="abrirModalFiltros()" expand="block"
+            style="height: 36px; --border-radius: 8px; margin-left: 0;">
+            <ion-icon slot="icon-only" name="options-outline"></ion-icon>
+          </ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>
+  </div>
 
-    <!-- Scroll Infinito -->
-    <ion-infinite-scroll threshold="50px" (ionInfinite)="onIonInfinite($event)">
-      <ion-infinite-scroll-content loadingSpinner="bubbles"
-        loadingText="Cargando más cartas..."></ion-infinite-scroll-content>
-    </ion-infinite-scroll>
+</ion-header>
 
-  </ion-content>
-</div>
+<ion-content id="main-content">
+
+  <ion-grid>
+    <ion-row>
+      <!-- Cartas -->
+      <ion-col size="6" *ngFor="let carta of cartas_mostradas">
+        <ion-card>
+
+          <ion-grid>
+            <ion-row class="ion-justify-content-center ion-align-items-center">
+              <!-- Agregar a favorito -->
+              <ion-col size="auto">
+                <ion-button size="small"
+                  (click)="favoritosSet.has(carta.id) ? eliminarFavorito(carta.id) : agregarFavorito(carta)">
+                  <ion-icon slot="icon-only" [name]="favoritosSet.has(carta.id) ? 'heart' : 'heart-outline'"></ion-icon>
+                </ion-button>
+              </ion-col>
+              <!--Agregar a una colección -->
+              <ion-col size="auto">
+                <ion-button size="small" (click)="agregarPropia(carta)">
+                  <ion-icon slot="icon-only" name="duplicate"></ion-icon>
+                </ion-button>
+              </ion-col>
+              <!-- Ver estadísticas -->
+              <ion-col size="auto">
+                <ion-button size="small" (click)="estadisticas(carta.id)">
+                  <ion-icon slot="icon-only" name="bar-chart"></ion-icon>
+                </ion-button>
+              </ion-col>
+              <!-- Ver carta -->
+              <ion-col size="auto">
+                <ion-button size="small" (click)="cotizar(carta)">
+                  <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
+                </ion-button>
+              </ion-col>
+
+            </ion-row>
+          </ion-grid>
+
+          <!-- Imagen de la carta -->
+          <img (click)="verCarta(carta)" [src]="carta.imagen_url || 'assets/placeholder.png'"
+            alt="{{ carta.nombre_espanol || 'Carta' }}" />
+
+          <!-- Nombre y código de la carta -->
+          <ion-card-header>
+            <ion-card-title>{{ carta.nombre_espanol }}</ion-card-title>
+            <ion-card-subtitle>{{ carta.codigo }}</ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Scroll Infinito -->
+  <ion-infinite-scroll threshold="50px" (ionInfinite)="onIonInfinite($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles"
+      loadingText="Cargando más cartas..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+</ion-content>
