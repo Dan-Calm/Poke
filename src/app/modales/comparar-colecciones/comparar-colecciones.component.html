@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <!-- <ion-title>Comparar Colecciones</ion-title> -->
+    <ion-buttons slot="end">
+      <ion-button (click)="enviarSolicitudContacto()" color="secondary">
+        <ion-icon name="person-add"></ion-icon>
+        <!-- Solicitar contacto -->
+      </ion-button>
+      <ion-button (click)="cerrarModal()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding comparar-colecciones-content" fullscreen>
+  <div style="display: flex; flex-direction: column; height: 100%;">
+    <!-- Mitad superior: Tus cartas -->
+    <div style="flex: 1 1 0; overflow-y: auto; border-bottom: 1px solid #ccc; padding-bottom: 1px;">
+      <h2 class="titulo-mitad">Tus cartas</h2>
+      <div class="cartas-grid">
+        <ion-card *ngFor="let carta of propiasMostradas" class="carta-mini">
+          <img [src]="carta.imagen_url || carta.imagen_url_grande" alt="{{ carta.nombre_espanol || carta.nombre }}" />
+          <ion-card-header>
+            <ion-card-title>{{ carta.nombre_espanol || carta.nombre }}</ion-card-title>
+            <ion-card-subtitle>{{ carta.codigo }} | {{ carta.idioma }}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="info-container">
+              <ion-label>Precio: {{ carta.precio }}</ion-label>
+              <!-- <ion-label>Tipo: {{ carta.tipo_carta }}</ion-label> -->
+              <!-- <ion-label>Expansión: {{ carta.expansion }}</ion-label> -->
+            </div>
+          </ion-card-content>
+        </ion-card>
+        <div *ngIf="propias.length === 0" style="grid-column: span 2; text-align: center; color: gray;">
+          No tienes cartas propias.
+        </div>
+      </div>
+    </div>
+
+    <!-- Mitad inferior: Cartas del otro usuario -->
+    <div style="flex: 1 1 0; overflow-y: auto; padding-top: 1px;">
+      <h2 class="titulo-mitad">Cartas del otro usuario</h2>
+      <div class="cartas-grid">
+        <ion-card *ngFor="let carta of otrasPropias" class="carta-mini">
+          <img [src]="carta.imagen_url || carta.imagen_url_grande" alt="{{ carta.nombre_espanol || carta.nombre }}" />
+          <ion-card-header>
+            <ion-card-title>{{ carta.nombre_espanol || carta.nombre }}</ion-card-title>
+            <ion-card-subtitle>{{ carta.codigo }} | {{ carta.idioma }}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="info-container">
+              <ion-label>Precio: ${{ carta.precio | number:'1.0-0' }}</ion-label>
+              <!-- <ion-label>Tipo: {{ carta.tipo_carta }}</ion-label> -->
+              <!-- <ion-label>Expansión: {{ carta.expansion }}</ion-label> -->
+            </div>
+          </ion-card-content>
+        </ion-card>
+        <div *ngIf="otrasPropias.length === 0" style="grid-column: span 2; text-align: center; color: gray;">
+          El otro usuario no tiene cartas propias.
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

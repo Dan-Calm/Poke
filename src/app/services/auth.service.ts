@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 
-import { collection, getDocs, query, where, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc, addDoc } from 'firebase/firestore';
 
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { db } from '../config/firebase.config';
@@ -9,12 +9,18 @@ import { db } from '../config/firebase.config';
 import { getAuth } from "firebase/auth";
 import { e } from '@angular/core/weak_ref.d-DOjz-6fK';
 
+
+import { updateDoc, Timestamp } from 'firebase/firestore';
+
+
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private datosUsuarioCache: any = null
-  
+  private datosUsuarioCache: any = null;
+  private sessionId: string | null = null;
+
   constructor(
     private afAuth: AngularFireAuth,
     private fireStore: AngularFirestore,
@@ -24,10 +30,27 @@ export class AuthService {
   async login(email: string, password: string): Promise<any> {
     try {
       const userCredential = await this.afAuth.signInWithEmailAndPassword(email, password);
-      console.log('Usuario autenticado:', userCredential.user);
-      return userCredential.user;
+      const user = userCredential.user;
+      if (user) {
+        // Marca como conectado
+        await setDoc(doc(db, "usuarios_online", user.uid), {
+          email: user.email,
+          lastActive: new Date()
+        });
+
+        // Inicia sesión de usuario (registro de tiempo)
+        const now = new Date();
+        const sesionesRef = collection(db, "usuarios", user.uid, "sesiones");
+        const sessionDoc = await addDoc(sesionesRef, {
+          inicio: now,
+          fin: null
+        });
+        this.sessionId = sessionDoc.id;
+        localStorage.setItem('sessionId', this.sessionId);
+        console.log('Sesión iniciada con ID:', this.sessionId);
+      }
+      return user;
     } catch (error) {
-      console.error('Error en el login:', error);
       throw error;
     }
   }
@@ -62,10 +85,22 @@ export class AuthService {
   // Método para cerrar sesión
   async cerrarSesion(): Promise<void> {
     try {
+      const user = await this.afAuth.currentUser;
+      if (user) {
+        // Elimina de usuarios_online
+        await deleteDoc(doc(db, "usuarios_online", user.uid));
+
+        // Finaliza la sesión de usuario (registro de tiempo)
+        const sessionId = localStorage.getItem('sessionId');
+        if (sessionId) {
+          const sessionRef = doc(db, "usuarios", user.uid, "sesiones", sessionId);
+          await updateDoc(sessionRef, { fin: new Date() });
+          localStorage.removeItem('sessionId');
+          console.log('Sesión finalizada con ID:', sessionId);
+        }
+      }
       await this.afAuth.signOut();
-      console.log('Sesión cerrada');
     } catch (error) {
-      console.error('Error al cerrar sesión:', error);
       throw error;
     }
   }

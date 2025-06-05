@@ -1,38 +1,40 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      {{ carta[0]?.nombre_espanol }} {{ carta[0]?.codigo }}
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-header [title]="'Estadísticas'"></app-header>
 
 <ion-content [fullscreen]="true">
-  <!-- <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Referencias de Precios</ion-title>
-    </ion-toolbar>
-  </ion-header> -->
-
   <!-- Contenedor de la información de la carta -->
-  <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; padding: 20px;">
-    <!-- Imagen de la carta -->
-    <img [src]="carta[0]?.imagen_url" alt="Imagen de la carta" style="width: 150px; height: auto; margin-right: 5px;">
+  <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; padding: 10px; gap: 15px;">
+    <!-- Imagen de la carta a la IZQUIERDA -->
+    <img
+      [src]="cartaSeleccionada[0]?.imagen_url_grande || cartaSeleccionada[0]?.imagen_url"
+      alt="Imagen de la carta"
+      style="width: 180px; height: auto; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08);"
+    >
 
-    <!-- Información de la carta -->
-    <div>
-      <!-- <h2>{{ carta[0]?.nombre_espanol }}</h2> -->
-      <p><strong>Código:</strong> {{ carta[0]?.codigo }}</p>
-      <p><strong>Expansión:</strong> {{ carta[0]?.expansion }}</p>
-      <p><strong>Rareza:</strong> {{ carta[0]?.rareza }}</p>
-      <p><strong>Precio promedio:</strong> {{ precio_promedio }}</p>
-
-      <!-- <p><strong>Tipo de Carta:</strong> {{ carta[0]?.tipo_carta }}</p> -->
+    <!-- Información de la carta a la DERECHA, ocupa todo el espacio disponible -->
+    <div style="min-width: 220px; flex: 1 1 0; word-break: break-word; overflow-wrap: anywhere;">
+      <p><strong>Código:</strong> {{ cartaSeleccionada[0]?.codigo }}</p>
+      <p><strong>Expansión:</strong> {{ cartaSeleccionada[0]?.expansion }}</p>
+      <p><strong>Rareza:</strong> {{ cartaSeleccionada[0]?.rareza }}</p>
+      <p><strong>Precio Promedio ({{idiomaSeleccionado }}):</strong> {{ precioPromedio }}</p>
     </div>
   </div>
 
+  <!-- Selector de Idioma -->
+  <ion-item *ngIf="idiomasDisponibles.length > 1">
+    <ion-label>Idioma del Gráfico:</ion-label>
+    <ion-select [(ngModel)]="idiomaSeleccionado" (ionChange)="onIdiomaCambiado()" interface="popover">
+      <ion-select-option *ngFor="let idioma of idiomasDisponibles" [value]="idioma">
+        {{ idioma }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-item *ngIf="idiomasDisponibles.length === 0 && referenciasPreciosGlobal.length > 0">
+    <ion-label color="medium" class="ion-text-center">No hay datos de precios históricos para esta carta.</ion-label>
+  </ion-item>
+
   <!-- Contenedor del gráfico -->
-  <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 20px;">
-    <div style="width: 100%; max-width: 1200px; height: 600px;">
+  <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 10px 20px 20px 20px;">
+    <div style="width: 100%; max-width: 1200px; height: 50vh; min-height: 300px;">
       <canvas #lineChart style="width: 100%; height: 100%;"></canvas>
     </div>
   </div>

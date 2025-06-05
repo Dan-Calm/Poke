@@ -1,0 +1,22 @@
+<app-header [title]="'Intercambio Mutuo'"></app-header>
+
+<ion-content class="ion-padding">
+
+  <ion-list *ngIf="sugerencias.length > 0">
+    <ion-item *ngFor="let sug of sugerencias" (click)="seleccionarSugerencia(sug)">
+      <ion-avatar slot="start">
+        <ion-icon name="person-circle-outline" style="font-size: 2.2em;"></ion-icon>
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ sug.nombreOtroUsuario }}</h2>
+        <p>
+          Te ofrece: 
+          <ion-badge color="success" slot="end">{{ sug.elMeDa.length }}</ion-badge><br>
+          Tú ofreces: 
+          <ion-badge color="primary" slot="end">{{ sug.yoLeDoy.length }}</ion-badge>
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

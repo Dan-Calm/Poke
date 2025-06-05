@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
@@ -16,7 +17,7 @@ export class MenuComponent {
   @Output() eliminarFavoritoEvent = new EventEmitter<string>();
   @Output() irAFavoritosEvent = new EventEmitter<string>();
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onMenuOpen() {}
   onMenuClose() {}
@@ -29,8 +30,10 @@ export class MenuComponent {
     this.irAFavoritosEvent.emit(id);
   }
 
-  cerrarSesion() {
-    this.authService.cerrarSesion();
-    window.location.href = '/login';
+  async cerrarSesion() {
+    await this.authService.cerrarSesion();
+    console.log('Sesión cerrada');
+
+    this.router.navigate(['/login']);
   }
 }

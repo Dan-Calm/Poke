@@ -41,6 +41,24 @@ const routes: Routes = [
         data: { rol: 'administrador' } // Requiere rol de usuario
       },
       {
+        path: 'tab5',
+        loadChildren: () => import('../tab5/tab5.module').then(m => m.Tab5PageModule),
+        canActivate: [AuthGuard],
+        data: { rol: 'usuario' } // Requiere rol de usuario
+      },
+      {
+        path: 'tab6',
+        loadChildren: () => import('../tab6/tab6.module').then(m => m.Tab6PageModule),
+        canActivate: [AuthGuard],
+        data: { rol: 'usuario' } // Requiere rol de usuario
+      },
+      {
+        path: 'admin',
+        loadChildren: () => import('../admin/admin-routing.module').then(m => m.AdminPageRoutingModule),
+        canActivate: [AuthGuard],
+        data: { rol: 'administrador' } // Requiere rol de usuario
+      },
+      {
         path: 'coleccion-detalle/:id', component: ColeccionDetalleComponent
       },
       {

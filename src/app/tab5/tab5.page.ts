@@ -22,7 +22,7 @@ export class Tab5Page implements OnInit {
   tieneMedallaInvestigador = false;
   tieneMedallaFavoritos = false;
   tieneMedallaVeterano = false;
-  tieneMedallaPrimeraCaptura = false; 
+  tieneMedallaPrimeraCaptura = false;
   progresoLegendaria: number = 0;      // 0 o 1 (o más si quieres mostrar progreso parcial)
   progresoColeccionista: number = 0;   // cantidad de colecciones
   progresoCienCartas: number = 0;      // cantidad de cartas
@@ -31,15 +31,29 @@ export class Tab5Page implements OnInit {
   progresoVeterano: number = 0;
   progresoPrimeraCaptura = 0;      // Progreso del veterano (0-100)
 
+  cantidadSolicitudesContacto: number = 0;
+
+
   constructor(
     private authService: AuthService,
     private coleccionesService: ColeccionesService,
     private alertController: AlertController,
     private modalCtrl: ModalController
-  ) {}
+  ) { }
 
   async ngOnInit() {
     await this.cargarDatosUsuario();
+    await this.cargarSolicitudesContacto();
+  }
+
+  async cargarSolicitudesContacto() {
+    this.cantidadSolicitudesContacto = (await this.coleccionesService.obtenerSolicitudesContacto()).length;
+  }
+
+  abrirSolicitudesContacto() {
+    // Aquí puedes abrir un modal o navegar a la página de solicitudes de contacto
+    // Ejemplo: this.modalCtrl.create({ component: SolicitudesContactoComponent });
+    // O simplemente mostrar un alert con la lista
   }
 
   async cargarDatosUsuario() {
@@ -56,45 +70,46 @@ export class Tab5Page implements OnInit {
 
   async ionViewWillEnter() {
     await this.coleccionesService.cargarFechaCreacionUsuario();
-  const [
-    tieneMedallaCartaLegendaria,
-    tieneMedallaColeccionistaVerdadero,
-    tieneMedallaCienCartas,
-    cantidadColecciones,
-    cantidadCartas,
-    cantidadLegendarias,
-    investigador,
-    favoritos,
-    veterano,
-    primeraCaptura
-  ] = await Promise.all([
-    this.coleccionesService.evaluarMedallaCartaLegendaria(),
-    this.coleccionesService.tieneCincoColecciones(),
-    this.coleccionesService.tieneCienCartas(),
-    this.coleccionesService.getCantidadColecciones(),
-    this.coleccionesService.getCantidadCartas(),
-    this.coleccionesService.cantidadCartasLegendarias(),
-    this.coleccionesService.evaluarMedallaInvestigador(),
-    this.coleccionesService.evaluarMedallaFavoritos(),
-    this.coleccionesService.evaluarMedallaVeterano(),
-    this.coleccionesService.evaluarMedallaPrimeraCaptura()
-  ]);
+    await this.cargarSolicitudesContacto();
+    const [
+      tieneMedallaCartaLegendaria,
+      tieneMedallaColeccionistaVerdadero,
+      tieneMedallaCienCartas,
+      cantidadColecciones,
+      cantidadCartas,
+      cantidadLegendarias,
+      investigador,
+      favoritos,
+      veterano,
+      primeraCaptura
+    ] = await Promise.all([
+      this.coleccionesService.evaluarMedallaCartaLegendaria(),
+      this.coleccionesService.tieneCincoColecciones(),
+      this.coleccionesService.tieneCienCartas(),
+      this.coleccionesService.getCantidadColecciones(),
+      this.coleccionesService.getCantidadCartas(),
+      this.coleccionesService.cantidadCartasLegendarias(),
+      this.coleccionesService.evaluarMedallaInvestigador(),
+      this.coleccionesService.evaluarMedallaFavoritos(),
+      this.coleccionesService.evaluarMedallaVeterano(),
+      this.coleccionesService.evaluarMedallaPrimeraCaptura()
+    ]);
 
-  this.tieneMedallaCartaLegendaria = tieneMedallaCartaLegendaria;
-  this.tieneMedallaColeccionistaVerdadero = tieneMedallaColeccionistaVerdadero;
-  this.tieneMedallaCienCartas = tieneMedallaCienCartas;
-  this.progresoInvestigador = investigador.progreso;
-  this.tieneMedallaInvestigador = investigador.tieneMedalla;
-  this.progresoLegendaria = cantidadLegendarias;
-  this.progresoColeccionista = cantidadColecciones;
-  this.progresoCienCartas = cantidadCartas;
-  this.progresoFavoritos = favoritos.progreso;
-  this.tieneMedallaFavoritos = favoritos.tieneMedalla;
-  this.progresoVeterano = veterano.progreso;
-  this.tieneMedallaVeterano = veterano.tieneMedalla;
-  this.progresoPrimeraCaptura = primeraCaptura.progreso;
-  this.tieneMedallaPrimeraCaptura = primeraCaptura.tieneMedalla;
-}
+    this.tieneMedallaCartaLegendaria = tieneMedallaCartaLegendaria;
+    this.tieneMedallaColeccionistaVerdadero = tieneMedallaColeccionistaVerdadero;
+    this.tieneMedallaCienCartas = tieneMedallaCienCartas;
+    this.progresoInvestigador = investigador.progreso;
+    this.tieneMedallaInvestigador = investigador.tieneMedalla;
+    this.progresoLegendaria = cantidadLegendarias;
+    this.progresoColeccionista = cantidadColecciones;
+    this.progresoCienCartas = cantidadCartas;
+    this.progresoFavoritos = favoritos.progreso;
+    this.tieneMedallaFavoritos = favoritos.tieneMedalla;
+    this.progresoVeterano = veterano.progreso;
+    this.tieneMedallaVeterano = veterano.tieneMedalla;
+    this.progresoPrimeraCaptura = primeraCaptura.progreso;
+    this.tieneMedallaPrimeraCaptura = primeraCaptura.tieneMedalla;
+  }
 
   async mostrarInfoMedalla(medalla: string) {
     let mensaje = '';

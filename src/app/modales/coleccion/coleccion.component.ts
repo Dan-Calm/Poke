@@ -77,8 +77,7 @@ export class ColeccionComponent implements OnInit {
     // agrega los datos de precio y cantidad a las cartas de la colección si existen en cartas propias
     // this.unificarDatosCartas();
 
-    // calcula la cantidad de matches y el total del precio de las cartas propias de la colección
-    this.calcularResumenColeccion();
+
 
     this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado
     // console.log('Favoritos cargados:', this.favoritos);
@@ -93,13 +92,18 @@ export class ColeccionComponent implements OnInit {
     // agrega los datos de precio y cantidad a las cartas de la colección si existen en cartas propias
     this.unificarDatosCartas();
     console.log('cartas al final del ngOnInit:', this.cartas);
+
+    // calcula la cantidad de matches y el total del precio de las cartas propias de la colección
+    this.calcularResumenColeccion();
   }
+
   // carga las cartas de la colección seleccionada y las cartas propias del usuario
   async cargarCartasColeccionYPropias() {
     // console.log('Cargando cartas de la colección:', this.nombreColeccion);
     this.cartas = await this.coleccionesService.cargarCartasDeColeccion(this.nombreColeccion);
     // muestra en consola las cartas obtenidas
     // console.log('cartas:', this.cartas);
+
   }
 
   // si no hay cartas en la colección, las obtiene desde las expansiones y las mapea al formato estándar
@@ -173,14 +177,11 @@ export class ColeccionComponent implements OnInit {
     this.cantidadMatches = matches.length;
     // console.log('cantidad de cartas de la expansión que tienes en propias:', this.cantidadMatches);
 
-    // suma el precio total de las cartas propias de la colección (considerando cantidad)
-    this.totalPrecio = matches.reduce((acc, carta) => {
-      if (carta.precio && carta.cantidad) {
-        return acc + (carta.precio * carta.cantidad);
-      } else if (carta.precio) {
-        return acc + carta.precio;
-      }
-      return acc;
+    // suma el precio total de las cartas_mostradas (considerando cantidad)
+    this.totalPrecio = this.cartas_propias.reduce((acc, carta) => {
+      const precio = Number(carta.precio) || 0;
+      const cantidad = Number(carta.cantidad) || 0;
+      return acc + (precio * cantidad);
     }, 0);
 
     // console.log('total precio de cartas propias de la colección:', this.totalPrecio);

@@ -233,7 +233,7 @@ if vendedores_section:
         # Guardar historial de precios
         precios_ref = producto_ref.collection("precios")
         docs_precio = list(precios_ref.order_by("fecha_inicio", direction=firestore.Query.DESCENDING).limit(1).stream())
-        fecha_actual = datetime.now()
+        fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if docs_precio and docs_precio[0].to_dict().get("precio") == precio_medio:
             # Si el precio no cambió, solo actualiza la fecha_final
             precios_ref.document(docs_precio[0].id).update({"fecha_final": fecha_actual})

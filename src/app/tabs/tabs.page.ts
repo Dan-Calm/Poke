@@ -14,6 +14,6 @@ export class TabsPage implements OnInit {
 
   async ngOnInit() {
     const rol = await this.authService.getRol(); // Obtener el rol del usuario
-    this.mostrarTab4 = rol === 'administrador'; // Mostrar Tab4 solo si el rol es "administrador"
+    this.mostrarTab4 = rol === 'admin'; // Mostrar Tab4 solo si el rol es "administrador"
   }
 }

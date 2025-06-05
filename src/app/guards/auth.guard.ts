@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
       console.log('Rol del usuario:', rol);
 
       // Permitir acceso a todas las rutas si el usuario es administrador
-      if (rol === 'administrador') {
+      if (rol === 'admin') {
         return true;
       }
 

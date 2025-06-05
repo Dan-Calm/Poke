@@ -71,7 +71,7 @@ export class CartasService {
         return acumulador.concat(cartas);
       }, []);
 
-      // console.log('Todas las cartas de todas las tiendas:', this.listaTiendas);
+      console.log('Todas las cartas de todas las tiendas:', this.listaTiendas);
 
       return this.listaTiendas;
     } catch (error) {
@@ -92,6 +92,8 @@ export class CartasService {
     console.log('Referencia a precios:', precios);
     return precios;
   }
+
+  
 
   async expansiones() {
     try {
@@ -135,4 +137,5 @@ export class CartasService {
       throw error;
     }
   }
+  
 }

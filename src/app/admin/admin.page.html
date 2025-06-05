@@ -1,0 +1,84 @@
+<app-header [title]="'Panel de Administración'"></app-header>
+
+<ion-content>
+  <ion-grid class="admin-panel-grid">
+    <ion-row>
+      <!-- Sección izquierda: Administración de usuarios -->
+      <ion-col size="12" size-md="6" class="admin-panel-left">
+        <ion-card class="admin-card usuarios-online-card">
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="people-outline"
+                style="vertical-align: middle; font-size: 1.5em; margin-right: 8px;"></ion-icon>
+              Usuarios Online
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="usuarios-online-value">
+              <strong>{{ usuariosOnline }}</strong>
+              <span>usuarios conectados actualmente</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Sección de gestión de usuarios -->
+        <ion-card class="admin-card usuarios-list-card">
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="person-circle-outline"
+                style="vertical-align: middle; font-size: 1.5em; margin-right: 8px;"></ion-icon>
+              Gestión de Usuarios
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <!-- Barra de búsqueda -->
+            <ion-searchbar [(ngModel)]="textoBusqueda" (ionInput)="filtrarUsuarios()"
+              placeholder="Buscar usuario por nombre o email">
+            </ion-searchbar>
+            <ion-list>
+              <ion-item *ngFor="let usuario of usuariosFiltrados">
+                <ion-label>
+                  <div>
+                    <strong>{{ usuario.nombre_usuario || usuario.email }}</strong>
+                    <span *ngIf="usuario.tipo_usuario === 'admin'"
+                      style="color: #23e623; font-weight: bold; margin-left: 8px;">(Admin)</span>
+                  </div>
+                  <div style="font-size: 0.9em; color: #666;">{{ usuario.email }}</div>
+                </ion-label>
+                <ion-button fill="clear" color="danger" (click)="eliminarUsuario(usuario)" slot="end">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" color="primary" *ngIf="usuario.tipo_usuario !== 'admin'"
+                  (click)="hacerAdmin(usuario)" slot="end">
+                  <ion-icon name="star-outline"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" color="medium" *ngIf="usuario.tipo_usuario === 'admin'"
+                  (click)="quitarAdmin(usuario)" slot="end">
+                  <ion-icon name="star"></ion-icon>
+                </ion-button>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- Sección derecha: Estadísticas de cartas (vacía por ahora) -->
+
+      <ion-col size="12" size-md="6" class="admin-panel-right">
+        <ion-card class="admin-card stats-card">
+          <ion-card-header>
+            <ion-card-title>
+              Ranking de Cotizaciones
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div style="width: 100%; max-width: 900px; height: 500px; margin: 0 auto;">
+              <canvas #barChart style="width: 100%; height: 100%;"></canvas>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+</ion-content>
