@@ -16,6 +16,8 @@ import { FiltrosComponent } from '../modales/filtros/filtros.component';
 import { DetalleCartaComponent } from '../modales/detalle-carta/detalle-carta.component'
 import { AgregarPropiasComponent } from '../modales/agregar-propias/agregar-propias.component';
 
+import { CotizarComponent } from '../modales/cotizar/cotizar.component';
+
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -45,6 +47,8 @@ export class Tab1Page implements OnInit {
   rareza_carta_seleccionada: string = ''; // 
   tipo_carta_seleccionada: string = ''; // 
   expansion_carta_seleccionada: string = ''; // 
+
+  cargandoFavorito: boolean = false;
 
   filtrosSeleccionados = {
     niveles: [],
@@ -148,8 +152,8 @@ export class Tab1Page implements OnInit {
     event.target.complete();
   }
 
-  irAFavoritos(id: string) {
-    this.router.navigate(['/coleccion-detalle', id]);
+  irAFavoritos(carta: any) {
+    this.cotizar(carta);
   }
 
   async iniciarColecciones() {
@@ -178,19 +182,40 @@ export class Tab1Page implements OnInit {
   }
 
   async agregarFavorito(carta: any) {
-    console.log(`Agregar a Favorito carta con ID: ${carta.id}`);
-    await this.coleccionesServies.agregar_a_coleccion(carta, "favoritos"); // agregar a favoritos en la base de datos
-    console.log('Favorito agregado:', carta.id);
-    this.favoritos = await this.coleccionesServies.recargarFavoritos();
-    this.favoritosSet = new Set(this.favoritos.map(fav => fav.id)); // <-- Actualiza el Set
+    this.cargandoFavorito = true;
+    try {
+      console.log(`Agregar a Favorito carta con ID: ${carta.id}`);
+      await this.coleccionesServies.agregar_a_coleccion(carta, "favoritos");
+      console.log('Favorito agregado:', carta.id);
+      this.favoritos = await this.coleccionesServies.recargarFavoritos();
+      this.favoritosSet = new Set(this.favoritos.map(fav => fav.id));
+      const toast = document.createElement('ion-toast');
+      toast.message = 'Carta agregada a favoritos';
+      toast.duration = 1000;
+      toast.color = 'success';
+      document.body.appendChild(toast);
+      await toast.present();
+    } finally {
+      this.cargandoFavorito = false;
+    }
   }
 
   async eliminarFavorito(id: string) {
-    console.log("eliminar favorito", id);
-
-    await deleteDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "favoritos", "cartas", id));
-    this.favoritos = await this.coleccionesServies.recargarFavoritos();
-    this.favoritosSet = new Set(this.favoritos.map(fav => fav.id)); // <-- Actualiza el Set
+    this.cargandoFavorito = true;
+    try {
+      console.log("eliminar favorito", id);
+      await deleteDoc(doc(db, "usuarios", this.idUsiuario, "colecciones", "favoritos", "cartas", id));
+      this.favoritos = await this.coleccionesServies.recargarFavoritos();
+      this.favoritosSet = new Set(this.favoritos.map(fav => fav.id));
+      const toast = document.createElement('ion-toast');
+      toast.message = 'Carta eliminada de favoritos';
+      toast.duration = 1000;
+      toast.color = 'danger';
+      document.body.appendChild(toast);
+      await toast.present();
+    } finally {
+      this.cargandoFavorito = false;
+    }
   }
 
   async agregarPropia(carta_guardada: any) {
@@ -316,8 +341,14 @@ export class Tab1Page implements OnInit {
     console.log('Historial agregado:', carta.id);
     this.historial = await this.coleccionesServies.cargarHistorial(); // cargar el historial del usuario logueado
 
-    // Navegar a la segunda pantalla pasando el ID de la colección como parámetro
-    this.router.navigate(['/coleccion-detalle', carta.id]);
+    // Abrir el modal CotizarComponent pasando la carta como propiedad
+    const modal = await this.modalController.create({
+      component: CotizarComponent,
+      componentProps: {
+        carta: carta
+      }
+    });
+    await modal.present();
   }
 
   accionMantenerPresionada(id: string, nombre: string, codigo: string): void {
@@ -328,6 +359,14 @@ export class Tab1Page implements OnInit {
 
     // Aquí puedes ejecutar la acción que desees
     alert(`Has mantenido presionada la carta: ${nombre} (${codigo})`);
+  }
+
+  scrollToTop() {
+    console.log('Scroll to top');
+    const content = document.getElementById('main-content');
+    if (content) {
+      (content as any).scrollToTop ? (content as any).scrollToTop(500) : content.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
 

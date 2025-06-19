@@ -43,7 +43,8 @@ async seleccionarSugerencia(sugerencia: any) {
     component: CompararColeccionesComponent,
     componentProps: {
       miId: this.id_usuario,
-      otroId: sugerencia.idUsuario
+      otroId: sugerencia.idUsuario,
+      otroUsuario: sugerencia.nombreOtroUsuario,
     }
   });
   await modal.present();

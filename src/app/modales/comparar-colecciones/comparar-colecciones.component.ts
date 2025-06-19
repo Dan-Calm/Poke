@@ -19,6 +19,7 @@ export class CompararColeccionesComponent implements OnInit {
 
   @Input() miId!: string;
   @Input() otroId!: string;
+  @Input() otroUsuario!: string; // Nombre del otro usuario, si es necesario
 
   propias: any[] = [];
   propiasMostradas: any[] = [];
@@ -51,6 +52,7 @@ export class CompararColeccionesComponent implements OnInit {
       const now = new Date();
       await this.coleccionesService.crearSolicitudContacto({
         de: this.miId,
+        nombre_de: this.otroUsuario, // Nombre del otro usuario
         para: this.otroId,
         fecha: now,
         estado: 'pendiente'

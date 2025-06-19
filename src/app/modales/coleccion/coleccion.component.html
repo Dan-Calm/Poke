@@ -28,48 +28,44 @@
 
       <ion-col size="6" *ngFor="let carta of cartas_mostradas">
         <ion-card class="carta-card">
-          <!-- Fila superior de 4 botones (puedes dejarla arriba del card si la necesitas) -->
-          <ion-row class="ion-justify-content-center ion-align-items-center">
-            <ion-col size="2.4">
+            <!-- Fila superior de 4 botones (puedes dejarla arriba del card si la necesitas) -->
+            <ion-row class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="auto">
               <ion-button expand="block" size="small"
-                (click)="favoritosSet.has(carta.id) ? eliminarFavorito(carta.id) : agregarFavorito(carta)">
-                <ion-icon slot="icon-only" [name]="favoritosSet.has(carta.id) ? 'heart' : 'heart-outline'"></ion-icon>
+              (click)="favoritosSet.has(carta.id) ? eliminarFavorito(carta.id) : agregarFavorito(carta)">
+              <ion-icon slot="icon-only" [name]="favoritosSet.has(carta.id) ? 'heart' : 'heart-outline'"></ion-icon>
               </ion-button>
             </ion-col>
-            <ion-col size="2.4">
+            <ion-col size="auto">
               <ion-button size="small" (click)="agregarPropia(carta)">
-                <ion-icon slot="icon-only" name="duplicate"></ion-icon>
+              <ion-icon slot="icon-only" name="duplicate"></ion-icon>
               </ion-button>
             </ion-col>
-            <ion-col size="2.4">
+            <ion-col size="auto">
               <ion-button size="small" (click)="estadisticas(carta)">
-                <ion-icon slot="icon-only" name="bar-chart"></ion-icon>
+              <ion-icon slot="icon-only" name="bar-chart"></ion-icon>
               </ion-button>
             </ion-col>
-            <ion-col size="2.4">
+            <ion-col size="auto">
               <ion-button size="small" (click)="cotizar(carta)">
-                <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
+              <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
               </ion-button>
             </ion-col>
-            <ion-col size="2.4">
-              <ion-button size="small" color="danger" (click)="eliminarCarta(carta)">
-                <ion-icon slot="icon-only" name="trash"></ion-icon>
-              </ion-button>
-            </ion-col>
-          </ion-row>
+            </ion-row>
 
-          <!-- Imagen con botones flotantes -->
-          <div class="carta-img-container">
+            <!-- Imagen con botones flotantes -->
+            <div class="carta-img-container">
             <img (click)="verCarta(carta)" [src]="carta.imagen_url" alt="Carta Pokémon"
               [ngStyle]="cartasPropiasSet.has(carta.id) ? {} : {'filter': 'grayscale(1)'}" />
-          <div class="carta-botones-flotantes">
-            <img src="assets/banderas/chile.png" alt="Español" class="icon-btn"
+            <div class="carta-botones-flotantes" *ngIf="cartasPropiasSet.has(carta.id)">
+              <img src="assets/banderas/chile.png" alt="Español" class="icon-btn"
               [class.selected]="carta.idioma === 'Español'" (click)="seleccionarIdioma(carta, 'Español')">
-            <img src="assets/banderas/united-kingdom.png" alt="Inglés" class="icon-btn"
+              <img src="assets/banderas/united-kingdom.png" alt="Inglés" class="icon-btn"
               [class.selected]="carta.idioma === 'Inglés'" (click)="seleccionarIdioma(carta, 'Inglés')">
-            <img src="assets/banderas/japan.png" alt="Japonés" class="icon-btn"
+              <img src="assets/banderas/japan.png" alt="Japonés" class="icon-btn"
               [class.selected]="carta.idioma === 'Japonés'" (click)="seleccionarIdioma(carta, 'Japonés')">
-          </div>
+            </div>
+
           </div>
 
           <ion-card-header>

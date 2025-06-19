@@ -33,6 +33,8 @@ export class Tab5Page implements OnInit {
 
   cantidadSolicitudesContacto: number = 0;
 
+  solicitudesContacto: any[] = []; // Aquí puedes definir el tipo de datos según tu modelo  
+
 
   constructor(
     private authService: AuthService,
@@ -48,6 +50,9 @@ export class Tab5Page implements OnInit {
 
   async cargarSolicitudesContacto() {
     this.cantidadSolicitudesContacto = (await this.coleccionesService.obtenerSolicitudesContacto()).length;
+    this.solicitudesContacto = await this.coleccionesService.obtenerSolicitudesContacto();
+
+    console.log('Solicitudes de contacto:', this.solicitudesContacto);
   }
 
   abrirSolicitudesContacto() {

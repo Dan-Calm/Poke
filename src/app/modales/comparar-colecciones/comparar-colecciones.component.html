@@ -1,6 +1,6 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <!-- <ion-title>Comparar Colecciones</ion-title> -->
+  <ion-toolbar class="comparar-header-toolbar">
+    <ion-title>Comparar</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="enviarSolicitudContacto()" color="secondary">
         <ion-icon name="person-add"></ion-icon>
@@ -41,7 +41,7 @@
 
     <!-- Mitad inferior: Cartas del otro usuario -->
     <div style="flex: 1 1 0; overflow-y: auto; padding-top: 1px;">
-      <h2 class="titulo-mitad">Cartas del otro usuario</h2>
+      <h2 class="titulo-mitad"> {{ otroUsuario }}</h2>
       <div class="cartas-grid">
         <ion-card *ngFor="let carta of otrasPropias" class="carta-mini">
           <img [src]="carta.imagen_url || carta.imagen_url_grande" alt="{{ carta.nombre_espanol || carta.nombre }}" />

@@ -1,4 +1,3 @@
-/* filepath: c:\Users\DanielAntonioCaldero\Desktop\Portafolio\Poke\src\app\modales\comparar-colecciones\comparar-colecciones.component.scss */
 .comparar-colecciones-content, .colecciones-container {
   display: flex;
   flex-direction: column;
@@ -51,4 +50,40 @@ ion-card-subtitle {
 
 ion-label {
   font-size: 12px;
+}
+
+/* Fondo degradado para el modal */
+:host ::ng-deep ion-content {
+  background: #f5fdff00;
+  background: linear-gradient(178deg, rgba(245, 253, 255, 1) 15%, rgba(120, 217, 255, 0.86) 57%, rgba(245, 253, 255, 1) 90%) !important;
+}
+
+/* Header rojo con texto destacado */
+:host ::ng-deep ion-toolbar.comparar-header-toolbar {
+  --background: #d32f2f;
+  --color: #fff;
+  border-radius: 0 0 16px 16px;
+}
+
+:host ::ng-deep ion-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #000 !important;
+  text-shadow:
+    -1px -1px 0 #fff,
+     1px -1px 0 #fff,
+    -1px  1px 0 #fff,
+     1px  1px 0 #fff;
+  letter-spacing: 1px;  
+}
+
+#background-content{
+  background: rgba(255, 255, 255, 0) !important;
+}
+#background-content::part(background) {
+  background: rgba(255, 255, 255, 0) !important;
+}
+
+ion-content::part(background) {
+  background: #ffffff00;
 }

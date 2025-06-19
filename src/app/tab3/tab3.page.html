@@ -12,6 +12,7 @@
 
     <!-- Información de la carta a la DERECHA, ocupa todo el espacio disponible -->
     <div style="min-width: 220px; flex: 1 1 0; word-break: break-word; overflow-wrap: anywhere;">
+      <p><strong>Código:</strong> {{ cartaSeleccionada[0]?.nombre_espanol }}</p>
       <p><strong>Código:</strong> {{ cartaSeleccionada[0]?.codigo }}</p>
       <p><strong>Expansión:</strong> {{ cartaSeleccionada[0]?.expansion }}</p>
       <p><strong>Rareza:</strong> {{ cartaSeleccionada[0]?.rareza }}</p>
@@ -35,7 +36,7 @@
   <!-- Contenedor del gráfico -->
   <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 10px 20px 20px 20px;">
     <div style="width: 100%; max-width: 1200px; height: 50vh; min-height: 300px;">
-      <canvas #lineChart style="width: 100%; height: 100%;"></canvas>
+      <canvas #lineChart style="width: 100%; height: 100%;  background: white;"></canvas>
     </div>
   </div>
 </ion-content>

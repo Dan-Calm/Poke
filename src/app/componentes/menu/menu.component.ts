@@ -26,8 +26,8 @@ export class MenuComponent {
     this.eliminarFavoritoEvent.emit(id);
   }
 
-  irAFavoritos(id: string) {
-    this.irAFavoritosEvent.emit(id);
+  irAFavoritos(carta: any) {
+    this.irAFavoritosEvent.emit(carta);
   }
 
   async cerrarSesion() {

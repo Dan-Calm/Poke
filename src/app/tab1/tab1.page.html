@@ -4,9 +4,12 @@
 
 <ion-header>
   <!-- Reemplaza el ion-toolbar por esto -->
-  <app-header [title]="'Biblioteca'"></app-header>
+  <app-header [title]="'Biblioteca'" [showMenuButton]="true"></app-header>
 
-  <!-- Ajusta la estructura del ion-grid para la barra de búsqueda y el botón -->
+</ion-header>
+
+<ion-content id="main-content">
+
   <div style="padding: 12px;">
     <ion-grid class="searchbar-grid" style="padding: 0;">
       <ion-row class="ion-align-items-center">
@@ -24,11 +27,8 @@
     </ion-grid>
   </div>
 
-</ion-header>
-
-<ion-content id="main-content">
-
   <ion-grid>
+
     <ion-row>
       <!-- Cartas -->
       <ion-col size="6" *ngFor="let carta of cartas_mostradas">
@@ -84,5 +84,17 @@
     <ion-infinite-scroll-content loadingSpinner="bubbles"
       loadingText="Cargando más cartas..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
+
+  <!-- Spinner overlay superpuesto -->
+  <div *ngIf="cargandoFavorito" class="spinner-overlay">
+    <ion-spinner color="danger" class="spinner-grande"></ion-spinner>
+  </div>
+
+    <!-- Botón flotante para volver arriba -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-scroll-top">
+    <ion-fab-button color="danger" (click)="scrollToTop()">
+      <ion-icon name="arrow-up-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
 </ion-content>

@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ carta.nombre_espanol }} {{ carta.codigo }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Resumen de mercado + Imagen de la carta -->
+  <ion-card class="ion-margin-bottom carta-resumen-card">
+    <ion-card-content class="carta-resumen-content" style="display: flex; align-items: center;">
+      <img [src]="carta.imagen_url || carta.imagen || 'assets/placeholder.png'" alt="Carta Pokémon"
+        class="carta-resumen-img" style="width: 100px; height: auto; margin-right: 16px;" />
+      <div class="carta-resumen-info" style="flex: 1;">
+
+        <div>
+          <strong>Nombre:</strong> {{ carta.nombre_espanol }}
+        </div>
+        <div>
+          <strong>Código:</strong> {{ carta.codigo }}
+        </div>
+        <div>
+          <strong>Rareza:</strong> {{ carta.rareza }}
+        </div>
+        
+        <div>
+          <strong>Referencias:</strong> {{ cartasFiltradas.length }}
+        </div>
+        <div>
+          <strong>Precio de mercado:</strong>
+          ${{ calcularPrecioPromedio(cartasFiltradas) | number:'1.0-0':'es-CL' }}
+        </div>
+
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Filtro de idiomas -->
+  <ion-card class="ion-margin-bottom filtro-idioma-card">
+    <ion-card-content style="display: flex; align-items: center;">
+      <ion-label style="margin-right: 12px; min-width: 120px;">Filtrar por idioma:</ion-label>
+      <select [(ngModel)]="idiomaSeleccionado" (change)="filtrarPorIdioma()" class="custom-select" style="flex: 1; max-width: 200px;">
+        <option value="">Todos</option>
+        <option *ngFor="let idioma of idiomasDisponibles" [value]="idioma">
+          {{ idioma }}
+        </option>
+      </select>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de tiendas -->
+  <ion-list>
+    <ion-item *ngFor="let carta of cartasFiltradas" class="custom-card">
+
+      <ion-thumbnail slot="start" class="custom-thumbnail" style="background: #494949; height: 100px; display: flex; align-items: center; justify-content: center;">
+        <img [src]="getLogoTienda(carta)" alt="{{ carta.tienda }}" style="width: 100%; height: 100%; object-fit: contain;" />
+      </ion-thumbnail>
+
+      <ion-label class="carta-info-label">
+        <p class="carta-info-line">
+          <strong>Idioma: </strong>
+          <span class="carta-info-value">{{ carta.idioma }}</span>
+        </p>
+        <p class="carta-info-line">
+          <strong>Stock: </strong>
+          <span class="carta-info-value">{{ carta.stock }}</span>
+        </p>
+        <p class="carta-info-line">
+          <strong>Precio: </strong>
+          <span class="carta-info-value precio">${{ carta.precio | number:'1.0-0':'es-CL' }}</span>
+        </p>
+        <ion-button expand="block" (click)="openLink(carta.link)" class="carta-tienda-btn">
+          <ion-icon name="cart-outline" slot="start"></ion-icon>
+          Ir a la tienda
+        </ion-button>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -23,7 +23,7 @@ export class ColeccionesService {
 
   }
 
-  async crearSolicitudContacto(solicitud: { de: string, para: string, fecha: Date, estado: string }) {
+  async crearSolicitudContacto(solicitud: { de: string, para: string, fecha: Date, estado: string, nombre_de: string }): Promise<void> {
     // Guarda la solicitud en la subcolección del usuario objetivo
     const solicitudesParaRef = collection(db, "usuarios", solicitud.para, "solicitudes_contacto");
     await addDoc(solicitudesParaRef, solicitud);
@@ -171,6 +171,21 @@ export class ColeccionesService {
       return true;
     } catch (error) {
       console.error('Error al cargar los documentos de favoritos:', error);
+      throw error;
+    }
+  }
+
+  async eliminar_en_coleccion(nombre_coleccion: string, carta_id: string): Promise<void> {
+    console.log('Eliminar carta con ID:', carta_id);
+    await this.obtenerIdUsuario(); // obtener el id del usuario logueado
+    console.log('ID del usuario:', this.idUsuarios);
+
+    try {
+      const referencia_documento = doc(db, 'usuarios', this.idUsuarios, 'colecciones', nombre_coleccion, 'cartas', carta_id);
+      await deleteDoc(referencia_documento);
+      console.log('Carta eliminada de la colección:', carta_id);
+    } catch (error) {
+      console.error('Error al eliminar la carta de la colección:', error);
       throw error;
     }
   }

@@ -1,6 +1,6 @@
 <ion-menu contentId="main-content" (ionDidOpen)="onMenuOpen()" (ionDidClose)="onMenuClose()">
   <ion-header>
-    <ion-toolbar>
+    <ion-toolbar class="menu-header-toolbar">
       <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
@@ -16,29 +16,32 @@
             <ion-list>
               <ion-item *ngFor="let favorito of favoritos">
                 <ion-button slot="start" (click)="eliminarFavorito(favorito.id)">X</ion-button>
-                <ion-label (click)="irAFavoritos(favorito.id)">
-                  {{ favorito.codigo }} - {{ favorito.nombre }}
+                <ion-label (click)="irAFavoritos(favorito)">
+                  {{ favorito.codigo }} - {{ favorito.nombre_espanol }}
                 </ion-label>
+              </ion-item>
+            </ion-list>
+          </div>
+        </ion-accordion>
+        <!-- Acordeón para Historial -->
+        <ion-accordion value="historial">
+          <ion-item slot="header">
+            <ion-label>Historial</ion-label>
+          </ion-item>
+          <div slot="content">
+            <ion-list>
+              <ion-item *ngFor="let histo of historial">
+                {{ histo.nombre_espanol }}
               </ion-item>
             </ion-list>
           </div>
         </ion-accordion>
       </ion-accordion-group>
     </ion-list>
-
-    <!-- Lista de historial -->
-    <ion-list>
-      <ion-item-divider>
-        <ion-label>Historial</ion-label>
-      </ion-item-divider>
-      <ion-item *ngFor="let histo of historial">
-        {{ histo.nombre_espanol }}
-      </ion-item>
-    </ion-list>
-
-    <!-- Botón para cerrar sesión -->
-    <ion-button expand="block" color="danger"  (click)="cerrarSesion()" style="margin-top: 2rem;">
+  </ion-content>
+  <ion-footer>
+    <ion-button expand="block" color="danger" (click)="cerrarSesion()">
       Cerrar sesión
     </ion-button>
-  </ion-content>
+  </ion-footer>
 </ion-menu>

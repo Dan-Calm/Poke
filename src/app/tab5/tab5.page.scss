@@ -90,3 +90,31 @@
   font-weight: 500;
 }
 }
+
+:host,
+ion-content {
+  // background: #f5fdff !important;
+  background: linear-gradient(178deg, rgba(245, 253, 255, 1) 15%, rgba(120, 217, 255, 0.86) 57%, rgba(245, 253, 255, 1) 90%) !important;
+}
+
+ion-content::part(background) {
+  background: #ffffff00;
+}
+
+.app-header-toolbar {
+  --background: #d32f2f; /* Fondo rojo */
+  --color: #fff;
+  border-radius: 0 0 16px 16px;
+}
+
+ion-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #000 !important;
+  text-shadow:
+    -1px -1px 0 #fff,
+     1px -1px 0 #fff,
+    -1px  1px 0 #fff,
+     1px  1px 0 #fff; /* Borde blanco */
+  letter-spacing: 1px;
+}

@@ -40,6 +40,7 @@ export class SelectorExpansionesComponent {
   cerrar() {
     this.modalCtrl.dismiss(); // Cierra sin seleccionar nada
   }
+
   async seleccionarExpansion(expansion: any) {
     console.log('Expansión seleccionada:', expansion);
     console.log('Nombre de la expansión:', expansion.id);
@@ -50,6 +51,6 @@ export class SelectorExpansionesComponent {
     console.log("Expansion seleccionada", expansionSeleccionada); // Lista de cartas de la expansión seleccionada
 
     this.coleccionesService.completarColeccion(expansion)
-    // this.modalCtrl.dismiss(); // cierra el modal
+    this.modalCtrl.dismiss(); // cierra el modal
   }
 }

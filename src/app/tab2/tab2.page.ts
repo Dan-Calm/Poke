@@ -55,10 +55,17 @@ export class Tab2Page {
     await modal.present();
 
     const { data } = await modal.onDidDismiss();
+    await this.cargarColecciones();
 
     if (data) {
       console.log('Expansión seleccionada:', data);
-
+      // Mostrar toast de confirmación
+      const toast = document.createElement('ion-toast');
+      toast.message = 'Expansión agregada correctamente';
+      toast.duration = 1000;
+      toast.color = 'success';
+      document.body.appendChild(toast);
+      await toast.present();
     }
   }
 
@@ -88,5 +95,18 @@ export class Tab2Page {
         };
       });
     console.log('Colecciones de usuario tab2:', this.colecciones_usuario);
+
+    this.colecciones_usuario = this.colecciones_usuario.sort((a, b) => {
+      const orden = ['propias', 'favoritos', 'historial'];
+      const idxA = orden.indexOf(a.id);
+      const idxB = orden.indexOf(b.id);
+    
+      if (idxA !== -1 && idxB !== -1) {
+        return idxA - idxB; // Ambos están en el orden, ordenar por índice
+      }
+      if (idxA !== -1) return -1; // a está en el orden, va antes
+      if (idxB !== -1) return 1;  // b está en el orden, va antes
+      return 0; // Ninguno está en el orden, mantener su posición relativa
+    });
   }
 }

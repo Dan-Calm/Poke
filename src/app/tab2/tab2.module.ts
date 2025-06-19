@@ -9,6 +9,8 @@ import { Tab2PageRoutingModule } from './tab2-routing.module';
 
 import { HeaderComponent } from '../componentes/header/header.component'
 
+import { MenuComponent } from '../componentes/menu/menu.component';
+
 @NgModule({
   imports: [
     IonicModule,
@@ -16,7 +18,8 @@ import { HeaderComponent } from '../componentes/header/header.component'
     FormsModule,
     ExploreContainerComponentModule,
     Tab2PageRoutingModule,
-    HeaderComponent
+    HeaderComponent,
+    MenuComponent
   ],
   declarations: [Tab2Page]
 })

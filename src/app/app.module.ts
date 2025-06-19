@@ -14,6 +14,8 @@ import { firebaseConfig } from './config/firebase.config';
 import { FormsModule } from '@angular/forms';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
+import { MenuComponent } from './componentes/menu/menu.component';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -24,7 +26,7 @@ import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
     AngularFireModule.initializeApp(firebaseConfig), // Configuración de Firebase
     AngularFireAuthModule, // Módulo de autenticación de Firebase 
     FormsModule,
-    
+    MenuComponent
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideCharts(withDefaultRegisterables())],
   bootstrap: [AppComponent],

@@ -33,7 +33,7 @@ db = firestore.client()
 url_base = "https://www.wikidex.net"
 
 path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Chispas_Fulgurantes"
-# path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Corona_Astral"
+path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Corona_Astral"
 # path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Evoluciones_Prismáticas"
 # path_expansion = "/wiki/Escarlata_y_Púrpura_(TCG):_Fábula_Sombría"
 # path_expansion = "/wiki/Espada_y_Escudo_(TCG):_Oscuridad_Incandescente"
@@ -280,6 +280,8 @@ else:
     print("No se pudo leer el documento de prueba. Verifica la conexión.")
 
 def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, marcas, niveles):
+    # url_imagen_x2 = ""
+    # url_imagen = ""
     print("Buscando imágenes...")
     print("Codigos: ", codigos)
     print("Rarezas: ", rarezas)
@@ -292,8 +294,8 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
         print("Codigo:", codigo)
         posicion = codigo.split("/")[0]
         coleccion = codigo.split("/")[1]
-        # print("Posicion:", posicion)
-        # print("Coleccion:", coleccion)
+        print("Posicion:", posicion)
+        print("Coleccion:", coleccion)
         print("Url completa:", url_base + path_pokemon)
         url_pokemon = url_base + path_pokemon
         time.sleep(1)  # Esperar a que la página cargue completamente
@@ -304,23 +306,22 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
         content = soup.find("div", {"id" : "mw-content-text"})
         texto = content.find_all("p")[0]
 
-        # print("Texto : ", texto)
+        print("Texto : ", texto)
         nombre = texto.find("i")
-        # print("Nombre : ", nombre)
+        print("Nombre : ", nombre)
         if nombre == None:
             nombre_ingles = ""
         else:
             nombre_ingles = nombre.find("b").text
 
-        # print("soup:", soup)
+        # print(">>>>>>>>>>>>>>>>>>>>soup:", soup)
 
         galeria = soup.find(class_="gallery mw-gallery-nolines")
-        # print("galeria:", len(galeria))
         # print("galeria:", galeria)
         # Verificar si galeria es None
         if galeria is None:
-            galeria = soup.find(class_="imagen")
-            # print("Galeria:", galeria)
+            galeria = soup.find(class_="gallerybox")
+            print("Galeria:", galeria)
             img = galeria.find("img")  # Buscar la imagen dentro del enlace
             print("Imagen:", img)
             srcset = img.get("srcset")
@@ -338,6 +339,7 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
             print(f"     - {url_imagen_x2}")
 
         else:
+            print("galeria:", len(galeria))
             ediciones = galeria.find_all(class_="gallerybox")
             print("Ediciones:", len(ediciones))
             print("Expansion:", expansion)
@@ -416,7 +418,7 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
                             # print("   - Srcset URLs:")
 
                             url = partes.strip().split(" ")[0]  # Extraer la URL
-                            # print(f"     - {url}")
+                            print(f"     - URL:{url}")
                 else:
                     print(f" - Referencia: None (No se encontró un enlace con clase 'image')")
                 # print("_" * 40)
@@ -429,8 +431,11 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
                 print("\nEdición con más coincidencias:")
                 print("Coincidencias:", max_matches)
                 print("Información completa de la edición:")
-                # print(edicion_con_mas_matches)
-                referencia = edicion_con_mas_matches.find("a", class_="image")
+                print("--------")
+                print(edicion_con_mas_matches)
+                print("--------")
+                referencia = edicion_con_mas_matches.find("a", class_="mw-file-description")
+                print("Referencia:", referencia)
                 if referencia:
                     # print(" - Referencia completa: ", referencia)
 
@@ -438,6 +443,8 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
                     href = referencia.get("href")  # Enlace del atributo href
                     title = referencia.get("title")  # Título del atributo title
                     img = referencia.find("img")  # Buscar la imagen dentro del enlace
+                    
+                    
 
                     if img:
                         alt = img.get("alt")  # Texto alternativo
@@ -445,12 +452,12 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
                         srcset = img.get("srcset")  # Atributo srcset con múltiples resoluciones
 
                         # Imprimir cada elemento por separado
-                        # print("   - Href:", href)
-                        # print("   - Title:", title)
-                        # print("   - Alt:", alt)
+                        print("   - Href:", href)
+                        print("   - Title:", title)
+                        print("   - Alt:", alt)
                         print("   - Src:", src)
                         url_imagen = src
-                        # print("   - Srcset:", srcset)
+                        print("   - Srcset:", srcset)
 
                         # Procesar srcset para separar las URLs
                         if srcset:
@@ -462,7 +469,7 @@ def buscarImagenes(codigos, path_pokemon, rarezas, nombres_pokemones, tipos, mar
                             print("   - Srcset URLs:")
 
                             url_imagen_x2 = partes.strip().split(" ")[0]  # Extraer la URL
-                            print(f"     - {url}")
+                            # print(f"     - {url}")
             else:
                 print("\nNo se encontraron coincidencias en ninguna edición.")
 

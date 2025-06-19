@@ -343,4 +343,11 @@ export class ColeccionComponent implements OnInit {
     // console.log('Cartas mostradas encontradas:', this.cartas_mostradas.find(c => c.id === carta.id));
   }
 
+  idiomaDisponible(carta: any, idioma: string): boolean {
+    if (Array.isArray(carta.idioma)) {
+      return carta.idioma.includes(idioma);
+    }
+    return carta.idioma === idioma;
+  }
+
 }

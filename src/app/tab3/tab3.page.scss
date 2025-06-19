@@ -3,3 +3,7 @@ canvas {
   max-height: 400px;
   margin: auto;
 }
+
+ion-content::part(background) {
+  background: #ffffff00;
+}
