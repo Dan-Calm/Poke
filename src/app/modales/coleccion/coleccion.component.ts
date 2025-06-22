@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 
 import { AgregarPropiasComponent } from '../../modales/agregar-propias/agregar-propias.component';
 import { image } from 'd3';
+import { CotizarComponent } from '../cotizar/cotizar.component';
 
 
 @Component({
@@ -48,6 +49,8 @@ export class ColeccionComponent implements OnInit {
 
   cartasTienda: any[] = []; // guarda las cartas de todas las tiendas
 
+  nombreheader: string = "";
+
   constructor(
     private router: Router,
     private modalController: ModalController,
@@ -60,8 +63,16 @@ export class ColeccionComponent implements OnInit {
 
   // función principal que se ejecuta al iniciar el componente
   async ngOnInit() {
-    // console.log('coleccion: ', this.coleccion);
+    console.log('coleccion: ', this.coleccion);
+
     this.nombreColeccion = this.coleccion.id
+
+
+    this.nombreheader = this.extraerNombreColeccion(this.coleccion.nombre);
+
+    this.nombreheader = this.nombreheader.charAt(0).toUpperCase() + this.nombreheader.slice(1);
+
+
     this.idUsiuario = await this.authService.getCurrentUser();
 
     // carga las cartas de la colección seleccionada y las cartas propias del usuario
@@ -95,6 +106,17 @@ export class ColeccionComponent implements OnInit {
 
     // calcula la cantidad de matches y el total del precio de las cartas propias de la colección
     this.calcularResumenColeccion();
+  }
+
+  extraerNombreColeccion(nombre: string): string {
+    if (!nombre) return '';
+    const partes = nombre.split(':');
+    if (partes.length > 1) {
+      // Retorna el texto después de los dos puntos, quitando espacios al inicio
+      return partes[1].trim();
+    }
+    // Si no hay dos puntos, retorna el nombre original
+    return nombre;
   }
 
   // carga las cartas de la colección seleccionada y las cartas propias del usuario
@@ -250,9 +272,16 @@ export class ColeccionComponent implements OnInit {
     console.log("ID del usuario:", this.idUsiuario);
     console.log(`Cotizar carta con ID: ${carta.id}`);
 
-    this.coleccionesService.agregar_a_coleccion(carta, "historial")
-    // Navegar a la segunda pantalla pasando el ID de la colección como parámetro
-    this.router.navigate(['/coleccion-detalle', carta.id]);
+    this.coleccionesService.agregar_a_coleccion(carta, "historial");
+
+    // Abre el modal Cotizar y envía la carta como variable
+    const modal = await this.modalController.create({
+      component: CotizarComponent, // Asegúrate de importar CotizarComponent
+      componentProps: {
+        carta: carta
+      }
+    });
+    await modal.present();
   }
 
   async agregarPropia(carta_guardada: any) {

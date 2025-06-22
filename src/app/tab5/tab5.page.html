@@ -6,47 +6,26 @@
         <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
       </ion-button>
 
-      <ion-button fill="clear" color="dark" (click)="abrirSolicitudesContacto()">
+      <!-- <ion-button fill="clear" color="dark" (click)="abrirSolicitudesContacto()">
         <ion-icon name="person-add-outline"></ion-icon>
         <ion-badge *ngIf="cantidadSolicitudesContacto > 0" color="danger"
           style="position: absolute; top: 2px; right: 2px;">
           {{ cantidadSolicitudesContacto }}
         </ion-badge>
-      </ion-button>
+      </ion-button> -->
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
+
+  
   <div class="perfil-container ion-text-center">
     <ion-avatar class="avatar-perfil">
       <img [src]="imagenPerfil">
     </ion-avatar>
     <h2>{{ nombreUsuario }}</h2>
     <p>Usuario desde: {{ fechaCreacion }}</p>
-
-    <ion-button id="popover-button">Open Menu</ion-button>
-    <ion-popover trigger="popover-button" [dismissOnSelect]="true">
-      <ng-template>
-        <ion-content>
-          <ion-list>
-            <ion-item [button]="true" [detail]="false">Option 1</ion-item>
-            <ion-item [button]="true" [detail]="false">Option 2</ion-item>
-            <ion-item [button]="true" id="nested-trigger">More options...</ion-item>
-
-            <ion-popover trigger="nested-trigger" [dismissOnSelect]="true" side="end">
-              <ng-template>
-                <ion-content>
-                  <ion-list>
-                    <ion-item [button]="true" [detail]="false">Nested option</ion-item>
-                  </ion-list>
-                </ion-content>
-              </ng-template>
-            </ion-popover>
-          </ion-list>
-        </ion-content>
-      </ng-template>
-    </ion-popover>
 
   </div>
 

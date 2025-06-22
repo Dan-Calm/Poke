@@ -1,99 +1,86 @@
-<app-header [title]="'Intercambio'"></app-header>
+<app-header [title]="'Intercambios'"></app-header>
 
 <ion-content class="ion-padding">
 
-
-
-  <ion-accordion-group>
-
-    <ion-accordion value="first">
-      <ion-item slot="header" color="light">
-        <ion-label>Pendientes</ion-label>
-        <ion-badge color="danger" *ngIf="solicitudesPendientes.length">
-          {{ solicitudesPendientes.length }}
-        </ion-badge>
-      </ion-item>
-
-      <div class="ion-padding" slot="content">
-
-        <ion-list *ngIf="solicitudesPendientes.length; else noPendientes">
-
-          <ion-item *ngFor="let solicitud of solicitudesPendientes">
-
-            <ion-label>
-              <strong>
-                {{ solicitud.de === id_usuario ? solicitud.nombre_para : solicitud.nombre_de }}
-              </strong>
-            </ion-label>
-
-            <ng-container *ngIf="solicitud.de !== id_usuario; else pendienteTexto">
-              <ion-button slot="end" color="success" (click)="aceptarSolicitud(solicitud)">
-                Aprobar
-              </ion-button>
-            </ng-container>
-            <ng-template #pendienteTexto>
-              <ion-text color="medium" slot="end">Pendiente</ion-text>
-            </ng-template>
-          </ion-item>
-
-        </ion-list>
-
-        <ng-template #noPendientes>
-          <ion-text color="medium">No hay solicitudes pendientes.</ion-text>
-        </ng-template>
-
-      </div>
-
-    </ion-accordion>
-
-    <ion-accordion value="second">
-      <ion-item slot="header" color="light">
-        <ion-label>Contactos</ion-label>
-        <ion-badge color="success" *ngIf="solicitudesAprobadas.length">
-          {{ solicitudesAprobadas.length }}
-        </ion-badge>
-      </ion-item>
-
-      <div class="ion-padding" slot="content">
-
-        <ion-list *ngIf="solicitudesAprobadas.length; else noAprobadas">
-
-            <ion-item *ngFor="let solicitud of solicitudesAprobadas">
-            <ion-label>
-              <strong>{{ solicitud.de === id_usuario ? solicitud.nombre_para : solicitud.nombre_de }}</strong>
-              <div>{{ solicitud.de === id_usuario ? solicitud.email_para : solicitud.email_de }}</div>
-            </ion-label>
-            <ion-button slot="end" fill="clear" (click)="copiarEmail(solicitud.de === id_usuario ? solicitud.email_para : solicitud.email_de)">
-              <ion-icon name="copy-outline"></ion-icon>
-            </ion-button>
+  <!-- Acordeón de solicitudes -->
+  <div class="acordeon-container">
+    <ion-accordion-group>
+      <ion-accordion value="first">
+        <ion-item slot="header">
+          <ion-label>Pendientes</ion-label>
+          <ion-badge color="danger" *ngIf="solicitudesPendientes.length">
+            {{ solicitudesPendientes.length }}
+          </ion-badge>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <ion-list *ngIf="solicitudesPendientes.length; else noPendientes">
+            <ion-item *ngFor="let solicitud of solicitudesPendientes">
+              <ion-label>
+                <strong>
+                  {{ solicitud.de === id_usuario ? solicitud.nombre_para : solicitud.nombre_de }}
+                </strong>
+              </ion-label>
+              <ng-container *ngIf="solicitud.de !== id_usuario; else pendienteTexto">
+                <ion-button slot="end" color="success" (click)="aceptarSolicitud(solicitud)">
+                  Aprobar
+                </ion-button>
+              </ng-container>
+              <ng-template #pendienteTexto>
+                <ion-text color="medium" slot="end">Pendiente</ion-text>
+              </ng-template>
             </ion-item>
+          </ion-list>
+          <ng-template #noPendientes>
+            <ion-text color="medium">No hay solicitudes pendientes.</ion-text>
+          </ng-template>
+        </div>
+      </ion-accordion>
 
-        </ion-list>
+      <ion-accordion value="second">
+        <ion-item slot="header">
+          <ion-label>Contactos</ion-label>
+          <ion-badge color="success" *ngIf="solicitudesAprobadas.length">
+            {{ solicitudesAprobadas.length }}
+          </ion-badge>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <ion-list *ngIf="solicitudesAprobadas.length; else noAprobadas">
+            <ion-item *ngFor="let solicitud of solicitudesAprobadas">
+              <ion-label>
+                <strong>{{ solicitud.de === id_usuario ? solicitud.nombre_para : solicitud.nombre_de }}</strong>
+                <div>{{ solicitud.de === id_usuario ? solicitud.email_para : solicitud.email_de }}</div>
+              </ion-label>
+              <ion-button slot="end" fill="clear" (click)="copiarEmail(solicitud.de === id_usuario ? solicitud.email_para : solicitud.email_de)">
+                <ion-icon name="copy-outline"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </ion-list>
+          <ng-template #noAprobadas>
+            <ion-text color="medium">Aún no hay contactos.</ion-text>
+          </ng-template>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </div>
 
-        <ng-template #noAprobadas>
-          <ion-text color="medium">Aún no hay contactos.</ion-text>
-        </ng-template>
-      </div>
-
-    </ion-accordion>
-
-  </ion-accordion-group>
-
-  <ion-list *ngIf="sugerencias.length > 0">
-    <ion-item *ngFor="let sug of sugerencias" (click)="seleccionarSugerencia(sug)">
-      <ion-avatar slot="start">
-        <ion-icon name="person-circle-outline" style="font-size: 2.2em;"></ion-icon>
-      </ion-avatar>
-      <ion-label>
-        <h2>{{ sug.nombreOtroUsuario }}</h2>
-        <p>
-          Te ofrece:
-          <ion-badge color="success" slot="end">{{ sug.elMeDa.length }}</ion-badge><br>
-          Tú ofreces:
-          <ion-badge color="primary" slot="end">{{ sug.yoLeDoy.length }}</ion-badge>
-        </p>
-      </ion-label>
-    </ion-item>
-  </ion-list>
+  <!-- Lista de sugerencias de intercambio -->
+  <div class="sugerencias-container">
+    <ion-list *ngIf="sugerencias.length > 0">
+      <ion-item *ngFor="let sug of sugerencias" (click)="seleccionarSugerencia(sug)">
+        <ion-avatar slot="start">
+          <ion-icon name="person-circle-outline" style="font-size: 2.2em;"></ion-icon>
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ sug.nombreOtroUsuario }}</h2>
+          <p>
+            Te ofrece:
+            <ion-badge color="success" slot="end">{{ sug.elMeDa.length }}</ion-badge><br>
+            Tú ofreces:
+            <ion-badge color="primary" slot="end">{{ sug.yoLeDoy.length }}</ion-badge>
+          </p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
 
 </ion-content>

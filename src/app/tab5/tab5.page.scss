@@ -20,75 +20,75 @@
   }
 
   .medalla-card {
-  text-align: center;
-  border: 2px solid gold;
-  border-radius: 16px;
-  background: linear-gradient(to right, #f9f295, #ffe600);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
+    text-align: center;
+    border: 2px solid gold;
+    border-radius: 16px;
+    background: linear-gradient(to right, #f9f295, #ffe600);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
 
-.imagen-medalla {
-  width: 120px;
-  height: auto;
-  margin: 0 auto;
-  padding-top: 10px;
-}
+  .imagen-medalla {
+    width: 120px;
+    height: auto;
+    margin: 0 auto;
+    padding-top: 10px;
+  }
 
-.perfil-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-}
+  .perfil-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
 
-.avatar-perfil {
-  width: 100px;
-  height: 100px;
-  margin-bottom: 10px;
-}
+  .avatar-perfil {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+  }
 
-.medallas-row {
-  justify-content: start;
-  align-items: center;
-  margin-top: 20px;
-}
+  .medallas-row {
+    justify-content: start;
+    align-items: center;
+    margin-top: 20px;
+  }
 
-.medalla-col {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  .medalla-col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-.medalla {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
+  .medalla {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
 
-.medalla img {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  border: 2px solid gold;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-  object-fit: cover;
-  transition: filter 0.3s ease, opacity 0.3s ease;
-}
+  .medalla img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 2px solid gold;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    object-fit: cover;
+    transition: filter 0.3s ease, opacity 0.3s ease;
+  }
 
-.medalla img.bloqueada {
-  filter: grayscale(100%);
-  opacity: 0.5;
-}
+  .medalla img.bloqueada {
+    filter: grayscale(100%);
+    opacity: 0.5;
+  }
 
-.medalla-titulo {
-  font-size: 0.75rem;
-  text-align: center;
-  margin-top: 6px;
-  color: #444;
-  font-weight: 500;
-}
+  .medalla-titulo {
+    font-size: 0.75rem;
+    text-align: center;
+    margin-top: 6px;
+    color: #444;
+    font-weight: 500;
+  }
 }
 
 :host,
@@ -102,7 +102,8 @@ ion-content::part(background) {
 }
 
 .app-header-toolbar {
-  --background: #d32f2f; /* Fondo rojo */
+  --background: #d32f2f;
+  /* Fondo rojo */
   --color: #fff;
   border-radius: 0 0 16px 16px;
 }
@@ -113,8 +114,31 @@ ion-title {
   color: #000 !important;
   text-shadow:
     -1px -1px 0 #fff,
-     1px -1px 0 #fff,
-    -1px  1px 0 #fff,
-     1px  1px 0 #fff; /* Borde blanco */
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff;
+  /* Borde blanco */
   letter-spacing: 1px;
+}
+
+.perfil-container,
+.perfil-container h2,
+.perfil-container p {
+  color: #111 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+
+  .perfil-container,
+  .perfil-container h2,
+  .perfil-container p {
+    color: #111 !important;
+  }
+
+  ion-buttons ion-icon {
+    font-size: 2rem;
+    /* Más grande */
+    color: #000 !important;
+    /* Negro */
+  }
 }

@@ -188,6 +188,7 @@ export class ColeccionesService {
     await this.obtenerIdUsuario(); // obtener el id del usuario logueado
     console.log('ID del usuario:', this.idUsuarios);
     console.log('Carta: ', carta);
+    
 
     try {
       const ref_favoritos = doc(db, 'usuarios', this.idUsuarios, 'colecciones', nombre_coleccion);

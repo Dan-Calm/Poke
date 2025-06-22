@@ -16,3 +16,52 @@
 ion-content::part(background) {
   background: #ffffff00;
 }
+
+// Fondo transparente para listas y items (incluyendo shadow DOM)
+ion-list,
+ion-list::part(background),
+ion-item,
+ion-item::part(native),
+ion-accordion-group,
+ion-accordion,
+ion-accordion::part(native),
+ion-accordion::part(container),
+ion-accordion::part(content),
+ion-accordion::part(header),
+ion-label,
+ion-avatar,
+ion-card,
+ion-card::part(native) {
+  background: transparent !important;
+  --background: transparent !important;
+  box-shadow: none !important;
+}
+
+// Fondo transparente para los contenedores personalizados
+ion-card {
+  background: transparent !important;
+  border: 2px solid #111;
+  border-radius: 18px;
+  margin-bottom: 24px;
+  padding: 12px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+// Elimina fondo de los headers de los acordeones
+ion-item[slot="header"],
+ion-item[slot="header"]::part(native) {
+  background: transparent !important;
+  --background: transparent !important;
+}
+
+// Opcional: elimina fondo de los botones si es necesario
+ion-button,
+ion-button::part(native) {
+  background: transparent !important;
+  --background: transparent !important;
+  box-shadow: none !important;
+}
+
+ion-card-content{
+  padding: 5px;
+}

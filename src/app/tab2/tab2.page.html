@@ -7,7 +7,7 @@
       <ion-col size="6">
         <ion-card (click)="abrirSelectorExpansiones()" class="cuadro-seleccion">
           <ion-card-content class="icono-centro">
-            <ion-icon name="add-circle-outline" size="large"></ion-icon>
+            <ion-icon name="add-circle" size="large"></ion-icon>
             <div>Añadir colección</div>
           </ion-card-content>
         </ion-card>
@@ -20,7 +20,7 @@
               <img [src]="coleccion.logo_mediano" alt="Logo colección"/>
             </ng-container>
             <ng-template #iconoPorDefecto>
-              <ion-icon name="albums-outline" size="large"></ion-icon>
+              <ion-icon name="albums" size="large"></ion-icon>
               <div>{{ coleccion.nombre | titlecase }}</div>
             </ng-template>
           </ion-card-content>
