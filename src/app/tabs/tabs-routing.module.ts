@@ -30,9 +30,8 @@ const routes: Routes = [
       },
       {
         path: 'tab3',
-        loadChildren: () => import('../tab1/tab1.module').then(m => m.Tab1PageModule),
-        canActivate: [AuthGuard],
-        data: { rol: 'usuario' } // Requiere rol de usuario
+        redirectTo: '/tabs/tab3/238_191_wiki_Pikachu_ex_%28Chispas_Fulgurantes_TCG%29',
+        pathMatch: 'full'
       },
       {
         path: 'tab4',

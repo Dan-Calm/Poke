@@ -3,7 +3,8 @@ import { collection, getDocs, query, where, doc, getDoc, setDoc, writeBatch, del
 import { db } from '../config/firebase.config';
 import { AuthService } from '../services/auth.service';
 import { race } from 'rxjs';
-
+import { Observable } from 'rxjs';
+import { onSnapshot } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -23,15 +24,39 @@ export class ColeccionesService {
 
   }
 
-  async crearSolicitudContacto(solicitud: { de: string, para: string, fecha: Date, estado: string, nombre_de: string }): Promise<void> {
-    // Guarda la solicitud en la subcolección del usuario objetivo
-    const solicitudesParaRef = collection(db, "usuarios", solicitud.para, "solicitudes_contacto");
-    await addDoc(solicitudesParaRef, solicitud);
+  solicitudesContactoListener(): Observable<any[]> {
+  return new Observable(observer => {
+    this.obtenerIdUsuario().then(() => {
+      const solicitudesRef = collection(db, "usuarios", this.idUsuarios, "solicitudes_contacto");
+      const unsubscribe = onSnapshot(solicitudesRef, (snapshot) => {
+        const solicitudes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        observer.next(solicitudes);
+      }, error => observer.error(error));
+      return unsubscribe;
+    });
+  });
+}
 
-    // Guarda la solicitud en la subcolección del usuario actual
+  async crearSolicitudContacto(solicitud: { de: string, para: string, fecha: Date, estado: string, nombre_para: string, email_para: string, nombre_de: string, email_de: string }): Promise<void> {
+    // Guarda la solicitud en la subcolección del usuario objetivo y obtiene el ID generado
+    const solicitudesParaRef = collection(db, "usuarios", solicitud.para, "solicitudes_contacto");
+    const docRef = await addDoc(solicitudesParaRef, solicitud);
+
+    // Guarda la solicitud en la subcolección del usuario actual con el mismo ID
     await this.obtenerIdUsuario();
-    const solicitudesPropiasRef = collection(db, "usuarios", this.idUsuarios, "solicitudes_contacto");
-    await addDoc(solicitudesPropiasRef, solicitud);
+    const solicitudesPropiasRef = doc(db, "usuarios", this.idUsuarios, "solicitudes_contacto", docRef.id);
+    await setDoc(solicitudesPropiasRef, solicitud);
+  }
+
+  async aprobarSolicitudContacto(solicitudId: string, usuarioId: string): Promise<void> {
+    // Actualiza el estado de la solicitud a "aprobado" en la subcolección del usuario que la envió
+    const solicitudRef = doc(db, "usuarios", usuarioId, "solicitudes_contacto", solicitudId);
+    await setDoc(solicitudRef, { estado: "aprobado" }, { merge: true });
+
+    // Actualiza el estado de la solicitud a "aprobado" en la subcolección del usuario que la recibió
+    await this.obtenerIdUsuario();
+    const solicitudPropiaRef = doc(db, "usuarios", this.idUsuarios, "solicitudes_contacto", solicitudId);
+    await setDoc(solicitudPropiaRef, { estado: "aprobado" }, { merge: true });
   }
 
   async obtenerSolicitudesContacto(): Promise<any[]> {
@@ -40,6 +65,23 @@ export class ColeccionesService {
     const snapshot = await getDocs(solicitudesRef);
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   }
+
+  async obtenerDatosUsuarioPorId(usuarioId: string): Promise<any> {
+    try {
+      const usuarioRef = doc(db, 'usuarios', usuarioId);
+      const usuarioSnap = await getDoc(usuarioRef);
+      if (usuarioSnap.exists()) {
+        return { id: usuarioSnap.id, ...usuarioSnap.data() };
+      } else {
+        console.error('No se encontró el usuario con ID:', usuarioId);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error al obtener los datos del usuario:', error);
+      return null;
+    }
+  }
+
 
   async historiales(): Promise<any[]> {
     const historiales: any[] = [];
@@ -273,6 +315,7 @@ export class ColeccionesService {
         const usuarioId = usuarioDoc.id;
         const usuarioData = usuarioDoc.data();
         const nombreUsuario = usuarioData['nombre_usuario'] || null;
+        const emailUsuario = usuarioData['email'] || null;
 
         const cartasDeColeccionRef = collection(db, 'usuarios', usuarioId, 'colecciones', nombreColeccion, 'cartas');
         const cartasSnap = await getDocs(cartasDeColeccionRef);
@@ -280,6 +323,7 @@ export class ColeccionesService {
           idCarta: doc.id, // ID del documento de la carta
           usuarioPropietario: usuarioId, // ID del usuario dueño de esta carta en esta colección
           nombre_usuario: nombreUsuario, // Nombre del usuario
+          email_usuario: emailUsuario, // Email del usuario
           ...doc.data() // Datos de la carta
         }));
 

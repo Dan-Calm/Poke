@@ -26,7 +26,7 @@ export class RegistrarPage {
       console.log('Usuario registrado:', user);
 
       // Redirigir al usuario a la página principal después del registro
-      this.router.navigate(['/tabs/tab1']);
+      this.router.navigate(['/login']);
     } catch (error) {
       console.error('Error en el registro:', error);
       this.errorMessage = 'Error al registrar. Inténtalo de nuevo.';

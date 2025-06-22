@@ -1,7 +1,7 @@
 .app-header-toolbar {
   --background: #d32f2f; /* Fondo rojo */
-  --color: #fff;
-  border-radius: 0 0 16px 16px;
+  // --color: #fff;
+  // border-radius: 0 0 16px 16px;
 }
 
 ion-title {
@@ -12,8 +12,23 @@ ion-title {
     -1px -1px 0 #fff,
      1px -1px 0 #fff,
     -1px  1px 0 #fff,
-     1px  1px 0 #fff; /* Borde blanco */
+     1px  1px 0 #fff;
   letter-spacing: 1px;
+
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  max-width: 100% !important;
+  display: block !important;
+  text-align: center !important;
+
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+ion-title .ion-text {
+  overflow: visible !important;
+  white-space: normal !important;
 }
 
 ion-menu-button {

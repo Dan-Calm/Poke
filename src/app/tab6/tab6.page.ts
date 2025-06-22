@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ColeccionesService } from '../services/colecciones.service';
 import { ModalController } from '@ionic/angular';
 import { CompararColeccionesComponent } from '../modales/comparar-colecciones/comparar-colecciones.component';
-
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tab6',
@@ -18,37 +18,83 @@ export class Tab6Page implements OnInit {
   propias_globales: any[] = [];
   favoritos_globales: any[] = [];
 
+  solicitudes: any[] = [];
+
+  solicitudesSub: Subscription | undefined;
+
   // Nueva propiedad para almacenar las sugerencias para el HTML
   sugerencias: Array<{
     idUsuario: string;
     nombreOtroUsuario: string; // Para mostrar el nombre en lugar del ID
     yoLeDoy: any[];
     elMeDa: any[];
+    email: string; // Agregado para manejar el email si es necesario
   }> = [];
 
   constructor(
-      private coleccionesService: ColeccionesService,
-  private modalCtrl: ModalController
+    private coleccionesService: ColeccionesService,
+    private modalCtrl: ModalController
   ) { }
 
   async ngOnInit() {
     this.id_usuario = await this.coleccionesService.obtenerIdUsuario();
-    console.log('ID del usuario actual en Tab6:', this.id_usuario);
     await this.cargarColecciones();
     this.sugerirIntercambios();
+
+    // Suscripción en tiempo real
+    this.solicitudesSub = this.coleccionesService.solicitudesContactoListener().subscribe(solicitudes => {
+      this.solicitudes = solicitudes;
+      console.log('Solicitudes de contacto en Tab6 (realtime):', this.solicitudes);
+    });
   }
 
-async seleccionarSugerencia(sugerencia: any) {
-  const modal = await this.modalCtrl.create({
-    component: CompararColeccionesComponent,
-    componentProps: {
-      miId: this.id_usuario,
-      otroId: sugerencia.idUsuario,
-      otroUsuario: sugerencia.nombreOtroUsuario,
+  ngOnDestroy() {
+    this.solicitudesSub?.unsubscribe();
+  }
+
+  get solicitudesPendientes() {
+    return this.solicitudes?.filter(s => s.estado === 'pendiente') || [];
+  }
+
+  get solicitudesAprobadas() {
+    return this.solicitudes?.filter(s => s.estado === 'aprobado') || [];
+  }
+
+  async aceptarSolicitud(solicitud: any) {
+    console.log('Solicitud aceptada:', solicitud);
+    try {
+      await this.coleccionesService.aprobarSolicitudContacto(solicitud.id, solicitud.de);
+      // Recargar las solicitudes después de aceptar
+      this.solicitudes = await this.coleccionesService.obtenerSolicitudesContacto();
+    } catch (error) {
+      console.error('Error al aceptar la solicitud:', error);
     }
-  });
-  await modal.present();
-}
+  }
+
+  async seleccionarSugerencia(sugerencia: any) {
+
+    console.log('Sugerencia seleccionada:', sugerencia);
+
+    const modal = await this.modalCtrl.create({
+      component: CompararColeccionesComponent,
+      componentProps: {
+        miId: this.id_usuario,
+        otroId: sugerencia.idUsuario,
+        otroUsuario: sugerencia.nombreOtroUsuario,
+        otroEmail: sugerencia.email, // Asumiendo que el ID es el email
+      }
+    });
+    await modal.present();
+  }
+
+  copiarEmail(email: string) {
+    navigator.clipboard.writeText(email).then(() => {
+      // Opcional: mostrar un mensaje de éxito
+      console.log('Email copiado al portapapeles:', email);
+    }).catch(err => {
+      console.error('Error al copiar el email:', err);
+    });
+  }
 
   async cargarColecciones() {
     this.propias = await this.coleccionesService.cargarCartasDeColeccion("propias");
@@ -136,6 +182,8 @@ async seleccionarSugerencia(sugerencia: any) {
     const yoLeDoyMap = new Map<string, any[]>(); // usuarioId -> cartas que yo le doy
     const elMeDaMap = new Map<string, any[]>();  // usuarioId -> cartas que él me da
     const nombreUsuarioMap = new Map<string, string>(); // usuarioId -> nombre
+    const emailUsuarioMap = new Map<string, string>();
+
 
     // Cartas que yo tengo y otros quieren
     this.encontrarCartasPropiasDeseadasPorOtros().forEach(match => {
@@ -144,6 +192,9 @@ async seleccionarSugerencia(sugerencia: any) {
       yoLeDoyMap.get(userId)!.push(match);
       if (match.detallesCartaDeseadaPorOtro?.nombre_usuario) {
         nombreUsuarioMap.set(userId, match.detallesCartaDeseadaPorOtro.nombre_usuario);
+      }
+      if (match.detallesCartaDeseadaPorOtro?.email_usuario) {
+        emailUsuarioMap.set(userId, match.detallesCartaDeseadaPorOtro.email_usuario);
       }
     });
 
@@ -155,6 +206,9 @@ async seleccionarSugerencia(sugerencia: any) {
       if (match.detallesCartaPoseidaPorOtro?.nombre_usuario) {
         nombreUsuarioMap.set(userId, match.detallesCartaPoseidaPorOtro.nombre_usuario);
       }
+      if (match.detallesCartaPoseidaPorOtro?.email_usuario) {
+        emailUsuarioMap.set(userId, match.detallesCartaPoseidaPorOtro.email_usuario);
+      }
     });
 
     // 2. Solo sugerir si hay reciprocidad (ambos mapas tienen entradas para el usuario)
@@ -165,6 +219,7 @@ async seleccionarSugerencia(sugerencia: any) {
         this.sugerencias.push({
           idUsuario: userId,
           nombreOtroUsuario: nombreUsuarioMap.get(userId) || userId,
+          email: emailUsuarioMap.get(userId) || '', // Agregar email si es necesario
           yoLeDoy,
           elMeDa
         });

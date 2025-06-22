@@ -1,13 +1,13 @@
 <ion-header>
-  <ion-toolbar class="comparar-header-toolbar">
+  <ion-toolbar style="padding-top: 32px;" class="comparar-header-toolbar">
     <ion-title>Comparar</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="enviarSolicitudContacto()" color="secondary">
-        <ion-icon name="person-add"></ion-icon>
+        <ion-icon name="person-add" style="color: #000000;"></ion-icon>
         <!-- Solicitar contacto -->
       </ion-button>
       <ion-button (click)="cerrarModal()">
-        <ion-icon name="close"></ion-icon>
+        <ion-icon name="close" style="color: #000000;"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -16,8 +16,8 @@
 <ion-content class="ion-padding comparar-colecciones-content" fullscreen>
   <div style="display: flex; flex-direction: column; height: 100%;">
     <!-- Mitad superior: Tus cartas -->
-    <div style="flex: 1 1 0; overflow-y: auto; border-bottom: 1px solid #ccc; padding-bottom: 1px;">
-      <h2 class="titulo-mitad">Tus cartas</h2>
+    <div *ngIf="misDatosUsuario" style="flex: 1 1 0; overflow-y: auto; border-bottom: 1px solid #ccc; padding-bottom: 1px;">
+      <h2 class="titulo-mitad"> {{ misDatosUsuario.nombre_usuario}} </h2>
       <div class="cartas-grid">
         <ion-card *ngFor="let carta of propiasMostradas" class="carta-mini">
           <img [src]="carta.imagen_url || carta.imagen_url_grande" alt="{{ carta.nombre_espanol || carta.nombre }}" />
@@ -40,8 +40,8 @@
     </div>
 
     <!-- Mitad inferior: Cartas del otro usuario -->
-    <div style="flex: 1 1 0; overflow-y: auto; padding-top: 1px;">
-      <h2 class="titulo-mitad"> {{ otroUsuario }}</h2>
+    <div *ngIf="otroDatosUsuario" style="flex: 1 1 0; overflow-y: auto; padding-top: 1px;">
+      <h2 class="titulo-mitad"> {{ otroDatosUsuario.nombre_usuario}}</h2>
       <div class="cartas-grid">
         <ion-card *ngFor="let carta of otrasPropias" class="carta-mini">
           <img [src]="carta.imagen_url || carta.imagen_url_grande" alt="{{ carta.nombre_espanol || carta.nombre }}" />

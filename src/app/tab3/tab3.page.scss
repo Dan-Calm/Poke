@@ -7,3 +7,14 @@ canvas {
 ion-content::part(background) {
   background: #ffffff00;
 }
+
+/* Estilos para la información de la carta */
+.carta-info {
+  color: #111 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .carta-info {
+    color: #111 !important; /* Fuerza negro en dark mode */
+  }
+}

@@ -19,20 +19,31 @@ export class CompararColeccionesComponent implements OnInit {
 
   @Input() miId!: string;
   @Input() otroId!: string;
-  @Input() otroUsuario!: string; // Nombre del otro usuario, si es necesario
 
   propias: any[] = [];
   propiasMostradas: any[] = [];
   otrasPropias: any[] = [];
   otrasFavoritos: any[] = [];
 
+  misDatosUsuario: any;
+  otroDatosUsuario: any;
+
   constructor(
     private coleccionesService: ColeccionesService,
     private modalController: ModalController,
-    private authService: AuthService // <--- agrega esto
   ) { }
 
   async ngOnInit() {
+
+    console.log('miId:', this.miId);
+    console.log('otroId:', this.otroId);
+
+    this.misDatosUsuario = await this.coleccionesService.obtenerDatosUsuarioPorId(this.miId);
+    this.otroDatosUsuario = await this.coleccionesService.obtenerDatosUsuarioPorId(this.otroId);
+
+    console.log('Datos del usuario actual:', this.misDatosUsuario);
+    console.log('Datos del otro usuario:', this.otroDatosUsuario);
+
     console.log('Mi ID:', this.miId, '| ID del otro usuario:', this.otroId);
     this.propias = await this.coleccionesService.cargarCartasDeColeccion("propias");
     console.log('Cartas propias del usuario actual:', this.propias);
@@ -46,19 +57,29 @@ export class CompararColeccionesComponent implements OnInit {
     this.propiasMostradas = this.propias.filter(carta => favoritosIds.has(carta.id));
   }
 
+  ionViewWillEnter() {
+    // Aquí puedes poner lógica que quieras ejecutar justo antes de mostrar el modal
+    console.log('El modal de comparar colecciones está a punto de mostrarse');
+  }
+
   async enviarSolicitudContacto() {
     try {
       // Guarda la solicitud en la colección "solicitudes_contacto" bajo el usuario destino
       const now = new Date();
       await this.coleccionesService.crearSolicitudContacto({
         de: this.miId,
-        nombre_de: this.otroUsuario, // Nombre del otro usuario
-        para: this.otroId,
+        nombre_de: this.misDatosUsuario.nombre_usuario, // Nombre del usuario actual
+        email_de: this.misDatosUsuario.email, // Email del usuario actual
+        para: this.otroDatosUsuario.id,
+        nombre_para: this.otroDatosUsuario.nombre_usuario, // Nombre del otro usuario
+        email_para: this.otroDatosUsuario.email, // Email del otro usuario
         fecha: now,
         estado: 'pendiente'
       });
-      // Puedes mostrar un toast o alerta aquí si lo deseas
+      // 
       console.log('Solicitud de contacto enviada');
+      // Cierra el modal después de enviar la solicitud
+      this.cerrarModal();
     } catch (error) {
       console.error('Error al enviar la solicitud de contacto:', error);
     }

@@ -16,20 +16,20 @@ export class LoginPage implements OnInit {
   password: string = '';
   errorMessage: string = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   async login() {
     try {
       const user = await this.authService.login(this.email, this.password);
       console.log('Usuario autenticado:', user);
-      this.router.navigate(['/tabs/tab1']); // Redirigir a la página de inicio después del login
+      this.router.navigate(['/tabs/tab1'], { replaceUrl: true });
     } catch (error) {
       console.error('Error en el login:', error);
       this.errorMessage = 'Credenciales inválidas. Inténtalo de nuevo.';
     }
   }
 
-  registrar(){
+  registrar() {
     this.router.navigate(['/registrar']);
   }
 

@@ -24,6 +24,11 @@ ion-title {
   background: transparent;
 }
 
+ion-buttons ion-icon {
+  font-size: 2rem; /* Más grande */
+  color: #000 !important; /* Negro */
+}
+
 ion-header {
   --background: #d32f2f; /* Rojo */
   --ion-background-color: #d32f2f;
@@ -183,4 +188,16 @@ ion-label {
 
 .carta-botones-flotantes .icon-btn.selected {
   border: 2px #ff0000;
+}
+
+.botones-row-centrados {
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 0.5rem; // Espacio flexible entre botones
+}
+
+.botones-row-centrados > ion-col {
+  flex: 0 0 auto;
+  padding-left: 0;
+  padding-right: 0;
 }
