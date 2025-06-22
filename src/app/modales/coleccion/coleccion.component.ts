@@ -95,6 +95,11 @@ export class ColeccionComponent implements OnInit {
     this.favoritosSet = new Set(this.favoritos.map(fav => fav.id));
 
 
+    await this.actuaalizarDatos();
+    console.log('Cartas al final del ngOnInit:', this.cartas_mostradas);
+  }
+
+  async actuaalizarDatos() {
     this.cartasTienda = await this.cartasService.descargarCartasDeTiendas();
 
     // crea un set con los ids de las cartas propias para comparación rápida
@@ -102,10 +107,12 @@ export class ColeccionComponent implements OnInit {
 
     // agrega los datos de precio y cantidad a las cartas de la colección si existen en cartas propias
     this.unificarDatosCartas();
-    console.log('cartas al final del ngOnInit:', this.cartas);
 
     // calcula la cantidad de matches y el total del precio de las cartas propias de la colección
     this.calcularResumenColeccion();
+
+    this.favoritos = await this.coleccionesServies.recargarFavoritos();
+    this.favoritosSet = new Set(this.favoritos.map(fav => fav.id)); // <-- Actualiza el Set
   }
 
   extraerNombreColeccion(nombre: string): string {
@@ -184,12 +191,22 @@ export class ColeccionComponent implements OnInit {
     });
 
     // cartas_mostradas: toma el primer valor de precio, cantidad e idioma (si existen), además de todos los valores de cartas
-    this.cartas_mostradas = this.cartas.map(carta => ({
+    const cartasTemp = this.cartas.map(carta => ({
       ...carta,
       precio: Array.isArray(carta.precio) && carta.precio.length > 0 ? carta.precio[0] : "",
       cantidad: Array.isArray(carta.cantidad) && carta.cantidad.length > 0 ? carta.cantidad[0] : "",
       idioma: Array.isArray(carta.idioma) && carta.idioma.length > 0 ? carta.idioma[0] : "",
     }));
+
+    // Filtra para dejar solo un objeto por id único
+    const idsUnicos = new Set();
+    this.cartas_mostradas = cartasTemp.filter(carta => {
+      if (idsUnicos.has(carta.id)) {
+        return false;
+      }
+      idsUnicos.add(carta.id);
+      return true;
+    });
   }
 
   // calcula la cantidad de matches y el total del precio de las cartas propias de la colección
@@ -339,7 +356,10 @@ export class ColeccionComponent implements OnInit {
 
         // console.log('Cartas guardadas en la colección "propias"');
 
-        await this.crearSetCartasPropias();
+        // await this.crearSetCartasPropias();
+
+        await this.actuaalizarDatos();
+        console.log('Cartas al final del ngOnInit:', this.cartas);
       }
     });
 
@@ -377,6 +397,14 @@ export class ColeccionComponent implements OnInit {
       return carta.idioma.includes(idioma);
     }
     return carta.idioma === idioma;
+  }
+
+  scrollToTop() {
+    console.log('Scroll to top');
+    const content = document.getElementById('main-content');
+    if (content) {
+      (content as any).scrollToTop ? (content as any).scrollToTop(500) : content.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
 }

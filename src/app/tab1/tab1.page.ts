@@ -261,7 +261,7 @@ export class Tab1Page implements OnInit {
               id: carta_guardada.id,
               imagen_url: carta_guardada.imagen_url,
               imagen_url_grande: carta_guardada.imagen_url_grande,
-              nombre: carta_guardada.nombre_espanol,
+              nombre_espanol: carta_guardada.nombre_espanol,
               rareza: carta_guardada.rareza,
               tipo_carta: carta_guardada.tipo_carta,
               precio: carta.dinero,

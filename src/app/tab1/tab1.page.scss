@@ -148,3 +148,18 @@ ion-item[slot="header"]::part(native) {
 ion-card-content{
   padding: 5px;
 }
+
+@media (prefers-color-scheme: dark) {
+  ion-label,
+  ion-text,
+  ion-card-title,
+  ion-card-subtitle,
+  .info-container,
+  .info-container *,
+  .image-container,
+  .image-container *,
+  h1, h2, h3, h4, h5, h6, p, strong, span, div {
+    color: #111 !important;
+    --ion-text-color: #111 !important;
+  }
+}
