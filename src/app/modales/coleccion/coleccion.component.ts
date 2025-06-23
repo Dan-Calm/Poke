@@ -37,6 +37,7 @@ export class ColeccionComponent implements OnInit {
   cartas: any[] = [];
   cartas_propias: any[] = [];
   cartas_mostradas: any[] = [];
+  cartas_mostradasSet: Set<string> = new Set();
   cartasPropiasSet: Set<string> = new Set();
   expansiones: any[] = [];
   cantidadMatches: number = 0;
@@ -51,6 +52,8 @@ export class ColeccionComponent implements OnInit {
 
   nombreheader: string = "";
 
+  cartas_propias_del_set: any[] = []; // cartas propias del set
+
   constructor(
     private router: Router,
     private modalController: ModalController,
@@ -64,31 +67,14 @@ export class ColeccionComponent implements OnInit {
   // función principal que se ejecuta al iniciar el componente
   async ngOnInit() {
     console.log('coleccion: ', this.coleccion);
-
     this.nombreColeccion = this.coleccion.id
-
-
     this.nombreheader = this.extraerNombreColeccion(this.coleccion.nombre);
-
     this.nombreheader = this.nombreheader.charAt(0).toUpperCase() + this.nombreheader.slice(1);
-
 
     this.idUsiuario = await this.authService.getCurrentUser();
 
     // carga las cartas de la colección seleccionada y las cartas propias del usuario
     await this.cargarCartasColeccionYPropias();
-
-    // si no hay cartas en la colección, intenta obtenerlas desde las expansiones
-    if (this.cartas.length === 0) {
-      await this.cargarCartasDesdeExpansiones();
-    }
-    // carga las cartas de tiendas y filtra las que tienes en propias
-    await this.cargarCartasTiendasYPropias();
-
-    // agrega los datos de precio y cantidad a las cartas de la colección si existen en cartas propias
-    // this.unificarDatosCartas();
-
-
 
     this.favoritos = await this.coleccionesServies.cargarFavoritos(); // cargar los favoritos del usuario logueado
     // console.log('Favoritos cargados:', this.favoritos);
@@ -97,6 +83,11 @@ export class ColeccionComponent implements OnInit {
 
     await this.actuaalizarDatos();
     console.log('Cartas al final del ngOnInit:', this.cartas_mostradas);
+    this.cartas_mostradasSet = new Set(this.cartas_mostradas.map(c => c.id));
+    console.log('Cartas mostradas Set:', this.cartas_mostradasSet);
+    this.cartas_propias_del_set = this.cartas.filter(carta => this.cartasPropiasSet.has(carta.id));
+    console.log('Cartas propias del set:', this.cartas_propias_del_set);
+    this.calcularResumenColeccion();
   }
 
   async actuaalizarDatos() {
@@ -109,7 +100,7 @@ export class ColeccionComponent implements OnInit {
     this.unificarDatosCartas();
 
     // calcula la cantidad de matches y el total del precio de las cartas propias de la colección
-    this.calcularResumenColeccion();
+
 
     this.favoritos = await this.coleccionesServies.recargarFavoritos();
     this.favoritosSet = new Set(this.favoritos.map(fav => fav.id)); // <-- Actualiza el Set
@@ -132,6 +123,13 @@ export class ColeccionComponent implements OnInit {
     this.cartas = await this.coleccionesService.cargarCartasDeColeccion(this.nombreColeccion);
     // muestra en consola las cartas obtenidas
     // console.log('cartas:', this.cartas);
+
+    // si no hay cartas en la colección, intenta obtenerlas desde las expansiones
+    if (this.cartas.length === 0) {
+      await this.cargarCartasDesdeExpansiones();
+    }
+    // carga las cartas de tiendas y filtra las que tienes en propias
+    await this.cargarCartasTiendasYPropias();
 
   }
 
@@ -177,27 +175,58 @@ export class ColeccionComponent implements OnInit {
     // console.log('cartas de tiendas que tienes en propias:', this.cartas_tiendas_propias);
   }
 
-  // agrega los datos de precio y cantidad a las cartas de la colección si existen en cartas propias
   unificarDatosCartas() {
-    // Para cada carta de la colección, busca todas las cartas_propias con el mismo id
+    // Idiomas base
+    const idiomasBase = ["Español", "Inglés", "Japonés"];
+  
     this.cartas = this.cartas.map(carta => {
+      // Busca todas las cartas propias con el mismo id
       const propias = this.cartas_propias.filter(cp => cp.id === carta.id);
+  
+      // Inicializa arrays para los 3 idiomas base
+      let precio: number[] = [0, 0, 0];
+      let cantidad: number[] = [0, 0, 0];
+      let idioma: string[] = [...idiomasBase];
+      let valor_mercado: number[] = [0, 0, 0];
+  
+      // Rellena los arrays con los datos de propias si existen
+      idiomasBase.forEach((idiomaBase, idx) => {
+        const propiaIdx = propias.findIndex(p => {
+          if (Array.isArray(p.idioma)) {
+            return p.idioma.includes(idiomaBase);
+          }
+          return p.idioma === idiomaBase;
+        });
+        if (propiaIdx !== -1) {
+          const propia = propias[propiaIdx];
+          precio[idx] = Array.isArray(propia.precio) ? Number(propia.precio[0]) || 0 : Number(propia.precio) || 0;
+          cantidad[idx] = Array.isArray(propia.cantidad) ? Number(propia.cantidad[0]) || 0 : Number(propia.cantidad) || 0;
+        }
+        // Busca valor de mercado en tiendas para ese idioma
+        const tienda = this.cartas_tiendas.find(
+          t => (t.coleccion === carta.id || t.codigo_carta === carta.codigo) && t.idioma?.toLowerCase() === idiomaBase.toLowerCase()
+        );
+        valor_mercado[idx] = tienda ? Number(tienda.precio) : 0;
+      });
+  
       return {
         ...carta,
-        precio: propias.map(p => p.precio),
-        cantidad: propias.map(p => p.cantidad),
-        idioma: propias.map(p => p.idioma)
+        precio,
+        cantidad,
+        idioma,
+        valor_mercado
       };
     });
-
-    // cartas_mostradas: toma el primer valor de precio, cantidad e idioma (si existen), además de todos los valores de cartas
+  
+    // cartas_mostradas: toma el primer valor de cada campo (Español por defecto)
     const cartasTemp = this.cartas.map(carta => ({
       ...carta,
-      precio: Array.isArray(carta.precio) && carta.precio.length > 0 ? carta.precio[0] : "",
-      cantidad: Array.isArray(carta.cantidad) && carta.cantidad.length > 0 ? carta.cantidad[0] : "",
-      idioma: Array.isArray(carta.idioma) && carta.idioma.length > 0 ? carta.idioma[0] : "",
+      precio: Array.isArray(carta.precio) && carta.precio.length > 0 ? carta.precio[0] : 0,
+      cantidad: Array.isArray(carta.cantidad) && carta.cantidad.length > 0 ? carta.cantidad[0] : 0,
+      idioma: Array.isArray(carta.idioma) && carta.idioma.length > 0 ? carta.idioma[0] : "Español",
+      valor_mercado: Array.isArray(carta.valor_mercado) && carta.valor_mercado.length > 0 ? carta.valor_mercado[0] : 0
     }));
-
+  
     // Filtra para dejar solo un objeto por id único
     const idsUnicos = new Set();
     this.cartas_mostradas = cartasTemp.filter(carta => {
@@ -207,6 +236,8 @@ export class ColeccionComponent implements OnInit {
       idsUnicos.add(carta.id);
       return true;
     });
+  
+    console.log('Cartas mostradas unificadas:', this.cartas_mostradas);
   }
 
   // calcula la cantidad de matches y el total del precio de las cartas propias de la colección
@@ -214,17 +245,25 @@ export class ColeccionComponent implements OnInit {
     // obtiene las cartas de la colección que también están en cartas propias
     const matches = this.cartas.filter(carta => this.cartasPropiasSet.has(carta.id));
     this.cantidadMatches = matches.length;
-    // console.log('cantidad de cartas de la expansión que tienes en propias:', this.cantidadMatches);
 
-    // suma el precio total de las cartas_mostradas (considerando cantidad)
-    this.totalPrecio = this.cartas_propias.reduce((acc, carta) => {
-      const precio = Number(carta.precio) || 0;
-      const cantidad = Number(carta.cantidad) || 0;
-      return acc + (precio * cantidad);
+    // suma el precio total de las cartas propias (considerando cantidad y arrays)
+    this.totalPrecio = this.cartas_propias_del_set.reduce((acc, carta) => {
+      let totalCarta = 0;
+      // Si precio y cantidad son arrays, suma el producto de cada par
+      if (Array.isArray(carta.precio) && Array.isArray(carta.cantidad)) {
+        for (let i = 0; i < carta.precio.length; i++) {
+          const precio = Number(carta.precio[i]) || 0;
+          const cantidad = Number(carta.cantidad[i]) || 0;
+          totalCarta += precio * cantidad;
+        }
+      } else {
+        // Si no son arrays, multiplica directamente
+        const precio = Number(carta.precio) || 0;
+        const cantidad = Number(carta.cantidad) || 0;
+        totalCarta = precio * cantidad;
+      }
+      return acc + totalCarta;
     }, 0);
-
-    // console.log('total precio de cartas propias de la colección:', this.totalPrecio);
-    // console.log('cantidad de cartas en la colección:', this.cartas.length);
   }
 
   // cierra el modal
@@ -359,7 +398,7 @@ export class ColeccionComponent implements OnInit {
         // await this.crearSetCartasPropias();
 
         await this.actuaalizarDatos();
-        console.log('Cartas al final del ngOnInit:', this.cartas);
+        this.calcularResumenColeccion();
       }
     });
 
@@ -383,6 +422,7 @@ export class ColeccionComponent implements OnInit {
         cartaMostrada.precio = Array.isArray(cartaEncontrada.precio) ? cartaEncontrada.precio[indice] : cartaEncontrada.precio;
         cartaMostrada.cantidad = Array.isArray(cartaEncontrada.cantidad) ? cartaEncontrada.cantidad[indice] : cartaEncontrada.cantidad;
         cartaMostrada.idioma = idioma;
+        cartaMostrada.valor_mercado = Array.isArray(cartaEncontrada.valor_mercado) ? cartaEncontrada.valor_mercado[indice] : cartaEncontrada.valor_mercado;
       }
     }
     // this.cartas_mostradas = [...this.cartas_mostradas];
