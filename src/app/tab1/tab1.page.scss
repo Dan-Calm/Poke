@@ -167,3 +167,46 @@ ion-card-content{
     color: #383838 !important;
   }
 }
+
+
+ion-searchbar {
+  --background: transparent !important;
+  --box-shadow: none !important;
+  --color: #111 !important; // color del texto
+  --icon-color: #111 !important; // color de los iconos
+  --placeholder-color: #111 !important;
+  background: transparent !important;
+  border-radius: 8px;
+  border: 1.5px solid #111;
+}
+
+ion-searchbar .searchbar-input {
+  background: transparent !important;
+  color: #111 !important;
+}
+
+ion-searchbar .searchbar-search-icon,
+ion-searchbar .searchbar-clear-icon {
+  color: #111 !important;
+  fill: #111 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  ion-searchbar {
+    --background: transparent !important;
+    --color: #111 !important;
+    --icon-color: #111 !important;
+    --placeholder-color: #111 !important;
+    background: transparent !important;
+    border: 1.5px solid #111;
+  }
+  ion-searchbar .searchbar-input {
+    background: transparent !important;
+    color: #111 !important;
+  }
+  ion-searchbar .searchbar-search-icon,
+  ion-searchbar .searchbar-clear-icon {
+    color: #111 !important;
+    fill: #111 !important;
+  }
+}

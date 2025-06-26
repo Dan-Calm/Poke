@@ -18,6 +18,7 @@ import { AgregarPropiasComponent } from '../modales/agregar-propias/agregar-prop
 
 import { CotizarComponent } from '../modales/cotizar/cotizar.component';
 
+
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',

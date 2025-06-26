@@ -146,6 +146,27 @@ export class AuthService {
     });
   }
 
+  upgradeToPremium(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.getCurrentUser().then(userId => {
+        if (userId) {
+          const userRef = doc(db, "usuarios", userId);
+          updateDoc(userRef, { tipo_usuario: "premium" })
+            .then(() => {
+              console.log("Usuario actualizado a premium");
+              resolve();
+            })
+            .catch(error => {
+              console.error("Error al actualizar el usuario a premium:", error);
+              reject(error);
+            });
+        } else {
+          reject(new Error("No hay usuario autenticado"));
+        }
+      }).catch(error => reject(error));
+    });
+  }
+
   async getDatosUsuario(): Promise<any> {
     // Si ya tenemos los datos en caché, los devolvemos
     if (this.datosUsuarioCache) {

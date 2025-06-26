@@ -11,13 +11,13 @@
 <ion-content id="main-content">
 
   <div style="padding: 12px;">
-    <ion-grid class="searchbar-grid" style="padding: 0;">
+    <ion-grid class="searchbar-grid" style="padding: 5px;">
       <ion-row class="ion-align-items-center">
         <ion-col size="10" class="ion-no-padding">
           <ion-searchbar [(ngModel)]="textoBusqueda" (input)="filtrarCartas()" placeholder="Buscar"
             style="height: 44px; margin-right: 8px; --border-radius: 8px;"></ion-searchbar>
         </ion-col>
-        <ion-col size="2" class="ion-no-padding ion-text-center">
+        <ion-col size="2" class="padding-left-5">
           <ion-button (click)="abrirModalFiltros()" expand="block"
             style="height: 36px; --border-radius: 8px; margin-left: 0;">
             <ion-icon slot="icon-only" name="options-outline"></ion-icon>

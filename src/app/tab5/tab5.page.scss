@@ -128,12 +128,23 @@ ion-title {
 }
 
 @media (prefers-color-scheme: dark) {
-
-  .perfil-container,
-  .perfil-container h2,
-  .perfil-container p {
+  ion-label,
+  ion-text,
+  ion-card-title,
+  // ion-card-subtitle,
+  .info-container,
+  .info-container *,
+  .image-container,
+  .image-container *,
+  h1, h2, h3, h4, h5, h6, p, strong, span, div {
     color: #111 !important;
+    --ion-text-color: #111 !important;
   }
+
+  ion-card-subtitle {
+    color: #383838 !important;
+  }
+
 
   ion-buttons ion-icon {
     font-size: 2rem;
@@ -141,4 +152,35 @@ ion-title {
     color: #000 !important;
     /* Negro */
   }
+}
+
+
+// Fondo transparente para listas y items (incluyendo shadow DOM)
+ion-list,
+ion-list::part(background),
+ion-item,
+ion-item::part(native),
+ion-accordion-group,
+ion-accordion,
+ion-accordion::part(native),
+ion-accordion::part(container),
+ion-accordion::part(content),
+ion-accordion::part(header),
+ion-label,
+ion-avatar,
+ion-card,
+ion-card::part(native) {
+  background: transparent !important;
+  --background: transparent !important;
+  box-shadow: none !important;
+}
+
+
+ion-list {
+  background: transparent !important;
+  border: 2px solid #111;
+  border-radius: 18px;
+  margin-bottom: 24px;
+  padding: 12px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }

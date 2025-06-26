@@ -6,20 +6,13 @@
         <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
       </ion-button>
 
-      <!-- <ion-button fill="clear" color="dark" (click)="abrirSolicitudesContacto()">
-        <ion-icon name="person-add-outline"></ion-icon>
-        <ion-badge *ngIf="cantidadSolicitudesContacto > 0" color="danger"
-          style="position: absolute; top: 2px; right: 2px;">
-          {{ cantidadSolicitudesContacto }}
-        </ion-badge>
-      </ion-button> -->
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
 
-  
+
   <div class="perfil-container ion-text-center">
     <ion-avatar class="avatar-perfil">
       <img [src]="imagenPerfil">
@@ -27,11 +20,13 @@
     <h2>{{ nombreUsuario }}</h2>
     <p>Usuario desde: {{ fechaCreacion }}</p>
 
+    <ion-button (click)="upgradeRol()">Solicitar premium</ion-button>
+
   </div>
 
   <!-- Medallas en lista vertical -->
-  <ion-list>
-    <ion-item lines="full">
+  <ion-list lines="none">
+    <ion-item >
       <ion-avatar slot="start">
         <img src="https://images.wikidexcdn.net/mwuploads/wikidex/1/16/latest/20180812035006/Medalla_Tierra.png"
           [ngStyle]="tieneMedallaPrimeraCaptura ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}" />
@@ -44,7 +39,7 @@
       </ion-label>
     </ion-item>
 
-    <ion-item lines="full">
+    <ion-item >
       <ion-avatar slot="start">
         <img src="https://images.wikidexcdn.net/mwuploads/wikidex/9/93/latest/20180812035749/Medalla_Volc%C3%A1n.png"
           [ngStyle]="tieneMedallaCartaLegendaria ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}" />
@@ -58,7 +53,7 @@
       </ion-label>
     </ion-item>
 
-    <ion-item lines="full">
+    <ion-item >
       <ion-avatar slot="start">
         <img src="https://images.wikidexcdn.net/mwuploads/wikidex/3/39/latest/20180812014627/Medalla_Roca.png"
           [ngStyle]="tieneMedallaColeccionistaVerdadero ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}" />
@@ -71,7 +66,7 @@
       </ion-label>
     </ion-item>
 
-    <ion-item lines="full">
+    <ion-item >
       <ion-avatar slot="start">
         <img src="https://images.wikidexcdn.net/mwuploads/wikidex/6/60/latest/20180812013531/Medalla_Cascada.png"
           [ngStyle]="tieneMedallaCienCartas ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}" />
@@ -83,45 +78,48 @@
         </app-barra-progreso>
       </ion-label>
     </ion-item>
+
+    <ion-item >
+      <ion-avatar slot="start">
+        <img src="https://images.wikidexcdn.net/mwuploads/wikidex/c/c5/latest/20180812035225/Medalla_Alma.png"
+          [ngStyle]="tieneMedallaInvestigador ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}" />
+      </ion-avatar>
+      <ion-label>
+        <h2>Investigador</h2>
+        <p>Ve al menos 50 cartas distintas en el historial.</p>
+        <app-barra-progreso [valor]="progresoInvestigador" [total]="50">
+        </app-barra-progreso>
+      </ion-label>
+    </ion-item>
+
+    <ion-item >
+      <ion-avatar slot="start">
+        <img src="https://images.wikidexcdn.net/mwuploads/wikidex/0/09/latest/20180812034547/Medalla_Arco%C3%ADris.png"
+          [ngStyle]="tieneMedallaFavoritos ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}" />
+      </ion-avatar>
+      <ion-label>
+        <h2>Favoritos</h2>
+        <p>Marca al menos 20 cartas como favoritas.</p>
+        <app-barra-progreso [valor]="progresoFavoritos" [total]="20">
+        </app-barra-progreso>
+      </ion-label>
+    </ion-item>
+
+    <ion-item >
+      <ion-avatar slot="start">
+        <img src="https://images.wikidexcdn.net/mwuploads/wikidex/c/c2/latest/20180812035607/Medalla_Pantano.png"
+          [ngStyle]="tieneMedallaVeterano ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}" />
+      </ion-avatar>
+      <ion-label>
+        <h2>Veterano</h2>
+        <p>Debes tener tu cuenta activa por al menos 30 días.</p>
+        <app-barra-progreso [valor]="progresoVeterano" [total]="30">
+        </app-barra-progreso>
+      </ion-label>
+    </ion-item>
+
   </ion-list>
 
-  <ion-item lines="full">
-    <ion-avatar slot="start">
-      <img src="https://images.wikidexcdn.net/mwuploads/wikidex/c/c5/latest/20180812035225/Medalla_Alma.png"
-        [ngStyle]="tieneMedallaInvestigador ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}" />
-    </ion-avatar>
-    <ion-label>
-      <h2>Investigador</h2>
-      <p>Ve al menos 50 cartas distintas en el historial.</p>
-      <app-barra-progreso [valor]="progresoInvestigador" [total]="50">
-      </app-barra-progreso>
-    </ion-label>
-  </ion-item>
 
-  <ion-item lines="full">
-    <ion-avatar slot="start">
-      <img src="https://images.wikidexcdn.net/mwuploads/wikidex/0/09/latest/20180812034547/Medalla_Arco%C3%ADris.png"
-        [ngStyle]="tieneMedallaFavoritos ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}" />
-    </ion-avatar>
-    <ion-label>
-      <h2>Favoritos</h2>
-      <p>Marca al menos 20 cartas como favoritas.</p>
-      <app-barra-progreso [valor]="progresoFavoritos" [total]="20">
-      </app-barra-progreso>
-    </ion-label>
-  </ion-item>
-
-  <ion-item lines="full">
-    <ion-avatar slot="start">
-      <img src="https://images.wikidexcdn.net/mwuploads/wikidex/c/c2/latest/20180812035607/Medalla_Pantano.png"
-        [ngStyle]="tieneMedallaVeterano ? {} : {'filter': 'grayscale(1)', 'opacity': '0.5'}" />
-    </ion-avatar>
-    <ion-label>
-      <h2>Veterano</h2>
-      <p>Debes tener tu cuenta activa por al menos 30 días.</p>
-      <app-barra-progreso [valor]="progresoVeterano" [total]="30">
-      </app-barra-progreso>
-    </ion-label>
-  </ion-item>
 
 </ion-content>

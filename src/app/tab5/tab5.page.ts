@@ -35,6 +35,8 @@ export class Tab5Page implements OnInit {
 
   solicitudesContacto: any[] = []; // Aquí puedes definir el tipo de datos según tu modelo  
 
+  rol: string = ''; // Variable para almacenar el rol del usuario
+
 
   constructor(
     private authService: AuthService,
@@ -46,6 +48,9 @@ export class Tab5Page implements OnInit {
   async ngOnInit() {
     await this.cargarDatosUsuario();
     await this.cargarSolicitudesContacto();
+
+    this.rol = (await this.authService.getRol()) ?? '';
+    console.log('Rol del usuario:', this.rol);
   }
 
   async cargarSolicitudesContacto() {
@@ -55,10 +60,11 @@ export class Tab5Page implements OnInit {
     console.log('Solicitudes de contacto:', this.solicitudesContacto);
   }
 
-  abrirSolicitudesContacto() {
-    // Aquí puedes abrir un modal o navegar a la página de solicitudes de contacto
-    // Ejemplo: this.modalCtrl.create({ component: SolicitudesContactoComponent });
-    // O simplemente mostrar un alert con la lista
+  async upgradeRol() {
+    if (this.rol === 'usuario') {
+      await this.authService.upgradeToPremium();
+      this.authService.getRol();
+    } 
   }
 
   async cargarDatosUsuario() {
