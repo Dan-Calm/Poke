@@ -1,30 +1,42 @@
 <ion-header>
-  <ion-toolbar style="padding-top: 32px;">
+  <ion-toolbar class="login-header-toolbar">
     <ion-title>Iniciar Sesión</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-grid>
-    <ion-row class="ion-justify-content-center">
-      <ion-col size-md="6" size-lg="4">
-        <form (submit)="login()">
-          <ion-item>
-            <ion-label position="floating">Correo Electrónico</ion-label>
-            <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
-          </ion-item>
+<ion-content class="ion-padding">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Bienvenido</h1>
+        <p>Inicia sesión para continuar</p>
+      </div>
+      
+      <form (submit)="login()" class="login-form">
+        <ion-item class="input-item">
+          <ion-label position="floating">Correo Electrónico</ion-label>
+          <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
+        </ion-item>
 
-          <ion-item>
-            <ion-label position="floating">Contraseña</ion-label>
-            <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
-          </ion-item>
+        <ion-item class="input-item">
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
+        </ion-item>
 
-          <ion-text color="danger" *ngIf="errorMessage">{{ errorMessage }}</ion-text>
+        <ion-text class="error-message" *ngIf="errorMessage">{{ errorMessage }}</ion-text>
 
-          <ion-button expand="block" type="submit">Iniciar Sesión</ion-button>
-          <ion-button expand="block" fill="clear" (click)="registrar()">¿No tienes cuenta? Regístrate</ion-button>
-        </form>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+        <div class="button-container">
+          <ion-button expand="block" type="submit" class="login-button">
+            <ion-icon name="log-in-outline" slot="start"></ion-icon>
+            Iniciar Sesión
+          </ion-button>
+          
+          <ion-button expand="block" fill="outline" (click)="registrar()" class="register-button">
+            <ion-icon name="person-add-outline" slot="start"></ion-icon>
+            ¿No tienes cuenta? Regístrate
+          </ion-button>
+        </div>
+      </form>
+    </div>
+  </div>
 </ion-content>

@@ -1,3 +1,216 @@
+// Estilos consistentes con el resto de la app
 ion-content::part(background) {
   background: #ffffff00;
+}
+
+// Fondo transparente para listas y items (incluyendo shadow DOM)
+ion-list,
+ion-list::part(background),
+ion-item,
+ion-item::part(native),
+ion-accordion-group,
+ion-accordion,
+ion-accordion::part(native),
+ion-accordion::part(container),
+ion-accordion::part(content),
+ion-accordion::part(header),
+ion-label,
+ion-avatar,
+ion-card,
+ion-card::part(native) {
+  background: transparent !important;
+  --background: transparent !important;
+  box-shadow: none !important;
+}
+
+// Estilos de las cards siguiendo el patrón del proyecto
+ion-card {
+  background: transparent !important;
+  border: 2px solid #111;
+  border-radius: 18px;
+  margin-bottom: 12px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+// Container principal
+.revision-container {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.swipe-card {
+  position: relative;
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+// Contenedor de imagen principal
+.imagen-principal-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.imagen-principal {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.imagen-miniatura {
+  position: absolute;
+  bottom: 15px;
+  right: 12px;
+  width: 100px;
+  height: 130px;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 10;
+  object-fit: contain;
+}
+
+// Información de la carta
+.carta-info {
+  margin: 8px 0;
+  
+  p {
+    margin: 4px 0;
+    color: #111;
+    font-size: 0.9rem;
+    
+    strong {
+      color: #111;
+      font-weight: 600;
+    }
+  }
+}
+
+// Botones de acción
+.botones-accion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.boton-confirmar {
+  --background: transparent;
+  --background-activated: rgba(17, 17, 17, 0.1);
+  --background-hover: rgba(17, 17, 17, 0.05);
+  --color: #111;
+  --border-color: #111;
+  --border-style: solid;
+  --border-width: 2px;
+  --border-radius: 12px;
+  font-weight: 600;
+  
+  ion-icon {
+    color: #111;
+  }
+}
+
+.boton-editar {
+  --background: transparent;
+  --background-activated: rgba(17, 17, 17, 0.1);
+  --background-hover: rgba(17, 17, 17, 0.05);
+  --color: #111;
+  --border-color: #111;
+  --border-style: solid;
+  --border-width: 2px;
+  --border-radius: 12px;
+  font-weight: 600;
+  
+  ion-icon {
+    color: #111;
+  }
+}
+
+// Mensaje de revisión completada
+.revision-completada {
+  text-align: center;
+  margin-top: 1em;
+  padding: 16px;
+  
+  h2 {
+    color: #111;
+    font-weight: 600;
+    font-size: 1.3rem;
+  }
+}
+
+// Estilos de títulos y subtítulos
+ion-card-title {
+  color: #111;
+  font-size: 1.2rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+ion-card-subtitle {
+  color: #383838;
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+
+// Colores de texto consistentes en modo oscuro
+@media (prefers-color-scheme: dark) {
+  ion-label,
+  ion-text,
+  ion-card-title,
+  ion-card-content,
+  .carta-info,
+  .carta-info *,
+  .revision-completada,
+  .revision-completada *,
+  h1, h2, h3, h4, h5, h6, p, strong, span, div {
+    color: #111 !important;
+    --ion-text-color: #111 !important;
+  }
+
+  ion-card-subtitle {
+    color: #383838 !important;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .revision-container {
+    padding: 4px;
+  }
+  
+  .imagen-miniatura {
+    width: 80px;
+    height: 105px;
+    bottom: 12px;
+    right: 10px;
+  }
+  
+  .imagen-principal {
+    max-width: 280px;
+  }
+  
+  .swipe-card {
+    max-width: 100%;
+  }
+  
+  .botones-accion {
+    gap: 6px;
+  }
+  
+  .carta-info p {
+    font-size: 0.85rem;
+    margin: 3px 0;
+  }
 }

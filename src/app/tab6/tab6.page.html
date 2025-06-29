@@ -21,17 +21,18 @@
                 </strong>
               </ion-label>
               <ng-container *ngIf="solicitud.de !== id_usuario; else pendienteTexto">
-                <ion-button slot="end" color="success" (click)="aceptarSolicitud(solicitud)">
+                <ion-button slot="end" fill="outline" (click)="aceptarSolicitud(solicitud)">
+                  <ion-icon name="checkmark-outline" slot="start"></ion-icon>
                   Aprobar
                 </ion-button>
               </ng-container>
               <ng-template #pendienteTexto>
-                <ion-text color="medium" slot="end">Pendiente</ion-text>
+                <ion-text slot="end">Pendiente</ion-text>
               </ng-template>
             </ion-item>
           </ion-list>
           <ng-template #noPendientes>
-            <ion-text color="medium">No hay solicitudes pendientes.</ion-text>
+            <ion-text>No hay solicitudes pendientes.</ion-text>
           </ng-template>
         </div>
       </ion-accordion>
@@ -56,7 +57,7 @@
             </ion-item>
           </ion-list>
           <ng-template #noAprobadas>
-            <ion-text color="medium">Aún no hay contactos.</ion-text>
+            <ion-text>Aún no hay contactos.</ion-text>
           </ng-template>
         </div>
       </ion-accordion>
@@ -65,22 +66,25 @@
 
   <!-- Lista de sugerencias de intercambio -->
   <div class="sugerencias-container">
-    <ion-list *ngIf="sugerencias.length > 0">
-      <ion-item *ngFor="let sug of sugerencias" (click)="seleccionarSugerencia(sug)">
+    <h3 class="section-title">Sugerencias de Intercambio</h3>
+    <ion-list *ngIf="sugerencias.length > 0; else noSugerencias">
+      <ion-item *ngFor="let sug of sugerencias" (click)="seleccionarSugerencia(sug)" class="suggestion-item">
         <ion-avatar slot="start">
-          <ion-icon name="person-circle-outline" style="font-size: 2.2em;"></ion-icon>
+          <img [src]="imagenPerfil" alt="Avatar del usuario">
         </ion-avatar>
         <ion-label>
           <h2>{{ sug.nombreOtroUsuario }}</h2>
           <p>
-            Te ofrece:
-            <ion-badge color="success" slot="end">{{ sug.elMeDa.length }}</ion-badge><br>
-            Tú ofreces:
-            <ion-badge color="primary" slot="end">{{ sug.yoLeDoy.length }}</ion-badge>
+            Te ofrece: <ion-badge color="success">{{ sug.elMeDa.length }}</ion-badge><br>
+            Tú ofreces: <ion-badge color="primary">{{ sug.yoLeDoy.length }}</ion-badge>
           </p>
         </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
       </ion-item>
     </ion-list>
+    <ng-template #noSugerencias>
+      <ion-text>No hay sugerencias de intercambio disponibles.</ion-text>
+    </ng-template>
   </div>
 
 </ion-content>

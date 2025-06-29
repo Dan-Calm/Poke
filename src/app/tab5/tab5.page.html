@@ -19,8 +19,11 @@
     </ion-avatar>
     <h2>{{ nombreUsuario }}</h2>
     <p>Usuario desde: {{ fechaCreacion }}</p>
-
-    <ion-button (click)="upgradeRol()">Solicitar premium</ion-button>
+    
+    <ion-button (click)="upgradeRol()" class="boton-premium">
+      <ion-icon name="star-outline" slot="start"></ion-icon>
+      Solicitar premium
+    </ion-button>
 
   </div>
 

@@ -22,6 +22,8 @@ export class Tab6Page implements OnInit {
 
   solicitudesSub: Subscription | undefined;
 
+  imagenPerfil: string = 'assets/default-avatar.png';
+
   // Nueva propiedad para almacenar las sugerencias para el HTML
   sugerencias: Array<{
     idUsuario: string;

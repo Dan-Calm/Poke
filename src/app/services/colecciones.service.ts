@@ -508,4 +508,58 @@ export class ColeccionesService {
     }
   }
 
+  // Métodos adicionales para estadísticas de administración
+  async obtenerTodasLasColecciones(): Promise<any[]> {
+    try {
+      const usuariosRef = collection(db, 'usuarios');
+      const usuariosSnapshot = await getDocs(usuariosRef);
+      
+      const todasLasColecciones: any[] = [];
+      
+      for (const usuarioDoc of usuariosSnapshot.docs) {
+        const usuarioId = usuarioDoc.id;
+        
+        try {
+          const coleccionesRef = collection(db, 'usuarios', usuarioId, 'colecciones');
+          const coleccionesSnapshot = await getDocs(coleccionesRef);
+          
+          for (const coleccionDoc of coleccionesSnapshot.docs) {
+            const coleccionId = coleccionDoc.id;
+            
+            const cartasRef = collection(db, 'usuarios', usuarioId, 'colecciones', coleccionId, 'cartas');
+            const cartasSnapshot = await getDocs(cartasRef);
+            
+            cartasSnapshot.docs.forEach(cartaDoc => {
+              todasLasColecciones.push({
+                usuarioId,
+                coleccionId,
+                cartaId: cartaDoc.id,
+                ...cartaDoc.data()
+              });
+            });
+          }
+        } catch (error) {
+          console.log(`Error al procesar colecciones del usuario ${usuarioId}:`, error);
+        }
+      }
+      
+      return todasLasColecciones;
+    } catch (error) {
+      console.error('Error al obtener todas las colecciones:', error);
+      return [];
+    }
+  }
+
+  async obtenerVariacionesPrecios(): Promise<any[]> {
+    // En una implementación real, esto obtendría datos históricos de precios
+    // Por ahora retornamos datos de ejemplo
+    return [
+      { id: '1', nombre_espanol: 'Charizard', codigo: 'BS-4', variacion: 50.5 },
+      { id: '2', nombre_espanol: 'Pikachu', codigo: 'BS-58', variacion: -25.0 },
+      { id: '3', nombre_espanol: 'Blastoise', codigo: 'BS-2', variacion: 40.2 },
+      { id: '4', nombre_espanol: 'Venusaur', codigo: 'BS-15', variacion: -14.3 },
+      { id: '5', nombre_espanol: 'Alakazam', codigo: 'BS-1', variacion: 70.8 }
+    ];
+  }
+
 }

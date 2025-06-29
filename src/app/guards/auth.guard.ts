@@ -39,7 +39,7 @@ export class AuthGuard implements CanActivate {
 
       console.log('Acceso denegado. Rol insuficiente.');
       const toast = document.createElement('ion-toast');
-      toast.message = 'Eres pobre.';
+      toast.message = 'Te falta la medalla premium para acceder.';
       toast.duration = 2000;
       toast.color = 'danger';
       document.body.appendChild(toast);

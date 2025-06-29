@@ -3,13 +3,13 @@
 <ion-content>
   <ion-grid class="admin-panel-grid">
     <ion-row>
-      <!-- Sección izquierda: Administración de usuarios -->
+      <!-- Sección izquierda -->
       <ion-col size="12" size-md="6" class="admin-panel-left">
+        <!-- 1. Usuarios Online -->
         <ion-card class="admin-card usuarios-online-card">
           <ion-card-header>
             <ion-card-title>
-              <ion-icon name="people-outline"
-                style="vertical-align: middle; font-size: 1.5em; margin-right: 8px;"></ion-icon>
+              <ion-icon name="people-outline" class="card-icon"></ion-icon>
               Usuarios Online
             </ion-card-title>
           </ion-card-header>
@@ -21,12 +21,59 @@
           </ion-card-content>
         </ion-card>
 
-        <!-- Sección de gestión de usuarios -->
+        <!-- 2. Registros por Mes -->
+        <ion-card class="admin-card registros-card">
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="calendar-outline" class="card-icon"></ion-icon>
+              Registros por Mes
+            </ion-card-title>
+            <ion-card-subtitle>
+              <ion-select [(ngModel)]="mesSeleccionado" (ionChange)="cargarRegistrosPorMes()" placeholder="Seleccionar mes">
+                <ion-select-option *ngFor="let mes of mesesDisponibles" [value]="mes.value">
+                  {{ mes.label }}
+                </ion-select-option>
+              </ion-select>
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="chart-container-small">
+              <canvas #registrosChart></canvas>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- 3. Estadísticas Premium -->
+        <ion-card class="admin-card premium-stats-card">
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="star-outline" class="card-icon"></ion-icon>
+              Estadísticas Premium
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="premium-stats">
+              <div class="stat-item">
+                <div class="stat-value">{{ usuariosPremium }}</div>
+                <div class="stat-label">Usuarios Premium</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{ suscripcionesPrimera }}</div>
+                <div class="stat-label">Primeras Suscripciones</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{ renovacionesSuscripciones }}</div>
+                <div class="stat-label">Renovaciones</div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- 4. Gestión de Usuarios -->
         <ion-card class="admin-card usuarios-list-card">
           <ion-card-header>
             <ion-card-title>
-              <ion-icon name="person-circle-outline"
-                style="vertical-align: middle; font-size: 1.5em; margin-right: 8px;"></ion-icon>
+              <ion-icon name="person-circle-outline" class="card-icon"></ion-icon>
               Gestión de Usuarios
             </ion-card-title>
           </ion-card-header>
@@ -38,12 +85,11 @@
             <ion-list>
               <ion-item *ngFor="let usuario of usuariosFiltrados">
                 <ion-label>
-                  <div>
+                  <div class="usuario-info">
                     <strong>{{ usuario.nombre_usuario || usuario.email }}</strong>
-                    <span *ngIf="usuario.tipo_usuario === 'admin'"
-                      style="color: #23e623; font-weight: bold; margin-left: 8px;">(Admin)</span>
+                    <span *ngIf="usuario.tipo_usuario === 'admin'" class="admin-badge">(Admin)</span>
                   </div>
-                  <div style="font-size: 0.9em; color: #666;">{{ usuario.email }}</div>
+                  <div class="usuario-email">{{ usuario.email }}</div>
                 </ion-label>
                 <ion-button fill="clear" color="danger" (click)="eliminarUsuario(usuario)" slot="end">
                   <ion-icon name="trash-outline"></ion-icon>
@@ -62,9 +108,39 @@
         </ion-card>
       </ion-col>
 
-      <!-- Sección derecha: Estadísticas de cartas (vacía por ahora) -->
-
+      <!-- Sección derecha -->
       <ion-col size="12" size-md="6" class="admin-panel-right">
+        <!-- 1. Cartas con Mayor Variación de Precio -->
+        <ion-card class="admin-card variaciones-precio-card">
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="trending-up-outline" class="card-icon"></ion-icon>
+              Cartas con Mayor Variación de Precio
+            </ion-card-title>
+            <ion-card-subtitle>Mes actual</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item *ngFor="let carta of cartasVariacionPrecio; let i = index">
+                <ion-label>
+                  <div class="variacion-item">
+                    <span class="variacion-numero">{{ i + 1 }}.</span>
+                    <div class="variacion-info">
+                      <strong>{{ carta.nombre_espanol || carta.nombre }}</strong>
+                      <div class="variacion-codigo">{{ carta.codigo }}</div>
+                    </div>
+                  </div>
+                </ion-label>
+                <ion-note slot="end" [color]="carta.variacion > 0 ? 'success' : 'danger'">
+                  <ion-icon [name]="carta.variacion > 0 ? 'trending-up' : 'trending-down'"></ion-icon>
+                  {{ carta.variacion > 0 ? '+' : '' }}{{ carta.variacion.toFixed(2) }}%
+                </ion-note>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- 2. Ranking de Cotizaciones -->
         <ion-card class="admin-card stats-card">
           <ion-card-header>
             <ion-card-title>
@@ -72,8 +148,23 @@
             </ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <div style="width: 100%; max-width: 900px; height: 500px; margin: 0 auto;">
-              <canvas #barChart style="width: 100%; height: 100%;"></canvas>
+            <div class="chart-container">
+              <canvas #barChart></canvas>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- 3. Cartas Más Guardadas -->
+        <ion-card class="admin-card cartas-guardadas-card">
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="heart-outline" class="card-icon"></ion-icon>
+              Cartas Más Guardadas
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="chart-container-small">
+              <canvas #cartasGuardadasChart></canvas>
             </div>
           </ion-card-content>
         </ion-card>

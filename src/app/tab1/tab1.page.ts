@@ -193,7 +193,9 @@ export class Tab1Page implements OnInit {
       const toast = document.createElement('ion-toast');
       toast.message = 'Carta agregada a favoritos';
       toast.duration = 1000;
-      toast.color = 'success';
+      toast.color = ''; // No uses un color predefinido
+      toast.style.setProperty('--background', '#0054e9', 'important'); // azul específico
+      toast.style.setProperty('--color', '#fff', 'important'); // texto blanco
       document.body.appendChild(toast);
       await toast.present();
     } finally {
@@ -211,7 +213,10 @@ export class Tab1Page implements OnInit {
       const toast = document.createElement('ion-toast');
       toast.message = 'Carta eliminada de favoritos';
       toast.duration = 1000;
-      toast.color = 'danger';
+      toast.color = ''; // No uses un color predefinido
+      // Fuerza fondo negro y texto blanco en todos los modos
+      toast.style.setProperty('--background', '#111', 'important');
+      toast.style.setProperty('--color', '#fff', 'important');
       document.body.appendChild(toast);
       await toast.present();
     } finally {

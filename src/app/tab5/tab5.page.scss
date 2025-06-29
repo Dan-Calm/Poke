@@ -184,3 +184,21 @@ ion-list {
   padding: 12px 0;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }
+
+// Estilo del botón premium siguiendo el patrón del proyecto
+.boton-premium {
+  --background: transparent;
+  --background-activated: rgba(17, 17, 17, 0.1);
+  --background-hover: rgba(17, 17, 17, 0.05);
+  --color: #111;
+  --border-color: #111;
+  --border-style: solid;
+  --border-width: 2px;
+  --border-radius: 12px;
+  font-weight: 600;
+  margin: 16px 0;
+  
+  ion-icon {
+    color: #111;
+  }
+}

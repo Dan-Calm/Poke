@@ -1,20 +1,88 @@
-canvas {
-  max-width: 100%;
-  max-height: 400px;
-  margin: auto;
-}
-
+// Estilos consistentes con el resto de la app
 ion-content::part(background) {
   background: #ffffff00;
 }
 
-/* Estilos para la información de la carta */
-.carta-info {
-  color: #111 !important;
+// Fondo transparente para listas y items (incluyendo shadow DOM)
+ion-list,
+ion-list::part(background),
+ion-item,
+ion-item::part(native),
+ion-accordion-group,
+ion-accordion,
+ion-accordion::part(native),
+ion-accordion::part(container),
+ion-accordion::part(content),
+ion-accordion::part(header),
+ion-label,
+ion-avatar,
+ion-card,
+ion-card::part(native) {
+  background: transparent !important;
+  --background: transparent !important;
+  box-shadow: none !important;
 }
 
+// Canvas con fondo transparente
+canvas {
+  max-width: 100%;
+  max-height: 400px;
+  margin: auto;
+  background: transparent !important;
+  border-radius: 8px;
+}
+
+// Estilos para la información de la carta
+.carta-info {
+  color: #111 !important;
+  
+  p {
+    color: #111 !important;
+    
+    strong {
+      color: #111 !important;
+      font-weight: 600;
+    }
+  }
+}
+
+// Estilos para ion-items
+ion-item {
+  background: transparent !important;
+  --background: transparent !important;
+  
+  ion-label {
+    color: #111 !important;
+  }
+}
+
+// Estilos para ion-select consistentes
+ion-select {
+  --color: #111;
+  --placeholder-color: #383838;
+}
+
+// Colores de texto consistentes en modo oscuro
 @media (prefers-color-scheme: dark) {
-  .carta-info {
-    color: #111 !important; /* Fuerza negro en dark mode */
+  ion-label,
+  ion-text,
+  ion-card-title,
+  ion-card-content,
+  .carta-info,
+  .carta-info *,
+  ion-item,
+  ion-item ion-label,
+  h1, h2, h3, h4, h5, h6, p, strong, span, div {
+    color: #111 !important;
+    --ion-text-color: #111 !important;
+  }
+
+  ion-card-subtitle {
+    color: #383838 !important;
+  }
+  
+  // Canvas transparente en modo oscuro también
+  canvas {
+    background: transparent !important;
   }
 }

@@ -61,10 +61,12 @@ export class Tab5Page implements OnInit {
   }
 
   async upgradeRol() {
+    console.log('Rol actual:', this.rol);
     if (this.rol === 'usuario') {
       await this.authService.upgradeToPremium();
       this.authService.getRol();
     } 
+    console.log('Rol actualizado:', this.rol);
   }
 
   async cargarDatosUsuario() {
