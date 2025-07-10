@@ -1,371 +1,72 @@
-// Estilos consistentes con el resto de la app
-ion-content::part(background) {
-  background: #ffffff00;
-}
+// Fondos transparentes
+ion-content::part(background),ion-list,ion-list::part(background),ion-item,ion-item::part(native),ion-accordion-group,ion-accordion,ion-accordion::part(native),ion-accordion::part(container),ion-accordion::part(content),ion-accordion::part(header),ion-label,ion-avatar,ion-card,ion-card::part(native),ion-item[slot="header"],ion-item[slot="header"]::part(native){background:transparent!important;--background:transparent!important;box-shadow:none!important}
 
-// Fondo transparente para listas y items (incluyendo shadow DOM)
-ion-list,
-ion-list::part(background),
-ion-item,
-ion-item::part(native),
-ion-accordion-group,
-ion-accordion,
-ion-accordion::part(native),
-ion-accordion::part(container),
-ion-accordion::part(content),
-ion-accordion::part(header),
-ion-label,
-ion-avatar,
-ion-card,
-ion-card::part(native) {
-  background: transparent !important;
-  --background: transparent !important;
-  box-shadow: none !important;
-}
+// Cards
+ion-card,.usuarios-online-card,.usuarios-list-card,.premium-stats-card,.registros-card,.cartas-guardadas-card,.variaciones-precio-card,.stats-card,.admin-card{background:transparent!important;border:2px solid #111;border-radius:18px;margin-bottom:24px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,0.03)}
 
-// Estilos de las cards siguiendo el patrón del tab1
-ion-card {
-  background: transparent !important;
-  border: 2px solid #111;
-  border-radius: 18px;
-  margin-bottom: 24px;
-  padding: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
+// Layout
+.admin-panel-grid{padding:12px}
+.admin-panel-left,.admin-panel-right{display:flex;flex-direction:column}
+.admin-panel-left{padding-right:12px}
+.admin-panel-right{padding-left:12px}
 
-// Eliminamos los colores específicos de las cards para mantener consistencia
-.usuarios-online-card {
-  background: transparent !important;
-  border: 2px solid #111;
-  border-radius: 18px;
-  margin-bottom: 24px;
-  padding: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
+// Stats
+.usuarios-online-value{font-size:2.5rem;color:#111;display:flex;align-items:baseline;gap:12px}
+.usuarios-online-value span{font-size:1rem;color:#383838;font-weight:400}
+.premium-stats{display:flex;justify-content:space-around;flex-wrap:wrap;gap:16px}
+.stat-item{text-align:center;flex:1;min-width:100px}
+.stat-value{font-size:2rem;font-weight:bold;color:#111;margin-bottom:4px}
+.stat-label{font-size:0.9rem;color:#383838}
 
-.usuarios-online-value {
-  font-size: 2.5rem;
-  color: #111;
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-}
+// Elements
+ion-item{--padding-start:0;--inner-padding-end:0;align-items:center}
+.admin-card ion-card-header{padding-bottom:8px}
+.admin-card ion-card-title{font-size:1.2rem;font-weight:600;color:#111}
+.admin-card ion-card-subtitle{color:#383838}
 
-.usuarios-online-value span {
-  font-size: 1rem;
-  color: #383838;
-  font-weight: 400;
-}
+// Searchbar
+ion-searchbar{--background:transparent!important;--box-shadow:none!important;--color:#111!important;--icon-color:#111!important;--placeholder-color:#111!important;background:transparent!important;border-radius:8px;border:1.5px solid #111;margin-bottom:16px}
+ion-searchbar .searchbar-input{background:transparent!important;color:#111!important}
+ion-searchbar .searchbar-search-icon,ion-searchbar .searchbar-clear-icon{color:#111!important;fill:#111!important}
 
-.usuarios-list-card {
-  margin-top: 24px;
-}
+// Misc
+ion-select{--color:#111;--placeholder-color:#383838}
+ion-note{font-weight:bold}
+canvas{border-radius:8px}
+.card-icon{vertical-align:middle;font-size:1.5em;margin-right:8px}
+.variacion-item{display:flex;align-items:center}
+.variacion-numero{font-weight:bold;margin-right:8px}
+.variacion-info{flex:1}
+.variacion-codigo{font-size:0.9em;color:#383838}
+.usuario-info{display:flex;align-items:center;flex-wrap:wrap}
+.admin-badge{color:#111;font-weight:bold;margin-left:8px;font-size:0.9em}
+.usuario-email{font-size:0.9em;color:#383838}
 
-ion-item {
-  --padding-start: 0;
-  --inner-padding-end: 0;
-  align-items: center;
-  background: transparent !important;
-  --background: transparent !important;
-}
+// Charts
+.chart-container{width:100%;max-width:900px;height:500px;margin:0 auto}
+.chart-container canvas,.chart-container-small canvas{width:100%!important;height:100%!important}
+.chart-container-small{width:100%;height:400px}
 
-.admin-panel-grid {
-  padding: 12px;
-}
+// Buttons
+ion-button[color="primary"] ion-icon[name="star-outline"],ion-button[color="medium"] ion-icon[name="star"],ion-button[color="primary"],ion-button[color="medium"]{--color:#111!important}
 
-.admin-panel-left,
-.admin-panel-right {
-  display: flex;
-  flex-direction: column;
-}
-
-.admin-panel-left {
-  padding-right: 12px;
-}
-
-.admin-panel-right {
-  padding-left: 12px;
-}
-
-// Estadísticas premium con colores consistentes
-.premium-stats-card {
-  background: transparent !important;
-  border: 2px solid #111;
-  color: #111;
-  
-  ion-card-title {
-    color: #111;
-  }
-}
-
-.premium-stats {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.stat-item {
-  text-align: center;
-  flex: 1;
-  min-width: 100px;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #111;
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  color: #383838;
-}
-
-// Cards con bordes consistentes
-.registros-card,
-.cartas-guardadas-card,
-.variaciones-precio-card,
-.stats-card {
-  background: transparent !important;
-  border: 2px solid #111;
-  border-radius: 18px;
-  margin-bottom: 24px;
-  padding: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
-
-.admin-card {
-  background: transparent !important;
-  border: 2px solid #111;
-  border-radius: 18px;
-  margin-bottom: 24px;
-  padding: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-  
-  ion-card-header {
-    padding-bottom: 8px;
-  }
-  
-  ion-card-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #111;
-  }
-  
-  ion-card-subtitle {
-    color: #383838;
-  }
-}
-
-// Estilos para ion-searchbar consistentes con tab1
-ion-searchbar {
-  --background: transparent !important;
-  --box-shadow: none !important;
-  --color: #111 !important;
-  --icon-color: #111 !important;
-  --placeholder-color: #111 !important;
-  background: transparent !important;
-  border-radius: 8px;
-  border: 1.5px solid #111;
-  margin-bottom: 16px;
-}
-
-ion-searchbar .searchbar-input {
-  background: transparent !important;
-  color: #111 !important;
-}
-
-ion-searchbar .searchbar-search-icon,
-ion-searchbar .searchbar-clear-icon {
-  color: #111 !important;
-  fill: #111 !important;
-}
-
-// Colores de texto consistentes
+// Dark mode
 @media (prefers-color-scheme: dark) {
-  ion-label,
-  ion-text,
-  ion-card-title,
-  ion-card-content,
-  .info-container,
-  .info-container *,
-  .usuarios-online-value,
-  .stat-value,
-  h1, h2, h3, h4, h5, h6, p, strong, span, div {
-    color: #111 !important;
-    --ion-text-color: #111 !important;
-  }
-
-  ion-card-subtitle,
-  .stat-label,
-  .usuarios-online-value span {
-    color: #383838 !important;
-  }
-
-  // Searchbar en modo oscuro
-  ion-searchbar {
-    --background: transparent !important;
-    --color: #111 !important;
-    --icon-color: #111 !important;
-    --placeholder-color: #111 !important;
-    background: transparent !important;
-    border: 1.5px solid #111;
-  }
-  
-  ion-searchbar .searchbar-input {
-    background: transparent !important;
-    color: #111 !important;
-  }
-  
-  ion-searchbar .searchbar-search-icon,
-  ion-searchbar .searchbar-clear-icon {
-    color: #111 !important;
-    fill: #111 !important;
-  }
+  ion-label,ion-text,ion-card-title,ion-card-content,.info-container,.info-container *,.usuarios-online-value,.stat-value,h1,h2,h3,h4,h5,h6,p,strong,span,div{color:#111!important;--ion-text-color:#111!important}
+  ion-card-subtitle,.stat-label,.usuarios-online-value span{color:#383838!important}
+  ion-searchbar{--background:transparent!important;--color:#111!important;--icon-color:#111!important;--placeholder-color:#111!important;background:transparent!important;border:1.5px solid #111}
+  ion-searchbar .searchbar-input{background:transparent!important;color:#111!important}
+  ion-searchbar .searchbar-search-icon,ion-searchbar .searchbar-clear-icon{color:#111!important;fill:#111!important}
 }
 
-// Responsive design
+// Mobile
 @media (max-width: 768px) {
-  .admin-panel-left,
-  .admin-panel-right {
-    padding: 0;
-  }
-  
-  .premium-stats {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .stat-value {
-    font-size: 1.5rem;
-  }
-  
-  .admin-panel-grid {
-    padding: 8px;
-  }
-}
-
-// Eliminar fondo de los headers de los acordeones
-ion-item[slot="header"],
-ion-item[slot="header"]::part(native) {
-  background: transparent !important;
-  --background: transparent !important;
-}
-
-// Estilos para ion-select consistentes
-ion-select {
-  --color: #111;
-  --placeholder-color: #383838;
-}
-
-// Estilos para ion-note (variaciones de precio)
-ion-note {
-  font-weight: bold;
-}
-
-// Canvas containers
-canvas {
-  border-radius: 8px;
-}
-
-// Estilos para elementos específicos del admin
-.card-icon {
-  vertical-align: middle;
-  font-size: 1.5em;
-  margin-right: 8px;
-}
-
-.variacion-item {
-  display: flex;
-  align-items: center;
-}
-
-.variacion-numero {
-  font-weight: bold;
-  margin-right: 8px;
-}
-
-.variacion-info {
-  flex: 1;
-}
-
-.variacion-codigo {
-  font-size: 0.9em;
-  color: #383838;
-}
-
-.usuario-info {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.admin-badge {
-  color: #111;
-  font-weight: bold;
-  margin-left: 8px;
-  font-size: 0.9em;
-}
-
-.usuario-email {
-  font-size: 0.9em;
-  color: #383838;
-}
-
-.chart-container {
-  width: 100%;
-  max-width: 900px;
-  height: 500px;
-  margin: 0 auto;
-}
-
-.chart-container canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.chart-container-small {
-  width: 100%;
-  height: 400px;
-}
-
-.chart-container-small canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-@media (max-width: 768px) {
-  .chart-container {
-    height: 300px;
-  }
-  
-  .chart-container-small {
-    height: 250px;
-  }
-  
-  .usuario-info {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .admin-badge {
-    margin-left: 0;
-    margin-top: 4px;
-  }
-}
-
-// Estilos para botones específicos
-ion-button[color="primary"] ion-icon[name="star-outline"],
-ion-button[color="medium"] ion-icon[name="star"] {
-  color: #111 !important;
-}
-
-ion-button[color="primary"] {
-  --color: #111 !important;
-}
-
-ion-button[color="medium"] {
-  --color: #111 !important;
+  .admin-panel-left,.admin-panel-right{padding:0}
+  .premium-stats{flex-direction:column;gap:12px}
+  .stat-value{font-size:1.5rem}
+  .admin-panel-grid{padding:8px}
+  .chart-container{height:300px}
+  .chart-container-small{height:250px}
+  .usuario-info{flex-direction:column;align-items:flex-start}
+  .admin-badge{margin-left:0;margin-top:4px}
 }

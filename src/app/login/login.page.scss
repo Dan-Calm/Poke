@@ -1,304 +1,63 @@
-// Fondo transparente para el contenido principal
-ion-content,
-ion-content::part(background) {
-  background: transparent !important;
+ion-content,ion-content::part(background){background:transparent!important}
+.login-container{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:12px}
+.login-card{background:transparent;border:2px solid #111;border-radius:18px;padding:20px;width:100%;max-width:380px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.logo-container{display:flex;justify-content:center;margin-bottom:16px}
+.app-logo{width:350px;height:350px}
+.login-header{text-align:center;margin-bottom:20px}
+.login-header h1{color:#111!important;font-weight:700;font-size:1.6rem;margin-bottom:6px}
+.login-header p{color:#666!important;font-size:.9rem;margin:0}
+
+.login-form{display:flex;flex-direction:column;gap:12px}
+.input-item{--background:transparent;--border-color:#111;--border-width:2px;--border-radius:12px;--padding-start:16px;--padding-end:16px;margin-bottom:8px;min-height:48px}
+.input-item ion-label{color:#111!important;font-weight:600;font-size:.9rem}
+.input-item ion-label.label-floating{color:#666!important}
+.input-item ion-input{--color:#111;--placeholder-color:#999;font-size:.95rem}
+.input-item.item-has-focus{--border-color:#d32f2f}
+.input-item.item-has-focus ion-label{color:#d32f2f!important}
+.error-message{color:#dc3545!important;font-size:.85rem;text-align:center;background:rgba(220,53,69,.1);padding:8px;border-radius:6px;border:1px solid #dc3545;margin-bottom:12px}
+.button-container{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+
+.login-button{--background:#d32f2f;--color:#000;--border-color:#d32f2f;--border-width:2px;--border-radius:12px;--padding-top:12px;--padding-bottom:12px;font-weight:600;font-size:.95rem}
+.login-button:hover{--background:#b71c1c;--border-color:#b71c1c}
+.login-button ion-icon{margin-right:6px;color:#000}
+.register-button{--background:transparent;--color:#d32f2f;--border-color:transparent;--border-radius:12px;--padding-top:12px;--padding-bottom:12px;--box-shadow:none;font-weight:600;font-size:.9rem}
+.register-button:hover{--background:rgba(211,47,47,.1);--color:#b71c1c}
+.register-button ion-icon{margin-right:6px;color:#d32f2f}
+ion-item,ion-input,ion-label{background:transparent!important}
+
+@media (max-width:768px){
+.login-container{padding:8px;min-height:100vh;align-items:flex-start;padding-top:32px}
+.login-card{padding:16px;max-width:100%}
+.app-logo{width:90px;height:90px}
+.logo-container{margin-bottom:12px}
+.login-header{margin-bottom:16px}
+.login-header h1{font-size:1.4rem;margin-bottom:4px}
+.login-header p{font-size:.85rem}
+.input-item{--padding-start:12px;--padding-end:12px;margin-bottom:6px;min-height:44px}
+.button-container{margin-top:12px;gap:8px}
+.login-button,.register-button{--padding-top:10px;--padding-bottom:10px;font-size:.9rem}
+}
+@media (max-width:480px){
+.login-container{padding:6px;min-height:100vh;padding-top:32px}
+.login-card{padding:12px;border-radius:14px}
+.app-logo{width:350px;height:350px}
+.logo-container{margin-bottom:10px}
+.login-header{margin-bottom:14px}
+.login-header h1{font-size:1.3rem;margin-bottom:3px}
+.login-header p{font-size:.8rem}
+.input-item{margin-bottom:5px;min-height:42px}
+.button-container{margin-top:10px;gap:6px}
+.login-button,.register-button{--padding-top:9px;--padding-bottom:9px;font-size:.85rem}
+.error-message{padding:6px;font-size:.8rem;margin-bottom:8px}
 }
 
-// Header con estilo del menú - fondo rojo
-ion-header {
-  .login-header-toolbar {
-    --background: #d32f2f; /* Fondo rojo */
-    --color: #fff;
-    border-radius: 0 0 16px 16px;
-    padding-top: 32px;
-    
-    ion-title {
-      font-size: 2.2rem;
-      font-weight: bold;
-      color: #000 !important;
-      text-shadow:
-        -1px -1px 0 #fff,
-         1px -1px 0 #fff,
-        -1px  1px 0 #fff,
-         1px  1px 0 #fff; /* Borde blanco */
-      letter-spacing: 1px;
-      text-align: center;
-    }
-  }
-}
-
-// Contenedor principal de login
-.login-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - 120px);
-  padding: 20px;
-}
-
-// Card de login con estilo del proyecto
-.login-card {
-  background: transparent;
-  border: 2px solid #111;
-  border-radius: 18px;
-  padding: 32px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-// Header del formulario
-.login-header {
-  text-align: center;
-  margin-bottom: 32px;
-  
-  h1 {
-    color: #111 !important;
-    font-weight: 700;
-    font-size: 2rem;
-    margin-bottom: 8px;
-  }
-  
-  p {
-    color: #666 !important;
-    font-size: 1rem;
-    margin: 0;
-  }
-}
-
-// Formulario de login
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-// Items de input con estilo consistente
-.input-item {
-  --background: transparent;
-  --border-color: #111;
-  --border-style: solid;
-  --border-width: 2px;
-  --border-radius: 12px;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --inner-padding-start: 0;
-  --inner-padding-end: 0;
-  margin-bottom: 16px;
-  
-  ion-label {
-    color: #111 !important;
-    font-weight: 600;
-    
-    &.label-floating {
-      color: #666 !important;
-    }
-  }
-  
-  ion-input {
-    --color: #111;
-    --placeholder-color: #999;
-    font-size: 1rem;
-  }
-  
-  &.item-has-focus {
-    --border-color: #d32f2f; /* Color rojo del menú para el focus */
-    --border-width: 2px;
-    
-    ion-label {
-      color: #d32f2f !important; /* Label rojo al hacer focus */
-    }
-  }
-}
-
-// Mensaje de error
-.error-message {
-  color: #dc3545 !important;
-  font-size: 0.9rem;
-  text-align: center;
-  background: rgba(220, 53, 69, 0.1);
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #dc3545;
-  margin-bottom: 16px;
-  display: block;
-}
-
-// Contenedor de botones
-.button-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 24px;
-}
-
-// Botón de login principal - estilo rojo sólido con texto negro
-.login-button {
-  --background: #d32f2f; /* Fondo rojo sólido */
-  --color: #000; /* Texto negro */
-  --border-color: #d32f2f;
-  --border-style: solid;
-  --border-width: 2px;
-  --border-radius: 12px;
-  --padding-top: 16px;
-  --padding-bottom: 16px;
-  font-weight: 600;
-  font-size: 1rem;
-  
-  &:hover {
-    --background: #b71c1c; /* Rojo más oscuro al hover */
-    --border-color: #b71c1c;
-    --color: #000; /* Mantener texto negro en hover */
-  }
-  
-  ion-icon {
-    margin-right: 8px;
-    color: #000; /* Icono negro */
-  }
-}
-
-// Botón de registro - solo texto e icono sin borde
-.register-button {
-  --background: transparent;
-  --color: #d32f2f; /* Color rojo del texto */
-  --border-color: transparent; /* Sin borde */
-  --border-style: none;
-  --border-width: 0;
-  --border-radius: 12px;
-  --padding-top: 16px;
-  --padding-bottom: 16px;
-  --box-shadow: none;
-  font-weight: 600;
-  font-size: 1rem;
-  
-  &:hover {
-    --background: rgba(211, 47, 47, 0.1); /* Fondo rojo translúcido al hover */
-    --color: #b71c1c; /* Texto más oscuro al hover */
-  }
-  
-  ion-icon {
-    margin-right: 8px;
-    color: #d32f2f;
-  }
-  
-  // Asegurar que no haya bordes en ningún estado
-  &::part(native) {
-    border: none !important;
-    box-shadow: none !important;
-  }
-}
-
-// Fondo transparente para elementos internos
-ion-item,
-ion-item::part(native),
-ion-input,
-ion-input::part(native),
-ion-label {
-  background: transparent !important;
-  --background: transparent !important;
-}
-
-// Responsive design
-@media (max-width: 768px) {
-  .login-container {
-    padding: 16px;
-    min-height: calc(100vh - 100px);
-  }
-  
-  .login-card {
-    padding: 24px;
-    max-width: 100%;
-  }
-  
-  .login-header {
-    margin-bottom: 24px;
-    
-    h1 {
-      font-size: 1.75rem;
-    }
-  }
-  
-  .input-item {
-    --padding-start: 12px;
-    --padding-end: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .login-card {
-    padding: 20px;
-    border-radius: 16px;
-  }
-  
-  .login-header {
-    h1 {
-      font-size: 1.5rem;
-    }
-    
-    p {
-      font-size: 0.9rem;
-    }
-  }
-  
-  .button-container {
-    gap: 12px;
-  }
-}
-
-// Modo oscuro - mantener colores del tema rojo
-@media (prefers-color-scheme: dark) {
-  .login-header-toolbar ion-title,
-  .login-header h1,
-  .login-header p,
-  .input-item ion-label,
-  .input-item ion-input {
-    color: #111 !important;
-    --color: #111 !important;
-  }
-  
-  // Mantener el header rojo en modo oscuro
-  .login-header-toolbar {
-    --background: #d32f2f;
-    
-    ion-title {
-      color: #000 !important;
-      text-shadow:
-        -1px -1px 0 #fff,
-         1px -1px 0 #fff,
-        -1px  1px 0 #fff,
-         1px  1px 0 #fff;
-    }
-  }
-  
-  // Mantener botones rojos en modo oscuro
-  .login-button {
-    --background: #d32f2f;
-    --color: #000; /* Texto negro en modo oscuro también */
-    --border-color: #d32f2f;
-    
-    ion-icon {
-      color: #000; /* Icono negro en modo oscuro */
-    }
-  }
-  
-  .register-button {
-    --color: #d32f2f;
-    --border-color: transparent; /* Sin borde en modo oscuro */
-    
-    ion-icon {
-      color: #d32f2f;
-    }
-    
-    &:hover {
-      --color: #b71c1c;
-      
-      ion-icon {
-        color: #b71c1c;
-      }
-    }
-  }
-  
-  .error-message {
-    color: #dc3545 !important;
-  }
+@media (prefers-color-scheme:dark){
+.login-header h1,.login-header p,.input-item ion-label,.input-item ion-input{color:#111!important}
+.login-button{--background:#d32f2f;--color:#000;--border-color:#d32f2f}
+.login-button ion-icon{color:#000}
+.register-button{--color:#d32f2f}
+.register-button ion-icon{color:#d32f2f}
+.register-button:hover{--color:#b71c1c}
+.register-button:hover ion-icon{color:#b71c1c}
+.error-message{color:#dc3545!important}
 }

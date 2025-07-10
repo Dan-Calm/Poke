@@ -41,7 +41,8 @@ export class AuthGuard implements CanActivate {
       const toast = document.createElement('ion-toast');
       toast.message = 'Te falta la medalla premium para acceder.';
       toast.duration = 2000;
-      toast.color = 'danger';
+      toast.style.setProperty('--background', '#111', 'important');
+      toast.style.setProperty('--color', '#fff', 'important');
       document.body.appendChild(toast);
       await toast.present();
       // this.router.navigate(['/tab1']);
